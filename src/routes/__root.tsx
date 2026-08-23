@@ -113,6 +113,13 @@ function RootDocument({ children }: { children: React.ReactNode }) {
         <HeadContent />
         <script dangerouslySetInnerHTML={{ __html: LOCALE_BOOT_SCRIPT }} />
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(SITE_SCHEMA) }} />
+        {/* Datafa.st analytics — defer-loaded, cookieless */}
+        <script
+          defer
+          data-website-id="dfid_SwiRXiNlTaTixNRBnLI2Z"
+          data-domain="starrank.lol"
+          src="https://datafa.st/js/script.js"
+        />
       </head>
       <body>
         {children}

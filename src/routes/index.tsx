@@ -356,7 +356,7 @@ function Home() {
             {data.checkout.turnstileSiteKey ? (
               <div className="cf-turnstile" data-sitekey={data.checkout.turnstileSiteKey} />
             ) : null}
-            {showListingMeta ? (
+            {showListingMeta && (platform !== null || resolveFailed) ? (
               <div className="listing-meta">
                 {previewLogo || listingTitle ? (
                   <div className="resolved-identity">
