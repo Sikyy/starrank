@@ -1,12 +1,15 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { createServerFn } from '@tanstack/react-start'
 
-import { RULES_LEAD, RULES_SECTIONS, RULES_TITLE } from '../content/rules.ts'
+import { RULES_LEAD, RULES_TITLE } from '../content/rules.ts'
+import { useLocale } from '../i18n/context.tsx'
 import { database } from '../server/env.ts'
 import { loadPublicStats } from '../server/db.ts'
+import { resolveRequestLocale } from '../server/locale.ts'
 import { SiteFooter, SiteHeader } from '../ui/site-chrome.tsx'
 
 const loadRules = createServerFn({ method: 'GET' }).handler(async () => {
+  resolveRequestLocale()
   const stats = await loadPublicStats(database(), new Date())
   return { visitorsOnline: stats.visitorsOnline, visitorsLast24h: stats.visitorsLast24h }
 })
@@ -31,15 +34,16 @@ export const Route = createFileRoute('/rules')({
 
 function RulesPage() {
   const { visitorsOnline, visitorsLast24h } = Route.useLoaderData()
+  const { copy } = useLocale()
   return (
     <main className="site-shell">
       <SiteHeader visitorsOnline={visitorsOnline} visitorsLast24h={visitorsLast24h} />
       <article className="page-panel" aria-labelledby="rules-heading">
-        <p className="page-kicker">How Youbid works</p>
-        <h1 id="rules-heading">{RULES_TITLE}</h1>
-        <p className="page-lead">{RULES_LEAD}</p>
+        <p className="page-kicker">{copy.rulesKicker}</p>
+        <h1 id="rules-heading">{copy.rulesTitle}</h1>
+        <p className="page-lead">{copy.rulesLead}</p>
 
-        {RULES_SECTIONS.map((section) => (
+        {copy.rulesSections.map((section) => (
           <div key={section.heading}>
             <h2>{section.heading}</h2>
             {section.lead ? <p className="page-lead">{section.lead}</p> : null}

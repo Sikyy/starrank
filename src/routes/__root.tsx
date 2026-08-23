@@ -1,8 +1,18 @@
-import { HeadContent, Link, Scripts, createRootRoute } from '@tanstack/react-router'
+import { HeadContent, Link, Outlet, Scripts, createRootRoute } from '@tanstack/react-router'
+import { createServerFn } from '@tanstack/react-start'
 
+import { LocaleProvider, useLocale } from '../i18n/context.tsx'
+import { LOCALE_BOOT_SCRIPT } from '../i18n/locale.ts'
+import { resolveRequestLocale } from '../server/locale.ts'
 import appCss from '../styles.css?url'
 
+const loadLocale = createServerFn({ method: 'GET' }).handler(() => {
+  return { locale: resolveRequestLocale() }
+})
+
 export const Route = createRootRoute({
+  loader: () => loadLocale(),
+  component: RootLayout,
   notFoundComponent: NotFound,
   head: () => ({
     meta: [
@@ -83,16 +93,25 @@ const SITE_SCHEMA = {
   ],
 }
 
+function RootLayout() {
+  const { locale } = Route.useLoaderData()
+  return (
+    <LocaleProvider initialLocale={locale}>
+      <Outlet />
+    </LocaleProvider>
+  )
+}
+
 function RootDocument({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
       <head>
         <HeadContent />
+        <script dangerouslySetInnerHTML={{ __html: LOCALE_BOOT_SCRIPT }} />
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(SITE_SCHEMA) }} />
       </head>
       <body>
         {children}
-
         <Scripts />
       </body>
     </html>
@@ -100,14 +119,15 @@ function RootDocument({ children }: { children: React.ReactNode }) {
 }
 
 function NotFound() {
+  const { copy } = useLocale()
   return (
     <main className="site-shell">
       <section className="page-panel">
         <p className="page-kicker">404</p>
-        <h1>This page is not on Youbid</h1>
-        <p className="page-lead">The public board, live stats, and receipts are the routes that exist.</p>
+        <h1>{copy.notFoundTitle}</h1>
+        <p className="page-lead">{copy.notFoundLead}</p>
         <Link className="primary-button modal-primary" to="/">
-          Back to the board
+          {copy.backToBoard}
         </Link>
       </section>
     </main>

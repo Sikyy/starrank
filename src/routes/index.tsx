@@ -19,10 +19,16 @@ import {
 import { projectedRank, rankListings } from '../domain/ranking.ts'
 import { database, publicCheckoutConfig } from '../server/env.ts'
 import { loadPublicBoard, loadPublicStats, recordTraffic } from '../server/db.ts'
+import { localeHtmlLang, useLocale } from '../i18n/context.tsx'
+import { formatCount, formatRelativeAge, localizeError } from '../i18n/format.ts'
+import { interpolate } from '../i18n/locale.ts'
+import { en } from '../i18n/locales/en.ts'
+import { resolveRequestLocale } from '../server/locale.ts'
 import { resolveVisitorKey } from '../server/visitor-cookie.ts'
 import { SiteFooter, SiteHeader } from '../ui/site-chrome.tsx'
 
 const loadHome = createServerFn({ method: 'GET' }).handler(async () => {
+  resolveRequestLocale()
   const db = database()
   const now = new Date()
   await recordTraffic(db, {
@@ -51,6 +57,8 @@ export const Route = createFileRoute('/')({
 function Home() {
   const data = Route.useLoaderData()
   const router = useRouter()
+  const { copy, locale } = useLocale()
+  const htmlLang = localeHtmlLang(locale)
   const bidFormRef = useRef<HTMLElement>(null)
   const listings = data.listings
   const [clockIso, setClockIso] = useState(data.nowIso)
@@ -187,7 +195,7 @@ function Home() {
     event.preventDefault()
     const result = normalizeIdentity(identityInput)
     if (!result.ok) {
-      setIdentityError(result.message)
+      setIdentityError(localizeError(result.message, copy))
       return
     }
     setBusy(true)
@@ -216,7 +224,7 @@ function Home() {
         checkoutUrl?: string
       }
       if (!response.ok || !payload.intentId) {
-        setIdentityError(payload.message ?? 'Checkout could not start.')
+        setIdentityError(localizeError(payload.message ?? copy.errorCheckoutStart, copy))
         return
       }
       if ((payload.mode === 'stripe' || payload.mode === 'settled') && payload.checkoutUrl) {
@@ -242,7 +250,7 @@ function Home() {
       })
       const payload = (await response.json()) as { message?: string; receipt?: string }
       if (!response.ok) {
-        setIdentityError(payload.message ?? 'Mock settlement failed.')
+        setIdentityError(localizeError(payload.message ?? copy.errorMockSettle, copy))
         return
       }
       window.location.assign(`/receipts/${pendingIntentId}`)
@@ -261,17 +269,18 @@ function Home() {
 
       <section className="intro" id="top">
         <p className="tagline">
-          No ads, no API keys, no revenue sharing. Just bid past your competition to get to
-          the top. <strong>Will you take #1 when Youbid goes viral?</strong>
+          {copy.tagline} <strong>{copy.taglineEmphasis}</strong>
         </p>
 
         <section className="bid-panel" ref={bidFormRef} aria-labelledby="bid-heading">
           <div className="bid-title-row">
-            <h1 id="bid-heading">{takeover ? 'Take page one for' : `Claim #${previewRank} for`}</h1>
+            <h1 id="bid-heading">
+              {takeover ? copy.takePageOneFor : interpolate(copy.claimRankFor, { rank: previewRank })}
+            </h1>
             <button
               className="step-button"
               type="button"
-              aria-label="Decrease bid by one dollar"
+              aria-label={copy.decreaseBid}
               onClick={() => setAmountCents((amount) => Math.max(MINIMUM_BID_CENTS, amount - BID_STEP_CENTS))}
             >
               −
@@ -280,16 +289,14 @@ function Home() {
             <button
               className="step-button"
               type="button"
-              aria-label="Increase bid by one dollar"
+              aria-label={copy.increaseBid}
               onClick={() => setAmountCents((amount) => amount + BID_STEP_CENTS)}
             >
               +
             </button>
           </div>
           <p className="bid-explainer">
-            {takeover
-              ? 'This paid bid takes the whole first page for three hours.'
-              : 'Your amount decides the rank. Paying less than the #1 price still puts you on the board wherever that bid can take you.'}
+            {takeover ? copy.explainerTakeover : copy.explainerBid}
           </p>
 
           <form className="bid-composer-wrap" onSubmit={openCheckout} noValidate>
@@ -306,29 +313,29 @@ function Home() {
                       </svg>
                     )}
                   </span>
-                  <span className="sr-only">Product URL or social handle</span>
+                  <span className="sr-only">{copy.identityLabel}</span>
                   <input
                     value={identityInput}
                     onChange={(event) => applyIdentityInput(event.target.value)}
                     onBlur={(event) => void resolveIdentityFields(event.target.value)}
-                    placeholder="Your product URL or @handle"
+                    placeholder={copy.identityPlaceholder}
                     aria-invalid={Boolean(identityError)}
                     aria-describedby="identity-help identity-error"
                     autoComplete="url"
                   />
                 </label>
                 <button className="primary-button" type="submit" disabled={!canCheckout}>
-                  {busy ? 'Working…' : takeover ? 'Take over' : 'Bid'}
+                  {busy ? copy.working : takeover ? copy.takeOver : copy.bid}
                 </button>
               </div>
               <p className="identity-help" id="identity-help">
                 {data.checkout.mode === 'unavailable'
-                  ? 'Paid bids open after Stripe is configured. The live board shows verified payments only.'
+                  ? copy.helpUnavailable
                   : resolving
-                    ? 'Reading listing details…'
+                    ? copy.helpResolving
                     : resolveFailed
-                      ? 'Could not load this profile. Add a title and description.'
-                      : 'Already on the list? Enter the same URL or @handle and up your bid to get back to the top.'}
+                      ? copy.helpResolveFailed
+                      : copy.helpDefault}
               </p>
             </div>
             {data.checkout.turnstileSiteKey ? (
@@ -348,28 +355,28 @@ function Home() {
                   </div>
                 ) : null}
                 <label>
-                  <span>Title</span>
+                  <span>{copy.title}</span>
                   <input
                     value={listingTitle}
                     onChange={(event) => setListingTitle(event.target.value)}
-                    placeholder="Name shown on the board"
+                    placeholder={copy.titlePlaceholder}
                     maxLength={80}
                     required
                   />
                 </label>
                 <label>
-                  <span>Description</span>
+                  <span>{copy.description}</span>
                   <textarea
                     value={listingDescription}
                     onChange={(event) => setListingDescription(event.target.value)}
-                    placeholder="One or two sentences"
+                    placeholder={copy.descriptionPlaceholder}
                     maxLength={240}
                     rows={2}
                     required
                   />
                 </label>
                 <label>
-                  <span>Image URL <em>(optional)</em></span>
+                  <span>{copy.imageUrl} <em>{copy.optional}</em></span>
                   <input
                     value={listingImageUrl}
                     onChange={(event) => setListingImageUrl(event.target.value)}
@@ -383,26 +390,26 @@ function Home() {
           </form>
         </section>
 
-        <section className="takeover-offer" aria-label="Leaderboard takeover">
+        <section className="takeover-offer" aria-label={copy.takeoverAria}>
           <p>
-            <strong>New: Leaderboard takeover.</strong> Own the first page for 3 hours —{' '}
+            <strong>{copy.takeoverNew}</strong> {copy.takeoverOwn}{' '}
             {formatUsd(takeoverAmount)}{' '}
-            <span>(falls from 4× to 1.2× #1 over 24 hours)</span>
+            <span>{copy.takeoverFalls}</span>
           </p>
           <button type="button" onClick={chooseTakeover} disabled={Boolean(activeTakeover)}>
-            {activeTakeover ? 'Active' : 'Take over'}
+            {activeTakeover ? copy.takeoverActive : copy.takeOver}
           </button>
         </section>
       </section>
 
       <section className="leaderboard" aria-labelledby="leaderboard-heading">
-        <h2 className="sr-only" id="leaderboard-heading">Paid product leaderboard</h2>
+        <h2 className="sr-only" id="leaderboard-heading">{copy.boardHeading}</h2>
         <div className="board-controls">
           <button className="refresh-button" type="button" onClick={() => void router.invalidate()}>
-            Refresh
+            {copy.refresh}
           </button>
-          <nav className="pagination" aria-label="Leaderboard pages">
-            <button type="button" onClick={() => setPage(board.page - 1)} disabled={board.page === 1}>Prev</button>
+          <nav className="pagination" aria-label={copy.pagesAria}>
+            <button type="button" onClick={() => setPage(board.page - 1)} disabled={board.page === 1}>{copy.prev}</button>
             {Array.from({ length: board.pageCount }, (_, index) => index + 1).map((pageNumber) => (
               <button
                 key={pageNumber}
@@ -414,27 +421,28 @@ function Home() {
                 {pageNumber}
               </button>
             ))}
-            <button type="button" onClick={() => setPage(board.page + 1)} disabled={board.page === board.pageCount}>Next</button>
+            <button type="button" onClick={() => setPage(board.page + 1)} disabled={board.page === board.pageCount}>{copy.next}</button>
           </nav>
         </div>
 
         {board.takeover ? (
           <article className="takeover-live">
-            <span className="takeover-kicker">First-page takeover · paid</span>
+            <span className="takeover-kicker">{copy.takeoverLiveKicker}</span>
             <a href={board.takeover.href} target="_blank" rel="sponsored noopener noreferrer">
               {board.takeover.display}
             </a>
             <p>
-              This listing owns Youbid page one until{' '}
-              {new Date(board.takeover.endsAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}.
+              {interpolate(copy.takeoverOwnsUntil, {
+                time: new Date(board.takeover.endsAt).toLocaleTimeString(htmlLang, { hour: '2-digit', minute: '2-digit' }),
+              })}
             </p>
             <strong>{formatUsd(board.takeover.amountCents)}</strong>
-            <button type="button" onClick={() => setPage(2)}>Browse the regular leaderboard</button>
+            <button type="button" onClick={() => setPage(2)}>{copy.browseRegular}</button>
           </article>
         ) : (
           <div className="listing-stack">
             {board.listings.length === 0 ? (
-              <p className="empty-note">No live listings yet. The first verified bid takes #1. Amounts fall 3% a day.</p>
+              <p className="empty-note">{copy.emptyBoard}</p>
             ) : null}
             {board.listings.map((listing, index) => {
               const rank = board.firstRank + index
@@ -453,9 +461,9 @@ function Home() {
                     type="button"
                     onClick={() => chooseRank(listing)}
                   >
-                    claim this rank for {formatUsd(claimCents)}
+                    {interpolate(copy.claimRank, { amount: formatUsd(claimCents) })}
                   </button>
-                  <button className="rank-badge" type="button" onClick={() => chooseRank(listing)} aria-label={`Claim rank ${rank} for ${formatUsd(claimCents)}`}>
+                  <button className="rank-badge" type="button" onClick={() => chooseRank(listing)} aria-label={interpolate(copy.claimRankAria, { rank, amount: formatUsd(claimCents) })}>
                     #{rank}
                   </button>
                   {listing.image ? <img src={listing.image} alt="" width="56" height="56" loading="lazy" /> : null}
@@ -463,16 +471,16 @@ function Home() {
                     <a href={listing.href} target="_blank" rel="sponsored noopener noreferrer">
                       {listing.domain}
                     </a>
-                    <p>{listing.description}</p>
+                    <p>{listing.description === en.defaultDescription ? copy.defaultDescription : listing.description}</p>
                     <small>
-                      {listing.age}
+                      {formatRelativeAge(listing.settledAt, clockIso, copy)}
                       <span className="meta-dot" aria-hidden="true">•</span>
-                      on the board until {listing.dropsOffAt.slice(0, 10)}
+                      {interpolate(copy.onBoardUntil, { date: listing.dropsOffAt.slice(0, 10) })}
                       <span className="meta-dot" aria-hidden="true">•</span>
-                      <strong>{listing.clicks.toLocaleString()} clicks</strong>
+                      <strong>{interpolate(copy.clicks, { count: formatCount(listing.clicks, htmlLang) })}</strong>
                     </small>
                   </div>
-                  <button className="listing-price" type="button" onClick={() => chooseRank(listing)} aria-label={`Current rank amount ${formatUsd(listing.amountCents)}`}>
+                  <button className="listing-price" type="button" onClick={() => chooseRank(listing)} aria-label={interpolate(copy.currentAmountAria, { amount: formatUsd(listing.amountCents) })}>
                     {formatUsd(listing.amountCents)}
                   </button>
                 </article>
@@ -489,21 +497,20 @@ function Home() {
           if (event.currentTarget === event.target) closeCheckout()
         }}>
           <section className="checkout-modal" role="dialog" aria-modal="true" aria-labelledby="checkout-title">
-            <span className="modal-kicker">Local mock checkout</span>
-            <h2 id="checkout-title">Review your {takeover ? 'takeover' : 'bid'}</h2>
+            <span className="modal-kicker">{copy.checkoutKicker}</span>
+            <h2 id="checkout-title">{takeover ? copy.reviewTakeover : copy.reviewBid}</h2>
             <dl>
-              <div><dt>Listing</dt><dd>{listingTitle || (normalizedIdentity.ok ? normalizedIdentity.identity.display : identityInput)}</dd></div>
-              <div><dt>Placement</dt><dd>{takeover ? 'Page one · 3 hours' : `Projected rank #${previewRank}`}</dd></div>
-              <div><dt>Total</dt><dd>{formatUsd(amountCents)}</dd></div>
+              <div><dt>{copy.listing}</dt><dd>{listingTitle || (normalizedIdentity.ok ? normalizedIdentity.identity.display : identityInput)}</dd></div>
+              <div><dt>{copy.placement}</dt><dd>{takeover ? copy.placementTakeover : interpolate(copy.projectedRank, { rank: previewRank })}</dd></div>
+              <div><dt>{copy.total}</dt><dd>{formatUsd(amountCents)}</dd></div>
             </dl>
             <p className="payment-note">
-              Creating checkout reserved a D1 intent and did not change the board. Confirming
-              runs the same settlement planner as a paid webhook.
+              {copy.paymentNote}
             </p>
             <button className="primary-button modal-primary" type="button" disabled={busy} onClick={() => void confirmMockPayment()}>
-              Confirm mock payment
+              {copy.confirmMock}
             </button>
-            <button className="text-button" type="button" onClick={closeCheckout}>Cancel</button>
+            <button className="text-button" type="button" onClick={closeCheckout}>{copy.cancel}</button>
           </section>
         </div>
       ) : null}

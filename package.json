@@ -9,7 +9,7 @@
     "dev": "vite dev --port 3000",
     "generate-routes": "tsr generate",
     "typecheck": "tsc --noEmit",
-    "test": "node --test --experimental-strip-types src/domain/domain.test.ts src/server/stripe.test.ts src/server/checkout-flow.test.ts src/server/scrape.test.ts",
+    "test": "node --test --experimental-strip-types src/domain/domain.test.ts src/server/stripe.test.ts src/server/checkout-flow.test.ts src/server/scrape.test.ts src/i18n/i18n.test.ts",
     "build": "vite build",
     "preview": "vite preview",
     "cf-typegen": "wrangler types",
