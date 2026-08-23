@@ -39,10 +39,14 @@ export const Route = createFileRoute('/api/resolve')({
         }
 
         const handle = identity.identity.canonicalKey.startsWith('x:')
-        const scraped = await scrapePublicUrl(identity.identity.targetUrl)
+        // Platforms behind login walls (douyin/weibo) never yield server-side
+        // metadata; skip the scrape so users fill title/description manually.
+        const platformId = identity.identity.canonicalKey.split(':')[0]
+        const scrapeable = !['douyin', 'weibo'].includes(platformId)
+        const scraped = scrapeable ? await scrapePublicUrl(identity.identity.targetUrl) : { title: '', description: '', imageUrl: null }
         const metadata = {
           ...scraped,
-          imageUrl: handle ? scraped.imageUrl : faviconUrlForTarget(identity.identity.targetUrl),
+          imageUrl: handle || !scrapeable ? scraped.imageUrl : faviconUrlForTarget(identity.identity.targetUrl),
         }
         const complete = completeListingMetadata(metadata, null)
         return Response.json({

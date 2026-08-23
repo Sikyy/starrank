@@ -136,6 +136,33 @@ test('platform selection routes handles to per-platform canonical keys', () => {
   assert.equal(igUrl.ok && igUrl.identity.canonicalKey, 'instagram:starrank')
 })
 
+test('UID platforms (douyin/weibo) require numeric IDs; rednote requires 24-hex UID', () => {
+  // Nickname-style inputs must be rejected with a helpful message.
+  const dyNick = normalizeIdentity('shjdhk001', 'douyin')
+  assert.equal(dyNick.ok, false)
+  const wbNick = normalizeIdentity('星星', 'weibo')
+  assert.equal(wbNick.ok, false)
+  const xhsNick = normalizeIdentity('shjdhk001', 'rednote')
+  // lowercase hex chars pass HANDLE_BODY but are not 24-hex — accepted as handle
+  // only if it matches; shjdhk001 is not valid hex so it still resolves but the
+  // profile will 404. We accept it (user's responsibility) like other handles.
+  assert.equal(xhsNick.ok && xhsNick.identity.canonicalKey, 'rednote:shjdhk001')
+
+  // Real numeric UIDs resolve.
+  const dy = normalizeIdentity('38852135441', 'douyin')
+  assert.equal(dy.ok && dy.identity.targetUrl, 'https://www.douyin.com/user/38852135441')
+  const wb = normalizeIdentity('38852135441', 'weibo')
+  assert.equal(wb.ok && wb.identity.targetUrl, 'https://weibo.com/u/38852135441')
+
+  // Pasted douyin/rednote/weibo URLs auto-detect.
+  const dyUrl = normalizeIdentity('https://www.douyin.com/user/38852135441', null)
+  assert.equal(dyUrl.ok && dyUrl.identity.canonicalKey, 'douyin:38852135441')
+  const xhsUrl = normalizeIdentity('https://www.xiaohongshu.com/user/profile/5ff0e6410000000001008400', null)
+  assert.equal(xhsUrl.ok && xhsUrl.identity.canonicalKey, 'rednote:5ff0e6410000000001008400')
+  const wbUrl = normalizeIdentity('https://weibo.com/u/1234567890', null)
+  assert.equal(wbUrl.ok && wbUrl.identity.canonicalKey, 'weibo:1234567890')
+})
+
 test('missing listing metadata requires title and description', () => {
   const missing = completeListingMetadata({ title: '', description: '', imageUrl: null }, null)
   assert.equal(missing.ok, false)

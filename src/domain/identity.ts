@@ -1,21 +1,42 @@
-export type PlatformId = 'x' | 'instagram' | 'tiktok' | 'youtube' | 'rednote' | 'weibo'
+export type PlatformId =
+  | 'x'
+  | 'instagram'
+  | 'tiktok'
+  | 'douyin'
+  | 'youtube'
+  | 'rednote'
+  | 'weibo'
 
 export interface PlatformMeta {
   id: PlatformId
   label: string
-  /** Placeholder shown when this platform is selected, e.g. "@handle". */
+  /** Shown in the input placeholder when selected — documents the exact ID format. */
   placeholder: string
-  /** Hostname used to build the profile URL. */
   profileHost: string
 }
 
 export const PLATFORMS: Record<PlatformId, PlatformMeta> = {
-  x: { id: 'x', label: 'X', placeholder: '@用户名', profileHost: 'x.com' },
-  instagram: { id: 'instagram', label: 'Instagram', placeholder: '@用户名', profileHost: 'instagram.com' },
-  tiktok: { id: 'tiktok', label: 'TikTok / 抖音', placeholder: '@用户名', profileHost: 'tiktok.com' },
+  x: { id: 'x', label: 'X', placeholder: '@用户名（字母/数字/下划线）', profileHost: 'x.com' },
+  instagram: { id: 'instagram', label: 'Instagram', placeholder: '@用户名（字母/数字/._）', profileHost: 'instagram.com' },
+  tiktok: { id: 'tiktok', label: 'TikTok', placeholder: '@用户名（如 @starrank）', profileHost: 'tiktok.com' },
+  douyin: { id: 'douyin', label: '抖音', placeholder: '数字 UID（主页链接里的数字）', profileHost: 'douyin.com' },
   youtube: { id: 'youtube', label: 'YouTube', placeholder: '@频道名', profileHost: 'youtube.com' },
-  rednote: { id: 'rednote', label: '小红书', placeholder: '用户 ID', profileHost: 'xiaohongshu.com' },
-  weibo: { id: 'weibo', label: '微博', placeholder: '用户 ID', profileHost: 'weibo.com' },
+  rednote: {
+    id: 'rednote',
+    label: '小红书',
+    // Verified: profile URLs only resolve with the 24-hex user UID found in
+    // the share link, NOT the nickname/search handle.
+    placeholder: '用户 UID（24位，分享链接里复制）',
+    profileHost: 'xiaohongshu.com',
+  },
+  weibo: {
+    id: 'weibo',
+    label: '微博',
+    // Weibo blocks server-side reads (visitor wall); numeric UID links still
+    // work for visitors, so we accept the UID but skip metadata scraping.
+    placeholder: '数字 UID（个人主页链接里的数字）',
+    profileHost: 'weibo.com',
+  },
 }
 
 export const PLATFORM_LIST = Object.values(PLATFORMS)
@@ -34,7 +55,8 @@ const HANDLE_BODY = /^[a-zA-Z0-9_.]{1,30}$/
 const HANDLE_PATTERN = /^@([a-zA-Z0-9_.]{1,30})$/
 const X_HOSTS = new Set(['x.com', 'twitter.com'])
 const IG_HOSTS = new Set(['instagram.com', 'instagr.am'])
-const TIKTOK_HOSTS = new Set(['tiktok.com', 'douyin.com'])
+const TIKTOK_HOSTS = new Set(['tiktok.com'])
+const DOUYIN_HOSTS = new Set(['douyin.com', 'iesdouyin.com'])
 const YOUTUBE_HOSTS = new Set(['youtube.com', 'youtu.be'])
 const REDNOTE_HOSTS = new Set(['xiaohongshu.com', 'xhslink.com'])
 const WEIBO_HOSTS = new Set(['weibo.com', 'm.weibo.cn'])
@@ -125,10 +147,17 @@ function handleIdentity(platform: PlatformId, rawHandle: string): IdentityResult
   if (!HANDLE_BODY.test(normalizedHandle)) {
     return { ok: false, message: `${meta.label} 的账号格式不正确。` }
   }
+  // UID-based platforms only accept numeric IDs (verified against real profiles).
+  if ((platform === 'douyin' || platform === 'weibo') && !/^\d{5,32}$/.test(normalizedHandle)) {
+    return { ok: false, message: `${meta.label} 需要数字 UID（在个人主页链接里），不是昵称。` }
+  }
   let targetUrl: string
   switch (platform) {
     case 'youtube':
       targetUrl = `https://www.youtube.com/@${normalizedHandle}`
+      break
+    case 'douyin':
+      targetUrl = `https://www.douyin.com/user/${normalizedHandle}`
       break
     case 'rednote':
       targetUrl = `https://www.xiaohongshu.com/user/profile/${normalizedHandle}`
@@ -164,13 +193,29 @@ function handleFromSocialUrl(hostname: string, pathname: string): IdentityResult
     if (!segment) return null
     return handleIdentity('tiktok', segment)
   }
+  if (DOUYIN_HOSTS.has(hostname)) {
+    // douyin.com/user/<numeric UID>
+    const uid = pathname.split('/').filter(Boolean)[1] ?? segment
+    if (!uid) return null
+    return handleIdentity('douyin', uid)
+  }
+  if (REDNOTE_HOSTS.has(hostname)) {
+    // xiaohongshu.com/user/profile/<24-hex UID>
+    const uid = pathname.split('/').filter(Boolean)[2] ?? ''
+    if (!uid || !/^[0-9a-f]{24}$/.test(uid)) return null
+    return handleIdentity('rednote', uid)
+  }
+  if (WEIBO_HOSTS.has(hostname)) {
+    // weibo.com/u/<numeric UID>
+    const uid = pathname.split('/').filter(Boolean)[1] ?? ''
+    if (pathname.split('/').filter(Boolean)[0] !== 'u' || !/^\d+$/.test(uid)) return null
+    return handleIdentity('weibo', uid)
+  }
   if (YOUTUBE_HOSTS.has(hostname)) {
     const channel = pathname.split('/').filter(Boolean).join('/')
     if (!channel.startsWith('@')) return null
     return handleIdentity('youtube', channel.slice(1))
   }
-  void REDNOTE_HOSTS
-  void WEIBO_HOSTS
   return null
 }
 
