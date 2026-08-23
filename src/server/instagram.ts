@@ -43,12 +43,17 @@ export async function lookupInstagramUser(username: string, apiKey?: string): Pr
   const p = payload.profile
   if (!p || typeof p !== 'object') return null
 
+  // Instagram/Facebook image CDNs need a platform Referer and reject hotlinks,
+  // so a bare <img> from starrank.lol can't load them. Serve the avatar through
+  // the images.weserv.nl image proxy (which re-fetches the source server-side).
+  const avatarSrc =
+    (typeof p.avatar_hd === 'string' ? p.avatar_hd : null) ??
+    (typeof p.avatar === 'string' ? p.avatar : null)
+
   return {
     username: typeof p.username === 'string' ? p.username : username,
     fullName: typeof p.name === 'string' ? p.name : '',
     biography: typeof p.bio === 'string' ? p.bio : '',
-    avatarUrl:
-      (typeof p.avatar_hd === 'string' ? p.avatar_hd : null) ??
-      (typeof p.avatar === 'string' ? p.avatar : null),
+    avatarUrl: avatarSrc ? `https://images.weserv.nl/?url=${encodeURIComponent(avatarSrc)}` : null,
   }
 }
