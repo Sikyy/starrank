@@ -8,6 +8,7 @@ import { allowResolve } from '../server/env.ts'
 import { scrapePublicUrl } from '../server/scrape.ts'
 import { extractShareTarget } from '../server/share-input.ts'
 import { isDouyinSecUid, lookupDouyinUser } from '../server/douyin.ts'
+import { lookupInstagramUser } from '../server/instagram.ts'
 
 export const Route = createFileRoute('/api/resolve')({
   server: {
@@ -82,14 +83,36 @@ export const Route = createFileRoute('/api/resolve')({
               { status: 400 },
             )
           }
+        } else if (platformId === 'instagram' && socialHandle) {
+          // Instagram blocks anonymous page scraping, but its public
+          // web_profile_info endpoint gives the display name, biography, and
+          // avatar — so a handle lookup fills all three in.
+          const ig = await lookupInstagramUser(socialHandle)
+          if (ig && !ig.isPrivate) {
+            resolvedIdentity = {
+              canonicalKey: `instagram:${ig.username}`,
+              display: ig.fullName || `Instagram @${ig.username}`,
+              targetUrl: `https://instagram.com/${ig.username}`,
+            }
+            title = ig.fullName
+            description = ig.biography
+            imageUrl = ig.avatarUrl
+            origin = 'handle'
+          } else if (ig && ig.isPrivate) {
+            resolvedIdentity = {
+              canonicalKey: `instagram:${ig.username}`,
+              display: `Instagram @${ig.username}`,
+              targetUrl: `https://instagram.com/${ig.username}`,
+            }
+          }
         }
 
         const isSocial = /^(x|instagram|tiktok|douyin|rednote|weibo):/.test(resolvedIdentity.canonicalKey)
         if (isSocial) {
           // unavatar-backed platforms (x/tiktok) return the account's
-          // real avatar. instagram/douyin/rednote/weibo have no anonymous
-          // source from Workers → what douyin gave us above wins.
-          if (platformId !== 'douyin') {
+          // real avatar. douyin/instagram/rednote/weibo use their own lookup
+          // above when available; otherwise fall back to a platform-letter tile.
+          if (platformId !== 'douyin' && platformId !== 'instagram') {
             imageUrl = staticAvatarUrl(platformId as PlatformId, socialHandle ?? '')
             if (!['weibo', 'rednote'].includes(platformId)) {
               const scraped = await scrapePublicUrl(resolvedIdentity.targetUrl)
