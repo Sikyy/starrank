@@ -13,6 +13,8 @@ export interface ProductionConfig {
   ownerCookieSecret?: string
   /** SearchAPI.io key for profile lookups that Cloudflare egress can't reach. */
   searchApiKey?: string
+  /** rnote.dev API key for Xiaohongshu profile lookups. */
+  xhsApiKey?: string
 }
 
 export interface CheckoutRequest {

@@ -9,6 +9,7 @@ import { scrapePublicUrl } from '../server/scrape.ts'
 import { extractShareTarget } from '../server/share-input.ts'
 import { isDouyinSecUid, lookupDouyinUser } from '../server/douyin.ts'
 import { lookupInstagramUser } from '../server/instagram.ts'
+import { lookupXiaohongshuUser } from '../server/xiaohongshu.ts'
 
 export const Route = createFileRoute('/api/resolve')({
   server: {
@@ -100,6 +101,21 @@ export const Route = createFileRoute('/api/resolve')({
             imageUrl = ig.avatarUrl
             origin = 'handle'
           }
+        } else if (platformId === 'rednote' && socialHandle) {
+          // Xiaohongshu blocks Cloudflare egress; use the rnote.dev crawler API
+          // to get the nickname, bio, and avatar for a 24-hex user_id.
+          const xhs = await lookupXiaohongshuUser(socialHandle, config.xhsApiKey)
+          if (xhs) {
+            resolvedIdentity = {
+              canonicalKey: `rednote:${xhs.userId}`,
+              display: xhs.nickname || `小红书 @${socialHandle}`,
+              targetUrl: `https://www.xiaohongshu.com/user/profile/${xhs.userId}`,
+            }
+            title = xhs.nickname
+            description = xhs.description
+            imageUrl = xhs.avatarUrl
+            origin = 'handle'
+          }
         }
 
         const isSocial = /^(x|instagram|tiktok|douyin|rednote|weibo):/.test(resolvedIdentity.canonicalKey)
@@ -107,7 +123,7 @@ export const Route = createFileRoute('/api/resolve')({
           // unavatar-backed platforms (x/tiktok) return the account's
           // real avatar. douyin/instagram/rednote/weibo use their own lookup
           // above when available; otherwise fall back to a platform-letter tile.
-          if (platformId !== 'douyin' && platformId !== 'instagram') {
+          if (platformId !== 'douyin' && platformId !== 'instagram' && platformId !== 'rednote') {
             imageUrl = staticAvatarUrl(platformId as PlatformId, socialHandle ?? '')
             if (!['weibo', 'rednote'].includes(platformId)) {
               const scraped = await scrapePublicUrl(resolvedIdentity.targetUrl)
