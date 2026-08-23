@@ -71,12 +71,41 @@ export function toPublicListing(
     domain: listing.displayName,
     description: listing.description || 'Paid and verified on StarRank.',
     href: `/go/${listing.id}`,
-    image: listing.imageUrl || faviconUrlForTarget(listing.targetUrl),
+    // Social identities never fall back to the platform favicon as their logo.
+    // When they have no avatar we render a platform-initial tile instead.
+    image: listing.imageUrl || (isSocialIdentity(listing.canonicalIdentity) ? letterTile(listing.canonicalIdentity) : faviconUrlForTarget(listing.targetUrl)),
     amountCents: listingStanding(listing, nowIso),
     settledAt: listing.settledAt ?? nowIso,
     age: listing.settledAt ? ageLabel(listing.settledAt, now) : 'just now',
     clicks,
   }
+}
+
+/** True when the listing is a social handle (x:/instagram:/tiktok:/…). */
+export function isSocialIdentity(canonicalKey: string): boolean {
+  return /^(x|instagram|tiktok|douyin|youtube|rednote|weibo):/.test(canonicalKey)
+}
+
+const PLATFORM_LETTERS: Record<string, string> = {
+  x: 'X',
+  instagram: 'IG',
+  tiktok: 'TT',
+  douyin: '抖音',
+  youtube: 'YT',
+  rednote: 'RED',
+  weibo: 'WB',
+}
+
+/** A tiny inline-SVG letter tile so the board never shows a platform favicon. */
+function letterTile(canonicalKey: string): string {
+  const platform = canonicalKey.split(':')[0]
+  const letter = PLATFORM_LETTERS[platform] ?? (platform.charAt(0).toUpperCase() || 'S')
+  const svg =
+    `<svg xmlns="http://www.w3.org/2000/svg" width="56" height="56">` +
+    `<rect width="56" height="56" rx="28" fill="#7c5cff"/>` +
+    `<text x="28" y="35" font-family="-apple-system,sans-serif" font-weight="700" font-size="${letter.length > 2 ? 14 : 20}" fill="#fff" text-anchor="middle" dominant-baseline="middle">${letter}</text>` +
+    `</svg>`
+  return `data:image/svg+xml;utf8,${encodeURIComponent(svg)}`
 }
 
 export function publicTakeover(

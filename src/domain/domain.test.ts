@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
 
-import { boardPage } from './board.ts'
+import { boardPage, toPublicListing, isSocialIdentity } from './board.ts'
 import { settleVerifiedPaidEvent } from './checkout.ts'
 import { faviconUrlForTarget } from './favicon.ts'
 import { normalizeIdentity } from './identity.ts'
@@ -98,6 +98,32 @@ test('a public URL uses favicon.so as the listing logo, not an og image host', (
   assert.equal(faviconUrlForTarget('https://cleer.deepzero.ai/'), 'https://favicon.so/cleer.deepzero.ai')
   assert.equal(faviconUrlForTarget('https://www.example.com/app'), 'https://favicon.so/example.com')
   assert.equal(faviconUrlForTarget('not-a-url'), null)
+})
+
+test('social listings never show a platform favicon — they use an initial tile', () => {
+  assert.equal(isSocialIdentity('x:nasa'), true)
+  assert.equal(isSocialIdentity('instagram:cheongdam_garden'), true)
+  assert.equal(isSocialIdentity('url:example.com'), false)
+
+  const social = listing({
+    id: 'social_1',
+    displayName: 'Instagram @nasa',
+    canonicalIdentity: 'instagram:nasa',
+    targetUrl: 'https://instagram.com/nasa',
+    imageUrl: null,
+  })
+  const asListing = toPublicListing(social, 0, new Date('2026-08-23T00:00:00.000Z'))
+  // Must NOT be a favicon.so URL, and must be an SVG data URI tile.
+  assert.ok(!asListing.image?.includes('favicon.so'))
+  assert.ok(asListing.image?.startsWith('data:image/svg+xml'))
+
+  // A web URL without a custom image keeps the site favicon.
+  const web = listing({ id: 'web_1', displayName: 'example.com', canonicalIdentity: 'url:example.com', targetUrl: 'https://example.com/', imageUrl: null })
+  assert.equal(toPublicListing(web, 0, new Date()).image, 'https://favicon.so/example.com')
+
+  // A provided image URL always wins for any identity.
+  const withAvatar = listing({ id: 'a1', canonicalIdentity: 'instagram:nasa', imageUrl: 'https://cdn/avatar.jpg' })
+  assert.equal(toPublicListing(withAvatar, 0, new Date()).image, 'https://cdn/avatar.jpg')
 })
 
 test('identity normalization accepts public URLs and handles, rejects invite and script URLs', () => {
