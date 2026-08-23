@@ -5,10 +5,9 @@ import { formatCount } from '../i18n/format.ts'
 import { interpolate } from '../i18n/locale.ts'
 import { LocaleSwitcher } from './locale-switcher.tsx'
 
-// Public analytics for starrank.lol. This is the DataFast dashboard URL; swap
-// it for the public share URL (https://datafa.st/share/<id>) if you want
-// anonymous visitors to see the stats without signing in.
-export const DATAFAT_DASHBOARD_URL = 'https://datafa.st/dashboard/6a8aed1a25c806f747d17130'
+// Public analytics for starrank.lol — a DataFast public share that any visitor
+// can open without signing in (pageviews, revenue, referrers, visited URLs).
+export const DATAFAT_DASHBOARD_URL = 'https://datafa.st/share/6a8aed1a25c806f747d17130'
 
 export function SiteHeader(input: {
   visitorsOnline: number
