@@ -63,12 +63,13 @@ console.log('create-product:', product.status, JSON.stringify(product.json).slic
 const productId = product.json?.data?.productId ?? product.json?.data?.id ?? product.json?.data?.product?.id
 if (productId) console.log('PRODUCT_ID =', productId)
 
-// 2. Register the HTTP webhook for order.completed in test mode.
+// 2. Register the HTTP webhook for order.completed. Pass TEST=1 for test mode.
+const testMode = process.env.TEST === '1'
 const hook = await call('/v1/actions/store/add-webhook', {
   storeId: vars.WAFFO_STORE_ID,
   channel: 'http',
   url: 'https://starrank.lol/api/webhooks/waffo',
   events: ['order.completed'],
-  testMode: true,
+  testMode,
 })
 console.log('add-webhook:', hook.status, JSON.stringify(hook.json).slice(0, 600))
