@@ -4,7 +4,7 @@ import { faviconUrlForTarget } from '../domain/favicon.ts'
 import { PLATFORMS, normalizeIdentity, type PlatformId } from '../domain/identity.ts'
 import { staticAvatarUrl } from '../domain/avatar.ts'
 import { completeListingMetadata } from '../domain/listing-metadata.ts'
-import { allowResolve } from '../server/env.ts'
+import { allowResolve, readProductionConfig } from '../server/env.ts'
 import { scrapePublicUrl } from '../server/scrape.ts'
 import { extractShareTarget } from '../server/share-input.ts'
 import { isDouyinSecUid, lookupDouyinUser } from '../server/douyin.ts'
@@ -50,6 +50,7 @@ export const Route = createFileRoute('/api/resolve')({
         if (!identity.ok) {
           return Response.json({ message: identity.message }, { status: 400 })
         }
+        const config = readProductionConfig()
 
         const [platformId, socialHandle] = identity.identity.canonicalKey.split(':')
         let resolvedIdentity = identity.identity
@@ -84,11 +85,11 @@ export const Route = createFileRoute('/api/resolve')({
             )
           }
         } else if (platformId === 'instagram' && socialHandle) {
-          // Instagram blocks anonymous page scraping, but its public
-          // web_profile_info endpoint gives the display name, biography, and
-          // avatar — so a handle lookup fills all three in.
-          const ig = await lookupInstagramUser(socialHandle)
-          if (ig && !ig.isPrivate) {
+          // Instagram blocks Cloudflare egress, so a handle lookup goes through
+          // SearchAPI (non-Cloudflare). Fills the display name, bio, and avatar;
+          // falls back to a platform-letter tile when unavailable.
+          const ig = await lookupInstagramUser(socialHandle, config.searchApiKey)
+          if (ig) {
             resolvedIdentity = {
               canonicalKey: `instagram:${ig.username}`,
               display: ig.fullName || `Instagram @${ig.username}`,
@@ -98,12 +99,6 @@ export const Route = createFileRoute('/api/resolve')({
             description = ig.biography
             imageUrl = ig.avatarUrl
             origin = 'handle'
-          } else if (ig && ig.isPrivate) {
-            resolvedIdentity = {
-              canonicalKey: `instagram:${ig.username}`,
-              display: `Instagram @${ig.username}`,
-              targetUrl: `https://instagram.com/${ig.username}`,
-            }
           }
         }
 

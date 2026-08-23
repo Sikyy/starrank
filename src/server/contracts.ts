@@ -11,6 +11,8 @@ export interface ProductionConfig {
   turnstileSecret?: string
   turnstileSiteKey?: string
   ownerCookieSecret?: string
+  /** SearchAPI.io key for profile lookups that Cloudflare egress can't reach. */
+  searchApiKey?: string
 }
 
 export interface CheckoutRequest {

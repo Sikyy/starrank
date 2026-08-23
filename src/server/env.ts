@@ -20,6 +20,7 @@ type WorkerEnv = {
   TURNSTILE_SECRET?: string
   TURNSTILE_SITE_KEY?: string
   OWNER_COOKIE_SECRET?: string
+  SEARCHAPI_API_KEY?: string
 }
 
 const LOCAL_OWNER_SECRET = 'starrank-local-owner-cookie-secret'
@@ -52,6 +53,7 @@ export function readProductionConfig(): ProductionConfig {
     waffoMerchantId: emptyToUndefined(value.WAFFO_MERCHANT_ID),
     waffoPrivateKey: emptyToUndefined(value.WAFFO_PRIVATE_KEY),
     waffoProductId: emptyToUndefined(value.WAFFO_PRODUCT_ID),
+    searchApiKey: emptyToUndefined(value.SEARCHAPI_API_KEY),
     waffoWebhookPublicKey: emptyToUndefined(value.WAFFO_WEBHOOK_PUBLIC_KEY),
     turnstileSecret: emptyToUndefined(value.TURNSTILE_SECRET),
     turnstileSiteKey: emptyToUndefined(value.TURNSTILE_SITE_KEY),
