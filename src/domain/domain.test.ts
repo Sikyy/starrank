@@ -215,16 +215,17 @@ test('containsShareLink recognises paste-able Douyin/Xiaohongshu links', () => {
   assert.equal(containsShareLink('example.com'), false)
 })
 
-test('missing listing metadata requires title and description', () => {
+test('missing listing metadata requires only the title; description may be empty', () => {
   const missing = completeListingMetadata({ title: '', description: '', imageUrl: null }, null)
   assert.equal(missing.ok, false)
-  if (!missing.ok) assert.deepEqual(missing.missing, ['title', 'description'])
+  if (!missing.ok) assert.deepEqual(missing.missing, ['title'])
 
   const handleNeedsCopy = completeListingMetadata(
     { title: '', description: '', imageUrl: null },
     { title: '@youbid', description: '', imageUrl: null },
   )
-  assert.equal(handleNeedsCopy.ok, false)
+  // Title is inherited from the existing listing; an empty description is fine.
+  assert.equal(handleNeedsCopy.ok, true)
 
   const filled = completeListingMetadata(
     { title: 'Youbid', description: 'Paid leaderboard', imageUrl: 'https://example.com/a.png' },

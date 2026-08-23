@@ -69,7 +69,7 @@ export function toPublicListing(
   return {
     id: listing.id,
     domain: listing.displayName,
-    description: listing.description || 'Paid and verified on StarRank.',
+    description: listing.description || '',
     href: `/go/${listing.id}`,
     // Social identities never fall back to the platform favicon as their logo.
     // When they have no avatar we render a platform-initial tile instead.

@@ -18,7 +18,6 @@ import { loadPublicBoard, loadPublicStats, recordTraffic } from '../server/db.ts
 import { localeHtmlLang, useLocale } from '../i18n/context.tsx'
 import { formatCount, formatRelativeAge, localizeError } from '../i18n/format.ts'
 import { interpolate } from '../i18n/locale.ts'
-import { en } from '../i18n/locales/en.ts'
 import { resolveRequestLocale } from '../server/locale.ts'
 import { resolveVisitorKey } from '../server/visitor-cookie.ts'
 import { SiteFooter, SiteHeader } from '../ui/site-chrome.tsx'
@@ -108,7 +107,6 @@ function Home() {
     data.checkout.mode !== 'unavailable' &&
     Boolean(activeIdentity) &&
     listingTitle.trim() !== '' &&
-    listingDescription.trim() !== '' &&
     amountCents >= MINIMUM_BID_CENTS &&
     !busy
   const showListingMeta = Boolean(activeIdentity)
@@ -129,7 +127,7 @@ function Home() {
     Boolean(activeIdentity) &&
     resolvedKey === activeIdentity?.canonicalKey &&
     !resolving &&
-    (!listingTitle.trim() || !listingDescription.trim())
+    !listingTitle.trim()
 
   function applyIdentityInput(value: string) {
     setIdentityInput(value)
@@ -185,13 +183,11 @@ function Home() {
       setResolvedKey(resolved?.canonicalKey ?? '')
       if (!response.ok || !payload.metadata || !resolved) return
       setServerIdentity(resolved)
-      // When a platform blocks server-side scraping we get no metadata back.
-      // Prefill an editable default (the identity display + a stock description)
-      // so checkout is never gated on metadata the site could not fetch.
+      // Title falls back to the account display; description uses the real bio
+      // when available and stays empty otherwise (no fake default text).
       const fallbackTitle = resolved.display
-      const fallbackDescription = copy.defaultDescription
       setListingTitle((current) => current || payload.metadata?.title || fallbackTitle)
-      setListingDescription((current) => current || payload.metadata?.description || fallbackDescription)
+      setListingDescription((current) => current || payload.metadata?.description || '')
       setListingImageUrl((current) => current || payload.metadata?.imageUrl || '')
     } catch {
       if (seq === resolveSeq.current) setResolvedKey(result.ok ? result.identity.canonicalKey : '')
@@ -508,7 +504,7 @@ function Home() {
                     <a href={listing.href} target="_blank" rel="sponsored noopener noreferrer">
                       {listing.domain}
                     </a>
-                    <p>{listing.description === en.defaultDescription ? copy.defaultDescription : listing.description}</p>
+                    {listing.description ? <p>{listing.description}</p> : null}
                     <small>
                       {formatRelativeAge(listing.settledAt, clockIso, copy)}
                       <span className="meta-dot" aria-hidden="true">•</span>

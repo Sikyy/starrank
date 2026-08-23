@@ -34,9 +34,10 @@ export function completeListingMetadata(
     description: submitted.description || existing?.description || '',
     imageUrl: submitted.imageUrl || existing?.imageUrl || null,
   })
+  // Only a title is required. Description is filled from the account bio when
+  // available and stays empty otherwise (no fake default text).
   const missing: MetadataField[] = []
   if (!metadata.title) missing.push('title')
-  if (!metadata.description) missing.push('description')
   if (missing.length > 0) return { ok: false, missing, metadata }
   return { ok: true, metadata }
 }
