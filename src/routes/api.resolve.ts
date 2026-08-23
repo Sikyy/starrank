@@ -7,6 +7,7 @@ import { completeListingMetadata } from '../domain/listing-metadata.ts'
 import { allowResolve } from '../server/env.ts'
 import { scrapePublicUrl } from '../server/scrape.ts'
 import { extractShareTarget } from '../server/share-input.ts'
+import { isDouyinSecUid, lookupDouyinUser } from '../server/douyin.ts'
 
 export const Route = createFileRoute('/api/resolve')({
   server: {
@@ -49,39 +50,67 @@ export const Route = createFileRoute('/api/resolve')({
           return Response.json({ message: identity.message }, { status: 400 })
         }
 
-        const isSocial = /^(x|instagram|tiktok|douyin|youtube|rednote|weibo):/.test(identity.identity.canonicalKey)
         const [platformId, socialHandle] = identity.identity.canonicalKey.split(':')
-
+        let resolvedIdentity = identity.identity
         let title = ''
         let description = ''
         let imageUrl = null as string | null
+        let origin = ''
 
+        if (platformId === 'douyin') {
+          // Resolve the stable sec_uid and pull public metadata (nickname,
+          // signature, avatar) from Douyin's official API. This is what lets a
+          // bare 抖音号 (unique_id) be found and gives the profile its real info.
+          const rawId = socialHandle ?? ''
+          const lookup = await lookupDouyinUser(
+            isDouyinSecUid(rawId) ? { secUid: rawId } : { uniqueId: rawId },
+          )
+          if (lookup) {
+            resolvedIdentity = {
+              canonicalKey: `douyin:${lookup.secUid}`,
+              display: lookup.nickname || `抖音 @${lookup.uniqueId}`,
+              targetUrl: `https://www.douyin.com/user/${lookup.secUid}`,
+            }
+            title = lookup.nickname
+            description = lookup.signature
+            imageUrl = lookup.avatarUrl
+            origin = 'handle'
+          } else if (!isDouyinSecUid(rawId)) {
+            // A bare 抖音号 we couldn't resolve: don't fabricate an invalid URL.
+            return Response.json(
+              { message: '未找到该抖音号。请粘贴抖音分享链接或主页链接。' },
+              { status: 400 },
+            )
+          }
+        }
+
+        const isSocial = /^(x|instagram|tiktok|douyin|youtube|rednote|weibo):/.test(resolvedIdentity.canonicalKey)
         if (isSocial) {
           // unavatar-backed platforms (x/tiktok/youtube) return the account's
           // real avatar. instagram/douyin/rednote/weibo have no anonymous
-          // source from Workers → leave avatar null, open manual entry, and
-          // fall back to a platform-letter tile (not the platform logo).
-          imageUrl = staticAvatarUrl(platformId as PlatformId, socialHandle ?? '')
-          // Light scrape for a title where the avatar source gives none.
-          if (!['douyin', 'weibo', 'rednote'].includes(platformId)) {
-            const scraped = await scrapePublicUrl(identity.identity.targetUrl)
-            title = scraped.title || title
-            description = scraped.description || description
+          // source from Workers → what douyin gave us above wins.
+          if (platformId !== 'douyin') {
+            imageUrl = staticAvatarUrl(platformId as PlatformId, socialHandle ?? '')
+            if (!['weibo', 'rednote'].includes(platformId)) {
+              const scraped = await scrapePublicUrl(resolvedIdentity.targetUrl)
+              title = title || scraped.title
+              description = description || scraped.description
+            }
           }
         } else {
           // Web URLs keep the site favicon.
-          const scraped = await scrapePublicUrl(identity.identity.targetUrl)
-          title = scraped.title
-          description = scraped.description
-          imageUrl = faviconUrlForTarget(identity.identity.targetUrl)
+          const scraped = await scrapePublicUrl(resolvedIdentity.targetUrl)
+          title = title || scraped.title
+          description = description || scraped.description
+          imageUrl = imageUrl || faviconUrlForTarget(resolvedIdentity.targetUrl)
         }
 
         const metadata = { title, description, imageUrl }
         const complete = completeListingMetadata(metadata, null)
         return Response.json({
-          identity: identity.identity,
+          identity: resolvedIdentity,
           metadata: complete.metadata,
-          source: title || description ? (isSocial ? 'handle' : 'scrape') : 'none',
+          source: title || description ? (origin || (isSocial ? 'handle' : 'scrape')) : 'none',
           missing: complete.ok ? [] : complete.missing,
         })
       },

@@ -11,6 +11,7 @@ import { createStripeCheckout } from '../server/stripe.ts'
 import { createWaffoCheckout } from '../server/waffo.ts'
 import { verifyTurnstile } from '../server/turnstile.ts'
 import { extractShareTarget } from '../server/share-input.ts'
+import { isDouyinSecUid, lookupDouyinUser } from '../server/douyin.ts'
 import { database, publicCheckoutConfig, readProductionConfig } from '../server/env.ts'
 import { ensureOwner, expireOpenIntents, insertIntent, loadReservationSnapshot, updateIntent } from '../server/db.ts'
 import { isDuplicateCheckoutRequest } from '../server/d1-errors.ts'
@@ -49,9 +50,33 @@ export const Route = createFileRoute('/api/checkout')({
           identityInput = share.candidate
           identityPlatform = null
         }
-        const identity = normalizeIdentity(identityInput, identityPlatform)
+        let identity = normalizeIdentity(identityInput, identityPlatform)
         if (!identity.ok) {
           return Response.json({ code: 'invalid_identity', message: identity.message }, { status: 400 })
+        }
+
+        // A bare 抖音号 only becomes a real douyin profile after a lookup; resolve
+        // it to the stable sec_uid so the intent carries the right profile id.
+        const [identityPlatformId, identityHandle] = identity.identity.canonicalKey.split(':')
+        if (identityPlatformId === 'douyin' && identityHandle) {
+          const lookup = await lookupDouyinUser(
+            isDouyinSecUid(identityHandle) ? { secUid: identityHandle } : { uniqueId: identityHandle },
+          )
+          if (lookup) {
+            identity = {
+              ok: true,
+              identity: {
+                canonicalKey: `douyin:${lookup.secUid}`,
+                display: lookup.nickname || `抖音 @${lookup.uniqueId}`,
+                targetUrl: `https://www.douyin.com/user/${lookup.secUid}`,
+              },
+            }
+          } else if (!isDouyinSecUid(identityHandle)) {
+            return Response.json(
+              { code: 'invalid_identity', message: '未找到该抖音号。请粘贴抖音分享链接或主页链接。' },
+              { status: 400 },
+            )
+          }
         }
 
         if (config.turnstileSecret) {

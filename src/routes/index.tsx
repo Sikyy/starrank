@@ -101,9 +101,9 @@ function Home() {
   const board = { page: 1, pageCount: 1, takeover: data.takeover, listings: rankedListings, firstRank: 1 }
   const previewRank = projectedRank(amountCents, rankedListings)
   const normalizedIdentity = normalizeIdentity(identityInput, platform)
-  // Prefer the local identity; fall back to the server-resolved one for share
-  // links (v.douyin.com / xhslink.com) that only the server can follow.
-  const activeIdentity = normalizedIdentity.ok ? normalizedIdentity.identity : serverIdentity
+  // The server-resolved identity is authoritative (it enriches a bare 抖音号 into
+  // its real profile); fall back to the local parse only until it resolves.
+  const activeIdentity = serverIdentity ?? (normalizedIdentity.ok ? normalizedIdentity.identity : null)
   const canCheckout =
     data.checkout.mode !== 'unavailable' &&
     Boolean(activeIdentity) &&
@@ -179,7 +179,9 @@ function Home() {
         identity?: ProductIdentity
         metadata?: { title?: string; description?: string; imageUrl?: string | null }
       }
-      const resolved = result.ok ? result.identity : (payload.identity ?? null)
+      // Prefer the server's resolved identity (authoritative + enriched); the
+      // local parse only serves as a fallback when the server sends none.
+      const resolved = payload.identity ?? (result.ok ? result.identity : null)
       setResolvedKey(resolved?.canonicalKey ?? '')
       if (!response.ok || !payload.metadata || !resolved) return
       setServerIdentity(resolved)
