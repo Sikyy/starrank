@@ -5,6 +5,11 @@ import { formatCount } from '../i18n/format.ts'
 import { interpolate } from '../i18n/locale.ts'
 import { LocaleSwitcher } from './locale-switcher.tsx'
 
+// Public analytics for starrank.lol. This is the DataFast dashboard URL; swap
+// it for the public share URL (https://datafa.st/share/<id>) if you want
+// anonymous visitors to see the stats without signing in.
+export const DATAFAT_DASHBOARD_URL = 'https://datafa.st/dashboard/6a8aed1a25c806f747d17130'
+
 export function SiteHeader(input: {
   visitorsOnline: number
   visitorsLast24h: number
@@ -37,9 +42,9 @@ export function SiteHeader(input: {
             ? `${interpolate(copy.visitorsSinceLaunch, { count: formatCount(input.visitorsSinceLaunch, lang) })} · `
             : ''}
         </span>
-        <Link className="stats-link" to="/stats" target="_blank" rel="noreferrer">
+        <a className="stats-link" href={DATAFAT_DASHBOARD_URL} target="_blank" rel="noreferrer">
           {copy.seeStats}
-        </Link>
+        </a>
       </div>
     </header>
   )
@@ -54,7 +59,7 @@ export function SiteFooter() {
         <Link to="/rules">{copy.navRules}</Link>
         <Link to="/terms">服务条款</Link>
         <Link to="/privacy">隐私政策</Link>
-        <Link to="/stats">{copy.footerStats}</Link>
+        <a href={DATAFAT_DASHBOARD_URL} target="_blank" rel="noreferrer">{copy.footerStats}</a>
         <a href="https://starrank.lol">starrank.lol</a>
         <a href="mailto:yyymalicious@gmail.com">客服邮箱：yyymalicious@gmail.com</a>
       </nav>
