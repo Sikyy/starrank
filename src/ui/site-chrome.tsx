@@ -58,6 +58,9 @@ export function SiteFooter() {
         <Link to="/stats">{copy.footerStats}</Link>
         <a href="https://starrank.lol">starrank.lol</a>
       </nav>
+      <p className="footer-contact">
+        客服邮箱：<a href="mailto:yyymalicious@gmail.com">yyymalicious@gmail.com</a>
+      </p>
     </footer>
   )
 }

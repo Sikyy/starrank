@@ -105,7 +105,7 @@ function TermsPage() {
           </ul>
           <h3>5.4 如何申请退款</h3>
           <p>
-            请发送邮件至 support@starrank.lol 并附上您的付款邮箱、交易单号与理由。
+            请发送邮件至 yyymalicious@gmail.com 并附上您的付款邮箱、交易单号与理由。
             我们会在 2 个工作日内确认，符合条件的退款将在 5–10 个工作日内原路退回。
           </p>
         </section>
@@ -113,7 +113,7 @@ function TermsPage() {
         <section>
           <h2>6. 计费争议</h2>
           <p>
-            如您认为某笔收费有误，请先联系 support@starrank.lol 再向银行发起争议。
+            如您认为某笔收费有误，请先联系 yyymalicious@gmail.com 再向银行发起争议。
             我们承诺在 2 个工作日内回复，并在核实后的 5 个工作日内解决计费错误。
           </p>
         </section>
@@ -166,7 +166,7 @@ function TermsPage() {
           <h2>11. 适用法律与争议解决</h2>
           <p>
             本条款受新加坡法律管辖。在启动任何正式程序之前，请您先通过
-            support@starrank.lol 与我们联系，尝试友好解决争议。
+            yyymalicious@gmail.com 与我们联系，尝试友好解决争议。
           </p>
         </section>
 
@@ -181,8 +181,8 @@ function TermsPage() {
         <section>
           <h2>13. 联系方式</h2>
           <ul>
-            <li>一般支持与计费：support@starrank.lol</li>
-            <li>退款：support@starrank.lol（标题注明"退款"）</li>
+            <li>一般支持与计费：yyymalicious@gmail.com</li>
+            <li>退款：yyymalicious@gmail.com（标题注明"退款"）</li>
             <li>网站：<a href="https://starrank.lol">https://starrank.lol</a></li>
           </ul>
         </section>

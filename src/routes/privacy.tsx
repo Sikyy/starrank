@@ -34,7 +34,7 @@ function PrivacyPage() {
           <h2>1. 数据控制者</h2>
           <ul>
             <li>运营者：StarRank（个人开发者，个体经营）</li>
-            <li>联系邮箱：support@starrank.lol</li>
+            <li>联系邮箱：yyymalicious@gmail.com</li>
             <li>数据保护官：不适用</li>
           </ul>
         </section>
@@ -129,7 +129,7 @@ function PrivacyPage() {
 
         <section>
           <h2>8. 您的数据权利</h2>
-          <p>联系我们（support@starrank.lol）即可行使以下权利，我们在 30 个日历日内回复：</p>
+          <p>联系我们（yyymalicious@gmail.com）即可行使以下权利，我们在 30 个日历日内回复：</p>
           <table className="legal-table">
             <thead><tr><th>权利</th><th>说明</th></tr></thead>
             <tbody>
@@ -181,7 +181,7 @@ function PrivacyPage() {
         <section>
           <h2>13. 联系我们</h2>
           <ul>
-            <li>隐私与支持邮箱：support@starrank.lol</li>
+            <li>隐私与支持邮箱：yyymalicious@gmail.com</li>
             <li>运营者：StarRank</li>
             <li>网站：<a href="https://starrank.lol">https://starrank.lol</a></li>
           </ul>
