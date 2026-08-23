@@ -1,4 +1,4 @@
-// Waffo Pancake (pancake.waffo.ai) payment provider for Youbid.
+// Waffo Pancake (pancake.waffo.ai) payment provider for StarRank.
 // Docs: https://docs.waffo.ai — API Key auth = RSA-SHA256 signed requests,
 // webhooks = RSA-SHA256-signed JSON envelope verified with the platform public key.
 // Runs on Cloudflare Workers: Web Crypto only, no Node built-ins.
@@ -101,7 +101,7 @@ export async function createWaffoCheckout(
   }
 
   const appUrl = config.appUrl.replace(/\/$/, '')
-  // Youbid amounts are integer CNY cents; Waffo takes a display string ("12.34").
+  // StarRank amounts are integer CNY cents; Waffo takes a display string ("12.34").
   const amountYuan = (input.amountCents / 100).toFixed(2)
   const body = JSON.stringify({
     productId: config.waffoProductId,
@@ -111,6 +111,8 @@ export async function createWaffoCheckout(
     darkMode: true,
     successUrl: `${appUrl}/receipts/${input.intentId}`,
     orderMerchantExternalId: input.intentId.slice(0, 128),
+    // The metadata key `youbid_intent_id` is kept to match in-flight and already
+    // recorded Waffo orders; the webhook reads this exact field to map back to an intent.
     metadata: {
       youbid_intent_id: input.intentId,
       purchase_kind: input.takeover ? 'takeover' : 'rank',
@@ -258,7 +260,7 @@ export async function verifyWaffoWebhookEvent(
       envelope.data.orderMerchantExternalId ??
       ''
     if (!intentId) {
-      return { ok: false, status: 409, message: 'Waffo order carries no youbid intent reference.' }
+      return { ok: false, status: 409, message: 'Waffo order carries no StarRank intent reference.' }
     }
     const snapshot: PaidWebhookSnapshot = {
       eventId,

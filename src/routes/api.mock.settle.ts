@@ -50,7 +50,7 @@ export const Route = createFileRoute('/api/mock/settle')({
           {
             eventId: `mock_${intent.id}`,
             payloadHash: intent.payloadHash,
-            eventType: 'youbid.mock.paid',
+            eventType: 'starrank.mock.paid',
             providerOrderId: `mock_order_${intent.id}`,
             intentId: intent.id,
             principalPaidCents: intent.targetAmountCents - current,

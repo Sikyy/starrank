@@ -17,7 +17,7 @@ export function rulesMarkdown(origin: string): string {
     return `## ${section.heading}\n\n${body}${bullets}`
   })
   return [
-    `# Youbid rules: ${RULES_TITLE}`,
+    `# StarRank rules: ${RULES_TITLE}`,
     `> ${RULES_LEAD}`,
     ...sections,
     `## ${en.rulesCanonicalHeading}\n\n- [${en.rulesCanonicalRules}](${origin}/rules)\n- [${en.rulesCanonicalBoard}](${origin}/)\n- [${en.rulesCanonicalStats}](${origin}/stats)`,

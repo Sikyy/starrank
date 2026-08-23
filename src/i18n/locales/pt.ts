@@ -15,7 +15,7 @@ export const pt: Messages = {
   latestActivityLabel: '⚡ Latest activity',
   activityAt: '{time} ago at #{rank}',
   revenueBanner: 'This site has made',
-  footerBlurb: 'Colocação paga, ordenada pelo lance verificado atual. Os valores caem 3% ao dia. Sem partilha de receita.',
+  footerBlurb: 'Colocação paga, ordenada pelo total pago, do mais alto para o mais baixo. Os valores nunca caem. Sem partilha de receita.',
   footerStats: 'Estatísticas',
 
   tagline: 'Sem anúncios, sem chaves de API, sem partilha de receita. Dê um lance acima da concorrência para subir.',
@@ -32,7 +32,7 @@ export const pt: Messages = {
   bid: 'Dar lance',
   takeOver: 'Assumir',
   working: 'A processar…',
-  helpUnavailable: 'Os lances pagos abrem depois de o Stripe estar configurado. O quadro ao vivo só mostra pagamentos verificados.',
+  helpUnavailable: 'Os lances pagos abrem assim que os pagamentos estiverem configurados. O quadro ao vivo só mostra pagamentos verificados.',
   helpResolving: 'A ler os detalhes…',
   helpResolveFailed: 'Não foi possível carregar este perfil. Adicione um título e uma descrição.',
   helpDefault: 'Já está na lista? Introduza o mesmo URL ou @handle e aumente o lance.',
@@ -55,7 +55,7 @@ export const pt: Messages = {
   takeoverLiveKicker: 'Tomada da primeira página · paga',
   takeoverOwnsUntil: 'Este anúncio ocupa a primeira página do StarRank até {time}.',
   browseRegular: 'Ver o ranking habitual',
-  emptyBoard: 'Ainda não há anúncios ao vivo. O primeiro lance verificado fica com o #1. Os valores caem 3% ao dia.',
+  emptyBoard: 'Ainda não há anúncios ao vivo. O primeiro lance verificado fica com o #1.',
   claimRank: 'ficar com esta posição por {amount}',
   claimRankAria: 'Ficar com a posição {rank} por {amount}',
   currentAmountAria: 'Valor atual da posição {amount}',
@@ -100,10 +100,10 @@ export const pt: Messages = {
     {
       heading: 'Lances',
       bullets: [
-        'Yuans chineses, mínimo de ¥1, passos de ¥1.',
-        'Cada valor ao vivo cai 3% ao dia. A posição é o saldo atual e, depois, quem foi liquidado primeiro.',
-        'Um anúncio sai do quadro abaixo de ¥1. Pare de pagar e desce; continue e fica.',
-        'Um lance abaixo do primeiro lugar ainda cai na posição que esse valor consegue comprar. Quem continua a pagar mantém o #1.',
+        'Yuans chineses, mínimo de ¥10, passos de ¥1.',
+        'Os valores nunca caem. A posição é o total pago, do mais alto para o mais baixo; em caso de empate, quem liquidou primeiro.',
+        'Um anúncio fica no quadro até ser reembolsado a zero.',
+        'Um lance abaixo do primeiro lugar ainda cai na posição que esse valor consegue comprar, e fica uma vez pago.',
         'Para subir um anúncio existente, introduza o mesmo URL ou @handle e pague a diferença até ao valor atual.',
         'Só o visitante que primeiro pagou um anúncio pode subi-lo enquanto estiver no quadro.',
       ],
@@ -129,8 +129,8 @@ export const pt: Messages = {
     {
       heading: 'Reembolsos',
       bullets: [
-        'Um reembolso baixa o saldo atual na proporção do principal reembolsado. Não inventamos outro número.',
-        'Um anúncio reembolsado a zero, ou abaixo de ¥1 por decaimento, sai do quadro. Outra pessoa pode então licitar essa identidade.',
+        'Um reembolso baixa a contribuição total do anúncio pelo principal reembolsado. Não inventamos outro número.',
+        'Um anúncio reembolsado a zero sai do quadro. Outra pessoa pode então licitar essa identidade.',
         'Um reembolso total de uma tomada termina o aluguer mais cedo.',
       ],
     },

@@ -15,7 +15,7 @@ export const es: Messages = {
   latestActivityLabel: '⚡ Latest activity',
   activityAt: '{time} ago at #{rank}',
   revenueBanner: 'This site has made',
-  footerBlurb: 'Colocación de pago, ordenada por la puja verificada actual. Los importes bajan un 3 % al día. Sin reparto de ingresos.',
+  footerBlurb: 'Colocación de pago, ordenada por el total pagado, del más alto al más bajo. Los importes nunca bajan. Sin reparto de ingresos.',
   footerStats: 'Estadísticas',
 
   tagline: 'Sin anuncios, sin claves API, sin reparto de ingresos. Puja por encima de la competencia para subir.',
@@ -32,7 +32,7 @@ export const es: Messages = {
   bid: 'Pujar',
   takeOver: 'Tomar',
   working: 'Trabajando…',
-  helpUnavailable: 'Las pujas de pago se abren cuando Stripe esté configurado. El tablero en vivo solo muestra pagos verificados.',
+  helpUnavailable: 'Las pujas de pago se abren cuando los pagos estén configurados. El tablero en vivo solo muestra pagos verificados.',
   helpResolving: 'Leyendo los datos…',
   helpResolveFailed: 'No se pudo cargar este perfil. Añade un título y una descripción.',
   helpDefault: '¿Ya estás en la lista? Introduce la misma URL o @handle y sube la puja.',
@@ -55,7 +55,7 @@ export const es: Messages = {
   takeoverLiveKicker: 'Toma de la primera página · pagada',
   takeoverOwnsUntil: 'Esta ficha ocupa la primera página de StarRank hasta las {time}.',
   browseRegular: 'Ver el ranking habitual',
-  emptyBoard: 'Aún no hay fichas en vivo. La primera puja verificada toma el #1. Los importes bajan un 3 % al día.',
+  emptyBoard: 'Aún no hay fichas en vivo. La primera puja verificada toma el #1.',
   claimRank: 'tomar este puesto por {amount}',
   claimRankAria: 'Tomar el puesto {rank} por {amount}',
   currentAmountAria: 'Importe actual del puesto {amount}',
@@ -100,10 +100,10 @@ export const es: Messages = {
     {
       heading: 'Pujas',
       bullets: [
-        'Yuanes chinos, mínimo 1 ¥, pasos de 1 ¥.',
-        'Cada importe en vivo baja un 3 % al día. El puesto es el saldo actual y, luego, quién se liquidó primero.',
-        'Una ficha sale del tablero por debajo de 1 ¥. Si dejas de pagar, bajas; si sigues, te quedas.',
-        'Una puja por debajo del primer puesto igual cae en el rango que ese importe puede comprar. Quien sigue pagando conserva el #1.',
+        'Yuanes chinos, mínimo 10 ¥, pasos de 1 ¥.',
+        'Los importes nunca bajan. El puesto es el total pagado, el más alto primero; en empate, quien se liquidó después.',
+        'Una ficha queda en el tablero hasta que se reembolse a cero.',
+        'Una puja por debajo del primer puesto igual cae en el rango que ese importe puede comprar, y se queda una vez pagada.',
         'Para subir una ficha existente, introduce la misma URL o @handle y paga la diferencia hasta el importe actual.',
         'Solo el visitante que pagó primero una ficha puede subirla mientras siga en el tablero.',
       ],
@@ -129,8 +129,8 @@ export const es: Messages = {
     {
       heading: 'Reembolsos',
       bullets: [
-        'Un reembolso baja el saldo actual en proporción al principal devuelto. No inventamos otro número.',
-        'Una ficha reembolsada a cero, o caída por debajo de 1 ¥, deja el tablero. Entonces otra persona puede pujar esa identidad.',
+        'Un reembolso baja la contribución total de la ficha por el principal devuelto. No inventamos otro número.',
+        'Una ficha reembolsada a cero deja el tablero. Entonces otra persona puede pujar esa identidad.',
         'Un reembolso total de una toma termina el alquiler antes.',
       ],
     },

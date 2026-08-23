@@ -93,7 +93,7 @@ async function scrapeOnce(parsed: URL, fetchImpl: typeof fetch): Promise<Listing
       redirect: 'follow',
       headers: {
         accept: 'text/html,application/xhtml+xml',
-        'user-agent': 'Mozilla/5.0 (compatible; Youbid/1.0; +https://youbid.lol)',
+        'user-agent': 'Mozilla/5.0 (compatible; StarRank/1.0; +https://starrank.lol)',
       },
       signal: AbortSignal.timeout(FETCH_MS),
     })

@@ -45,7 +45,7 @@ export function planReserveCheckout(
   ids: { intentId: string; expiresAt: string },
 ): ReservationPlan {
   if (!isValidBidCents(snapshot.targetAmountCents)) {
-    return { kind: 'reject', status: 400, message: 'Bid in whole dollars, at least $1.' }
+    return { kind: 'reject', status: 400, message: 'Bids are whole yuan (CNY), at least ¥10.' }
   }
 
   if (snapshot.kind === 'takeover') {
@@ -57,7 +57,7 @@ export function planReserveCheckout(
       return {
         kind: 'reject',
         status: 400,
-        message: `A takeover must be at least ${required} cents.`,
+        message: `A takeover must be at least ¥${required / 100}.`,
       }
     }
   }

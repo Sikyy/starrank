@@ -15,7 +15,7 @@ export const fr: Messages = {
   latestActivityLabel: '⚡ Latest activity',
   activityAt: '{time} ago at #{rank}',
   revenueBanner: 'This site has made',
-  footerBlurb: 'Placement payant, classé par l’enchère vérifiée actuelle. Les montants baissent de 3 % par jour. Pas de partage de revenus.',
+  footerBlurb: 'Placement payant, classé par le total payé, du plus élevé au plus bas. Les montants ne baissent jamais. Pas de partage de revenus.',
   footerStats: 'Stats',
 
   tagline: 'Pas de pubs, pas de clés API, pas de partage de revenus. Enchérissez plus haut que les autres pour monter.',
@@ -32,7 +32,7 @@ export const fr: Messages = {
   bid: 'Enchérir',
   takeOver: 'Prendre la page',
   working: 'En cours…',
-  helpUnavailable: 'Les enchères payantes s’ouvrent après la configuration de Stripe. Le tableau public n’affiche que les paiements vérifiés.',
+  helpUnavailable: 'Les enchères payantes s’ouvrent une fois les paiements configurés. Le tableau public n’affiche que les paiements vérifiés.',
   helpResolving: 'Lecture des détails…',
   helpResolveFailed: 'Impossible de charger ce profil. Ajoutez un titre et une description.',
   helpDefault: 'Déjà sur la liste ? Entrez la même URL ou le même @handle et augmentez l’enchère.',
@@ -55,7 +55,7 @@ export const fr: Messages = {
   takeoverLiveKicker: 'Première page · payé',
   takeoverOwnsUntil: 'Cette fiche occupe la première page de StarRank jusqu’à {time}.',
   browseRegular: 'Voir le classement habituel',
-  emptyBoard: 'Aucune fiche en ligne. La première enchère vérifiée prend la #1. Les montants baissent de 3 % par jour.',
+  emptyBoard: 'Aucune fiche en ligne. La première enchère vérifiée prend la #1.',
   claimRank: 'prendre ce rang pour {amount}',
   claimRankAria: 'Prendre le rang {rank} pour {amount}',
   currentAmountAria: 'Montant actuel du rang {amount}',
@@ -100,10 +100,10 @@ export const fr: Messages = {
     {
       heading: 'Enchères',
       bullets: [
-        'Yuans chinois, minimum 1 ¥, pas de 1 ¥.',
-        'Chaque montant en ligne baisse de 3 % par jour. Le rang est le solde actuel, puis qui a été réglé en premier.',
-        'Une fiche quitte le tableau sous 1 ¥. Arrêtez de payer et vous glissez ; continuez et vous restez.',
-        'Une enchère sous la première place prend quand même le rang que ce montant peut acheter. Qui continue de payer garde la #1.',
+        'Yuans chinois, minimum 10 ¥, pas de 1 ¥.',
+        'Les montants ne baissent jamais. Le rang est le total payé, le plus élevé d’abord ; à égalité, celui réglé en dernier.',
+        'Une fiche reste au tableau jusqu’à son remboursement à zéro.',
+        'Une enchère sous la première place prend quand même le rang que ce montant peut acheter, et y reste une fois payée.',
         'Pour relever une fiche existante, entrez la même URL ou le même @handle et payez l’écart jusqu’au montant actuel.',
         'Seul le visiteur qui a d’abord payé une fiche peut la relever tant qu’elle est en ligne.',
       ],
@@ -129,8 +129,8 @@ export const fr: Messages = {
     {
       heading: 'Remboursements',
       bullets: [
-        'Un remboursement baisse le solde actuel au prorata du principal remboursé. Nous n’inventons pas un nouveau chiffre.',
-        'Une fiche remboursée à zéro, ou tombée sous 1 ¥, quitte le tableau. Quelqu’un d’autre peut alors enchérir cette identité.',
+        'Un remboursement baisse la contribution totale de la fiche du principal remboursé. Nous n’inventons pas un nouveau chiffre.',
+        'Une fiche remboursée à zéro quitte le tableau. Quelqu’un d’autre peut alors enchérir cette identité.',
         'Un remboursement intégral d’une prise de contrôle termine le bail plus tôt.',
       ],
     },

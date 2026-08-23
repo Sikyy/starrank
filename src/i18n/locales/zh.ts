@@ -32,7 +32,7 @@ export const zh: Messages = {
   bid: '出价',
   takeOver: '接管',
   working: '处理中…',
-  helpUnavailable: '配置好 Stripe 后才能付费出价。线上榜单只显示已验证的付款。',
+  helpUnavailable: '配置好支付后就能付费出价。线上榜单只显示已验证的付款。',
   helpResolving: '正在读取条目信息…',
   helpResolveFailed: '无法读取这个主页。请填写标题和描述。',
   helpDefault: '已经在榜上？输入同一个网址或 @handle，加价就能往上走。',
@@ -129,7 +129,7 @@ export const zh: Messages = {
       heading: '退款',
       bullets: [
         '退款按退还本金的比例降低该条目的当前余额。我们不会另造一个数字。',
-        '退到零，或衰减到 ¥1 以下，条目离榜。之后别人可以竞拍这个身份。',
+        '退到零，条目离榜。之后别人可以竞拍这个身份。',
         '接管全额退款会提前结束租约。',
       ],
     },

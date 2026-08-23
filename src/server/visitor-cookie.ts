@@ -2,6 +2,7 @@ import { getCookie, setCookie } from '@tanstack/react-start/server'
 
 import { isLocalDevelopment } from './env.ts'
 
+// Retained as `youbid_visitor` for continuity with already-recorded traffic facts.
 export const VISITOR_COOKIE = 'youbid_visitor'
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/

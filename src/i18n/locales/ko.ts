@@ -15,7 +15,7 @@ export const ko: Messages = {
   latestActivityLabel: '⚡ Latest activity',
   activityAt: '{time} ago at #{rank}',
   revenueBanner: 'This site has made',
-  footerBlurb: '유료 게재. 현재 확인된 입찰로 순위가 정해집니다. 금액은 하루에 3% 떨어집니다. 수익 배분은 없습니다.',
+  footerBlurb: '유료 게재. 총 납입액이 높은 순으로 정렬되며 금액은 줄지 않습니다. 수익 배분은 없습니다.',
   footerStats: '통계',
 
   tagline: '광고도, API 키도, 수익 배분도 없습니다. 경쟁자보다 높게 입찰하면 위로 올라갑니다.',
@@ -32,7 +32,7 @@ export const ko: Messages = {
   bid: '입찰',
   takeOver: '테이크오버',
   working: '처리 중…',
-  helpUnavailable: 'Stripe를 설정하면 유료 입찰이 열립니다. 공개 보드는 확인된 결제만 보여 줍니다.',
+  helpUnavailable: '결제가 설정되면 유료 입찰이 열립니다. 공개 보드는 확인된 결제만 보여 줍니다.',
   helpResolving: '항목 정보를 읽는 중…',
   helpResolveFailed: '이 프로필을 불러오지 못했습니다. 제목과 설명을 추가하세요.',
   helpDefault: '이미 목록에 있나요? 같은 URL 또는 @handle을 입력하고 입찰을 올려 다시 위로 가세요.',
@@ -55,7 +55,7 @@ export const ko: Messages = {
   takeoverLiveKicker: '첫 페이지 테이크오버 · 결제됨',
   takeoverOwnsUntil: '이 항목이 {time}까지 StarRank 첫 페이지를 차지합니다.',
   browseRegular: '일반 리더보드 보기',
-  emptyBoard: '아직 공개 항목이 없습니다. 첫 확인 입찰이 #1이 됩니다. 금액은 하루에 3% 떨어집니다.',
+  emptyBoard: '아직 공개 항목이 없습니다. 첫 확인 입찰이 #1이 됩니다.',
   claimRank: '이 순위를 {amount}에 가져가기',
   claimRankAria: '{amount}으로 {rank}위 가져가기',
   currentAmountAria: '현재 순위 금액 {amount}',
@@ -100,10 +100,10 @@ export const ko: Messages = {
     {
       heading: '입찰',
       bullets: [
-        '중국 위안, 최소 ¥1, ¥1 단위.',
-        '공개 금액은 하루에 3% 떨어집니다. 순위는 현재 잔액, 그다음 먼저 정산된 사람입니다.',
-        '¥1 아래로 떨어지면 보드를 떠납니다. 지불을 멈추면 밀리고, 계속 지불하면 남습니다.',
-        '1위보다 낮은 입찰도 그 금액이 살 수 있는 순위에 들어갑니다. 계속 지불하는 큰손은 여전히 #1을 지킵니다.',
+        '중국 위안, 최소 ¥10, ¥1 단위.',
+        '금액은 줄지 않습니다. 순위는 총 납입액이 높은 순, 동액이면 먼저 정산된 사람이 위입니다.',
+        '항목은 0까지 환불될 때까지 보드에 남습니다.',
+        '1위보다 낮은 입찰도 그 금액이 살 수 있는 순위에 들어갑니다. 한 번 지불하면 유지됩니다.',
         '기존 항목을 올리려면 같은 URL 또는 @handle을 입력하고 현재 금액과의 차액을 지불하세요.',
         '해당 항목을 처음 결제한 방문자만, 아직 보드에 있는 동안 올릴 수 있습니다.',
       ],
@@ -129,8 +129,8 @@ export const ko: Messages = {
     {
       heading: '환불',
       bullets: [
-        '환불은 환불된 원금에 비례해 해당 항목의 현재 잔액을 낮춥니다. 새 숫자를 만들지 않습니다.',
-        '0까지 환불되거나 ¥1 아래로 감쇠하면 보드를 떠납니다. 그다음 다른 사람이 그 신원에 입찰할 수 있습니다.',
+        '환불은 환불된 원금만큼 해당 항목의 총 납입액을 낮춥니다. 새 숫자를 만들지 않습니다.',
+        '0까지 환불되면 보드를 떠납니다. 그다음 다른 사람이 그 신원에 입찰할 수 있습니다.',
         '테이크오버 전액 환불은 임대를 일찍 끝냅니다.',
       ],
     },

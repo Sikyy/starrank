@@ -22,7 +22,7 @@ type WorkerEnv = {
   OWNER_COOKIE_SECRET?: string
 }
 
-const LOCAL_OWNER_SECRET = 'youbid-local-owner-cookie-secret'
+const LOCAL_OWNER_SECRET = 'starrank-local-owner-cookie-secret'
 
 function workerEnv(): WorkerEnv {
   return env as unknown as WorkerEnv
@@ -71,7 +71,7 @@ export function isLocalDevelopment(config: ProductionConfig = readProductionConf
 
 /** Absolute origin without a trailing slash, for canonical links in machine-readable routes. */
 export function siteOrigin(config: ProductionConfig = readProductionConfig()): string {
-  return (config.appUrl ?? 'https://youbid.lol').replace(/\/+$/, '')
+  return (config.appUrl ?? 'https://starrank.lol').replace(/\/+$/, '')
 }
 
 export function publicCheckoutConfig(config: ProductionConfig = readProductionConfig()): PublicCheckoutConfig {

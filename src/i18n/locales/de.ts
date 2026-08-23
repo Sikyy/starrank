@@ -15,7 +15,7 @@ export const de: Messages = {
   latestActivityLabel: '⚡ Latest activity',
   activityAt: '{time} ago at #{rank}',
   revenueBanner: 'This site has made',
-  footerBlurb: 'Bezahlte Platzierung, sortiert nach dem aktuellen verifizierten Gebot. Beträge fallen 3 % pro Tag. Keine Umsatzbeteiligung.',
+  footerBlurb: 'Bezahlte Platzierung, sortiert nach dem gesamten gezahlten Betrag, höchster zuerst. Beträge verfallen nie. Keine Umsatzbeteiligung.',
   footerStats: 'Statistik',
 
   tagline: 'Keine Anzeigen, keine API-Keys, keine Umsatzbeteiligung. Überbiete die Konkurrenz und komm nach oben.',
@@ -32,7 +32,7 @@ export const de: Messages = {
   bid: 'Bieten',
   takeOver: 'Übernehmen',
   working: 'Einen Moment…',
-  helpUnavailable: 'Bezahlte Gebote öffnen nach der Stripe-Einrichtung. Das Live-Board zeigt nur verifizierte Zahlungen.',
+  helpUnavailable: 'Bezahlte Gebote öffnen, sobald Zahlungen eingerichtet sind. Das Live-Board zeigt nur verifizierte Zahlungen.',
   helpResolving: 'Eintragsdaten werden gelesen…',
   helpResolveFailed: 'Dieses Profil konnte nicht geladen werden. Titel und Beschreibung hinzufügen.',
   helpDefault: 'Schon auf der Liste? Dieselbe URL oder denselben @handle eingeben und das Gebot erhöhen.',
@@ -55,7 +55,7 @@ export const de: Messages = {
   takeoverLiveKicker: 'Erste-Seite-Übernahme · bezahlt',
   takeoverOwnsUntil: 'Dieser Eintrag besitzt StarRank-Seite eins bis {time}.',
   browseRegular: 'Zum normalen Leaderboard',
-  emptyBoard: 'Noch keine Live-Einträge. Das erste verifizierte Gebot wird #1. Beträge fallen 3 % pro Tag.',
+  emptyBoard: 'Noch keine Live-Einträge. Das erste verifizierte Gebot wird #1.',
   claimRank: 'diesen Rang für {amount} nehmen',
   claimRankAria: 'Rang {rank} für {amount} nehmen',
   currentAmountAria: 'Aktueller Rangbetrag {amount}',
@@ -100,10 +100,10 @@ export const de: Messages = {
     {
       heading: 'Bieten',
       bullets: [
-        'Chinesische Yuan, mindestens ¥1, Schritte von ¥1.',
-        'Jeder Live-Betrag fällt 3 % pro Tag. Rang ist der aktuelle Stand, dann wer zuerst settled hat.',
-        'Ein Eintrag fällt vom Board, wenn er unter ¥1 sinkt. Wer nicht zahlt, rutscht; wer weiter zahlt, bleibt.',
-        'Ein Gebot unter Platz 1 landet trotzdem auf dem Rang, den dieser Betrag kauft. Wer weiter zahlt, hält #1.',
+        'Chinesische Yuan, mindestens ¥10, Schritte von ¥1.',
+        'Beträge verfallen nie. Der Rang ist die gesamte bezahlte Summe, höchste zuerst; bei Gleichstand zählt, wer zuletzt bezahlt hat.',
+        'Ein Eintrag bleibt auf dem Board, bis er auf null erstattet wird.',
+        'Ein Gebot unter Platz 1 landet trotzdem auf dem Rang, den dieser Betrag kauft, und bleibt nach der Zahlung bestehen.',
         'Um einen bestehenden Eintrag zu erhöhen, dieselbe URL oder denselben @handle eingeben und die Differenz zum aktuellen Betrag zahlen.',
         'Nur der Besucher, der einen Eintrag zuerst bezahlt hat, kann ihn erhöhen, solange er live ist.',
       ],
@@ -129,8 +129,8 @@ export const de: Messages = {
     {
       heading: 'Erstattungen',
       bullets: [
-        'Eine Erstattung senkt den aktuellen Stand anteilig zum erstatteten Kapital. Wir erfinden keine neue Zahl.',
-        'Ein auf null erstatteter oder unter ¥1 gefallener Eintrag verlässt das Board. Danach kann jemand anderes diese Identität bieten.',
+        'Eine Erstattung senkt den Gesamtbeitrag des Eintrags um das erstattete Kapital. Wir erfinden keine neue Zahl.',
+        'Ein auf null erstatteter Eintrag verlässt das Board. Danach kann jemand anderes diese Identität bieten.',
         'Eine volle Erstattung einer Übernahme beendet den Lease früh.',
       ],
     },

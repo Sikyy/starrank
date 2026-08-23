@@ -3,6 +3,8 @@ import { getCookie, setCookie } from '@tanstack/react-start/server'
 import { hashOwnerToken, signOwnerCookie, verifyOwnerCookie } from '../domain/owner.ts'
 import { ownerSigningSecret, readProductionConfig } from './env.ts'
 
+// Retained as `youbid_owner` for continuity: existing owners hold this signed
+// cookie and use it to raise their live listings. Renaming would orphan them.
 export const OWNER_COOKIE = 'youbid_owner'
 
 export interface ResolvedOwner {

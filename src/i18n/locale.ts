@@ -3,6 +3,8 @@ export const LOCALES = ['en', 'zh', 'ja', 'ko', 'de', 'fr', 'es', 'pt', 'fa', 'h
 export type Locale = (typeof LOCALES)[number]
 
 export const DEFAULT_LOCALE: Locale = 'zh'
+// Retained as `youbid_locale` to keep persisted language preferences from the
+// previous brand. Renaming it only resets the stored preference for returners.
 export const LOCALE_COOKIE = 'youbid_locale'
 export const LOCALE_MAX_AGE = 60 * 60 * 24 * 365
 

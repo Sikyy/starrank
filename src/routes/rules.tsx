@@ -19,14 +19,14 @@ export const Route = createFileRoute('/rules')({
   component: RulesPage,
   head: () => ({
     meta: [
-      { title: `Youbid rules · ${RULES_TITLE}` },
+      { title: `StarRank rules · ${RULES_TITLE}` },
       { name: 'description', content: RULES_LEAD },
-      { property: 'og:title', content: `Youbid rules · ${RULES_TITLE}` },
+      { property: 'og:title', content: `StarRank rules · ${RULES_TITLE}` },
       { property: 'og:description', content: RULES_LEAD },
-      { property: 'og:url', content: 'https://youbid.lol/rules' },
+      { property: 'og:url', content: 'https://starrank.lol/rules' },
     ],
     links: [
-      { rel: 'canonical', href: 'https://youbid.lol/rules' },
+      { rel: 'canonical', href: 'https://starrank.lol/rules' },
       { rel: 'alternate', type: 'text/markdown', href: '/rules.md' },
     ],
   }),

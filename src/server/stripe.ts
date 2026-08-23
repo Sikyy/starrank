@@ -44,19 +44,21 @@ export async function createStripeCheckout(
               unit_amount: input.amountCents,
               product_data: {
                 name: input.takeover
-                  ? 'Youbid first-page takeover · 3 hours'
-                  : 'Youbid leaderboard bid',
+                  ? 'StarRank first-page takeover · 3 hours'
+                  : 'StarRank leaderboard bid',
                 description: `Paid placement for ${input.canonicalIdentity}`,
               },
             },
           },
         ],
+        // Keep the `youbid_intent_id` metadata key so in-flight Stripe sessions
+        // and the webhook that reads it stay in sync across the rebrand.
         metadata: {
           youbid_intent_id: input.intentId,
           purchase_kind: input.takeover ? 'takeover' : 'rank',
         },
       },
-      { idempotencyKey: `youbid-checkout-${input.requestId}` },
+      { idempotencyKey: `starrank-checkout-${input.requestId}` },
     )
   } catch (error) {
     console.error('stripe checkout session create failed', {
@@ -123,7 +125,7 @@ export async function verifyStripeWebhookEvent(
     const session = event.data.object
     const intentId = session.metadata?.youbid_intent_id
     if (!intentId || session.payment_status !== 'paid' || session.currency !== 'cny') {
-      return { ok: false, status: 409, message: 'Stripe Checkout Session is not a paid CNY Youbid intent.' }
+      return { ok: false, status: 409, message: 'Stripe Checkout Session is not a paid CNY StarRank intent.' }
     }
     const providerOrderId =
       typeof session.payment_intent === 'string' ? session.payment_intent : session.id
@@ -149,7 +151,7 @@ export async function verifyStripeWebhookEvent(
     const charge = event.data.object
     const providerOrderId = typeof charge.payment_intent === 'string' ? charge.payment_intent : charge.id
     if (charge.currency !== 'cny') {
-      return { ok: false, status: 409, message: 'Refund is not a CNY Youbid charge.' }
+      return { ok: false, status: 409, message: 'Refund is not a CNY StarRank charge.' }
     }
     return {
       ok: true,

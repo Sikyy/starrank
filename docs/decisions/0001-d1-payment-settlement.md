@@ -6,7 +6,7 @@ Date: 2026-08-21
 
 ## Decision
 
-Youbid uses one TanStack Start Worker and one D1 database as the authoritative store for listings, checkout intents, provider orders, webhook receipts, takeover leases, click facts, and public traffic facts. It does not introduce Durable Objects, Queues, KV, read replication, a `board_state` table, or a second public projection.
+StarRank uses one TanStack Start Worker and one D1 database as the authoritative store for listings, checkout intents, provider orders, webhook receipts, takeover leases, click facts, and public traffic facts. It does not introduce Durable Objects, Queues, KV, read replication, a `board_state` table, or a second public projection.
 
 The public rank changes only after a verified paid provider event is durably accepted and reconciled. Settlement records the provider's absolute order state and recomputes the listing contribution in one D1 batch. A checkout success redirect is presentational only.
 
@@ -20,7 +20,7 @@ D1 uniqueness constraints and atomic batches cover the launch races that matter:
 - one durable receipt per webhook id;
 - deterministic rank ordering by paid amount, settlement time, and stable id.
 
-A singleton Durable Object could serialize commands, but it would add a second schema, a projection outbox, alarms, cross-store recovery, projection lag, and a global bottleneck without closing the external transaction gap between Stripe and Cloudflare. The service becomes justified only after measured D1 contention or a new live coordination requirement fails an explicit threshold.
+A singleton Durable Object could serialize commands, but it would add a second schema, a projection outbox, alarms, cross-store recovery, projection lag, and a global bottleneck without closing the external transaction gap between a payment provider and Cloudflare. The service becomes justified only after measured D1 contention or a new live coordination requirement fails an explicit threshold.
 
 ## Required safeguards
 
