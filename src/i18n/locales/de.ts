@@ -16,8 +16,8 @@ export const de: Messages = {
   taglineEmphasis: 'Nimmst du #1, wenn Youbid viral geht?',
   claimRankFor: 'Platz #{rank} für',
   takePageOneFor: 'Seite eins für',
-  decreaseBid: 'Gebot um einen Dollar senken',
-  increaseBid: 'Gebot um einen Dollar erhöhen',
+  decreaseBid: 'Gebot um einen Yuan senken',
+  increaseBid: 'Gebot um einen Yuan erhöhen',
   explainerTakeover: 'Dieses bezahlte Gebot nimmt die ganze erste Seite für drei Stunden ein.',
   explainerBid: 'Dein Betrag bestimmt den Rang. Weniger als Platz 1 setzt dich trotzdem auf das Board, wo dieses Gebot hinreicht.',
   identityLabel: 'Produkt-URL oder Social-Handle',
@@ -93,9 +93,9 @@ export const de: Messages = {
     {
       heading: 'Bieten',
       bullets: [
-        'US-Dollar, mindestens $1, Schritte von $1.',
+        'Chinesische Yuan, mindestens ¥1, Schritte von ¥1.',
         'Jeder Live-Betrag fällt 3 % pro Tag. Rang ist der aktuelle Stand, dann wer zuerst settled hat.',
-        'Ein Eintrag fällt vom Board, wenn er unter $1 sinkt. Wer nicht zahlt, rutscht; wer weiter zahlt, bleibt.',
+        'Ein Eintrag fällt vom Board, wenn er unter ¥1 sinkt. Wer nicht zahlt, rutscht; wer weiter zahlt, bleibt.',
         'Ein Gebot unter Platz 1 landet trotzdem auf dem Rang, den dieser Betrag kauft. Wer weiter zahlt, hält #1.',
         'Um einen bestehenden Eintrag zu erhöhen, dieselbe URL oder denselben @handle eingeben und die Differenz zum aktuellen Betrag zahlen.',
         'Nur der Besucher, der einen Eintrag zuerst bezahlt hat, kann ihn erhöhen, solange er live ist.',
@@ -123,7 +123,7 @@ export const de: Messages = {
       heading: 'Erstattungen',
       bullets: [
         'Eine Erstattung senkt den aktuellen Stand anteilig zum erstatteten Kapital. Wir erfinden keine neue Zahl.',
-        'Ein auf null erstatteter oder unter $1 gefallener Eintrag verlässt das Board. Danach kann jemand anderes diese Identität bieten.',
+        'Ein auf null erstatteter oder unter ¥1 gefallener Eintrag verlässt das Board. Danach kann jemand anderes diese Identität bieten.',
         'Eine volle Erstattung einer Übernahme beendet den Lease früh.',
       ],
     },

@@ -13,6 +13,10 @@ type WorkerEnv = {
   APP_URL?: string
   STRIPE_SECRET_KEY?: string
   STRIPE_WEBHOOK_SECRET?: string
+  WAFFO_MERCHANT_ID?: string
+  WAFFO_PRIVATE_KEY?: string
+  WAFFO_PRODUCT_ID?: string
+  WAFFO_WEBHOOK_PUBLIC_KEY?: string
   TURNSTILE_SECRET?: string
   TURNSTILE_SITE_KEY?: string
   OWNER_COOKIE_SECRET?: string
@@ -45,6 +49,10 @@ export function readProductionConfig(): ProductionConfig {
     appUrl: value.APP_URL,
     stripeSecretKey: emptyToUndefined(value.STRIPE_SECRET_KEY),
     stripeWebhookSecret: emptyToUndefined(value.STRIPE_WEBHOOK_SECRET),
+    waffoMerchantId: emptyToUndefined(value.WAFFO_MERCHANT_ID),
+    waffoPrivateKey: emptyToUndefined(value.WAFFO_PRIVATE_KEY),
+    waffoProductId: emptyToUndefined(value.WAFFO_PRODUCT_ID),
+    waffoWebhookPublicKey: emptyToUndefined(value.WAFFO_WEBHOOK_PUBLIC_KEY),
     turnstileSecret: emptyToUndefined(value.TURNSTILE_SECRET),
     turnstileSiteKey: emptyToUndefined(value.TURNSTILE_SITE_KEY),
     ownerCookieSecret: emptyToUndefined(value.OWNER_COOKIE_SECRET),
@@ -53,7 +61,7 @@ export function readProductionConfig(): ProductionConfig {
 
 export function ownerSigningSecret(config: ProductionConfig): string | null {
   if (config.ownerCookieSecret) return config.ownerCookieSecret
-  if (!config.stripeSecretKey) return LOCAL_OWNER_SECRET
+  if (!config.stripeSecretKey && !config.waffoMerchantId) return LOCAL_OWNER_SECRET
   return null
 }
 
@@ -68,6 +76,9 @@ export function siteOrigin(config: ProductionConfig = readProductionConfig()): s
 
 export function publicCheckoutConfig(config: ProductionConfig = readProductionConfig()): PublicCheckoutConfig {
   const turnstileSiteKey = config.turnstileSiteKey ?? null
+  if (config.waffoMerchantId && config.waffoPrivateKey && config.waffoProductId && config.appUrl) {
+    return { mode: 'waffo', turnstileSiteKey }
+  }
   if (config.stripeSecretKey && config.appUrl) {
     return { mode: 'stripe', turnstileSiteKey }
   }

@@ -2,7 +2,7 @@ export const LOCALES = ['en', 'zh', 'ja', 'ko', 'de', 'fr', 'es', 'pt', 'fa', 'h
 
 export type Locale = (typeof LOCALES)[number]
 
-export const DEFAULT_LOCALE: Locale = 'en'
+export const DEFAULT_LOCALE: Locale = 'zh'
 export const LOCALE_COOKIE = 'youbid_locale'
 export const LOCALE_MAX_AGE = 60 * 60 * 24 * 365
 

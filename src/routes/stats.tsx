@@ -2,7 +2,7 @@ import { createFileRoute, useRouter } from '@tanstack/react-router'
 import { createServerFn } from '@tanstack/react-start'
 import { useEffect } from 'react'
 
-import { formatUsd } from '../domain/money.ts'
+import { formatCny } from '../domain/money.ts'
 import type { PublicStatsSnapshot } from '../domain/stats.ts'
 import { localeHtmlLang, useLocale } from '../i18n/context.tsx'
 import { interpolate } from '../i18n/locale.ts'
@@ -51,11 +51,11 @@ function StatsPage() {
           <Stat label={copy.statDay} value={stats.visitorsLast24h.toLocaleString(htmlLang)} />
           <Stat label={copy.statClicks} value={stats.clicksLast24h.toLocaleString(htmlLang)} />
           <Stat label={copy.statListings} value={stats.listingsLive.toLocaleString(htmlLang)} />
-          <Stat label={copy.statVolume} value={formatUsd(stats.volumeLiveCents)} />
-          <Stat label={copy.statFirst} value={stats.firstPlaceCents ? formatUsd(stats.firstPlaceCents) : '—'} />
+          <Stat label={copy.statVolume} value={formatCny(stats.volumeLiveCents)} />
+          <Stat label={copy.statFirst} value={stats.firstPlaceCents ? formatCny(stats.firstPlaceCents) : '—'} />
           <Stat
             label={copy.statTakeover}
-            value={stats.takeover ? `${stats.takeover.display} · ${formatUsd(stats.takeover.amountCents)}` : copy.takeoverNone}
+            value={stats.takeover ? `${stats.takeover.display} · ${formatCny(stats.takeover.amountCents)}` : copy.takeoverNone}
           />
         </dl>
 
@@ -68,7 +68,7 @@ function StatsPage() {
               <li key={`${row.listingId}-${row.settledAt}`}>
                 <span>#{row.rank}</span>
                 <strong>{row.display}</strong>
-                <em>{formatUsd(row.amountCents)}</em>
+                <em>{formatCny(row.amountCents)}</em>
                 <small>{formatClock(row.settledAt, htmlLang)}</small>
               </li>
             ))}

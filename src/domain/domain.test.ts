@@ -15,7 +15,7 @@ import {
   toppedUpDropsOffAt,
 } from './decay.ts'
 import { completeListingMetadata } from './listing-metadata.ts'
-import { TAKEOVER_FALL_MS, amountToClaim, dollarsToCents, formatUsd, takeoverIdleMs, takeoverPrice } from './money.ts'
+import { TAKEOVER_FALL_MS, amountToClaim, yuanToCents, formatCny, takeoverIdleMs, takeoverPrice } from './money.ts'
 import { canRaiseListing, signOwnerCookie, verifyOwnerCookie } from './owner.ts'
 import { projectedRank, rankListings } from './ranking.ts'
 import { buildPublicReceipt } from './receipt.ts'
@@ -74,12 +74,12 @@ function intent(overrides: Partial<IntentRecord> = {}): IntentRecord {
 }
 
 test('money stays in integer cents', () => {
-  assert.equal(dollarsToCents(10_001), 1_000_100)
-  assert.equal(dollarsToCents(0.5), 100)
+  assert.equal(yuanToCents(10_001), 1_000_100)
+  assert.equal(yuanToCents(0.5), 100)
   assert.equal(amountToClaim(310_000), 310_100)
   assert.equal(amountToClaim(100), 200)
-  assert.equal(formatUsd(100), '$1')
-  assert.equal(formatUsd(200), '$2')
+  assert.equal(formatCny(100), '¥1')
+  assert.equal(formatCny(200), '¥2')
 })
 
 test('a takeover opens at 4x and falls to 1.2x over a day', () => {

@@ -8,6 +8,7 @@ import { planMarkCheckoutReady, planMarkCheckoutUncertain, planReserveCheckout }
 import { attachOwnerCookie, resolveOwner } from '../server/owner-cookie.ts'
 import { parseCheckoutBody } from '../server/parse.ts'
 import { createStripeCheckout } from '../server/stripe.ts'
+import { createWaffoCheckout } from '../server/waffo.ts'
 import { verifyTurnstile } from '../server/turnstile.ts'
 import { database, publicCheckoutConfig, readProductionConfig } from '../server/env.ts'
 import { ensureOwner, expireOpenIntents, insertIntent, loadReservationSnapshot, updateIntent } from '../server/db.ts'
@@ -57,7 +58,7 @@ export const Route = createFileRoute('/api/checkout')({
         const checkoutMode = publicCheckoutConfig(config)
         if (checkoutMode.mode === 'unavailable') {
           return Response.json(
-            { code: 'checkout_unavailable', message: 'Production checkout requires Stripe.' },
+            { code: 'checkout_unavailable', message: 'Production checkout requires Stripe or Waffo.' },
             { status: 503 },
           )
         }
@@ -168,6 +169,46 @@ export const Route = createFileRoute('/api/checkout')({
           ? listingStanding(snapshot.listingByIdentity, nowIso)
           : 0
         const chargeCents = parsed.value.amountCents - liveCents
+
+        if (checkoutMode.mode === 'waffo') {
+          const waffoInput = {
+            requestId: parsed.value.requestId,
+            intentId: reserved.id,
+            amountCents: chargeCents,
+            canonicalIdentity: identity.identity.canonicalKey,
+            takeover: parsed.value.takeover,
+            turnstileToken: parsed.value.turnstileToken,
+          }
+          // Idempotent re-entry: reuse the hosted checkout URL already on file.
+          if (reserved.state === 'awaiting-payment' && reserved.providerCheckoutId) {
+            const existing = await createWaffoCheckout(waffoInput, config)
+            if (existing.ok) {
+              return jsonWithOwner(
+                { mode: 'waffo', intentId: reserved.id, checkoutUrl: existing.value.checkoutUrl },
+                200,
+                owner.cookieValue,
+                request,
+              )
+            }
+          }
+          const created = await createWaffoCheckout(waffoInput, config)
+          if (!created.ok) {
+            await updateIntent(db, planMarkCheckoutUncertain(reserved))
+            return jsonWithOwner(
+              { code: 'checkout_uncertain', message: created.message, intentId: reserved.id },
+              created.status,
+              owner.cookieValue,
+              request,
+            )
+          }
+          await updateIntent(db, planMarkCheckoutReady(reserved, created.value.sessionId))
+          return jsonWithOwner(
+            { mode: 'waffo', intentId: reserved.id, checkoutUrl: created.value.checkoutUrl },
+            200,
+            owner.cookieValue,
+            request,
+          )
+        }
 
         if (checkoutMode.mode === 'stripe') {
           if (reserved.state === 'awaiting-payment' && reserved.providerCheckoutId) {

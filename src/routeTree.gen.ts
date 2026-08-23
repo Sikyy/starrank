@@ -20,6 +20,7 @@ import { Route as GoListingIdRouteImport } from './routes/go.$listingId'
 import { Route as ReceiptsIntentIdRouteImport } from './routes/receipts.$intentId'
 import { Route as ApiMockSettleRouteImport } from './routes/api.mock.settle'
 import { Route as ApiWebhooksStripeRouteImport } from './routes/api.webhooks.stripe'
+import { Route as ApiWebhooksWaffoRouteImport } from './routes/api.webhooks.waffo'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -76,6 +77,11 @@ const ApiWebhooksStripeRoute = ApiWebhooksStripeRouteImport.update({
   path: '/api/webhooks/stripe',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiWebhooksWaffoRoute = ApiWebhooksWaffoRouteImport.update({
+  id: '/api/webhooks/waffo',
+  path: '/api/webhooks/waffo',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -89,6 +95,7 @@ export interface FileRoutesByFullPath {
   '/receipts/$intentId': typeof ReceiptsIntentIdRoute
   '/api/mock/settle': typeof ApiMockSettleRoute
   '/api/webhooks/stripe': typeof ApiWebhooksStripeRoute
+  '/api/webhooks/waffo': typeof ApiWebhooksWaffoRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -102,6 +109,7 @@ export interface FileRoutesByTo {
   '/receipts/$intentId': typeof ReceiptsIntentIdRoute
   '/api/mock/settle': typeof ApiMockSettleRoute
   '/api/webhooks/stripe': typeof ApiWebhooksStripeRoute
+  '/api/webhooks/waffo': typeof ApiWebhooksWaffoRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -116,6 +124,7 @@ export interface FileRoutesById {
   '/receipts/$intentId': typeof ReceiptsIntentIdRoute
   '/api/mock/settle': typeof ApiMockSettleRoute
   '/api/webhooks/stripe': typeof ApiWebhooksStripeRoute
+  '/api/webhooks/waffo': typeof ApiWebhooksWaffoRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -131,6 +140,7 @@ export interface FileRouteTypes {
     | '/receipts/$intentId'
     | '/api/mock/settle'
     | '/api/webhooks/stripe'
+    | '/api/webhooks/waffo'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -144,6 +154,7 @@ export interface FileRouteTypes {
     | '/receipts/$intentId'
     | '/api/mock/settle'
     | '/api/webhooks/stripe'
+    | '/api/webhooks/waffo'
   id:
     | '__root__'
     | '/'
@@ -157,6 +168,7 @@ export interface FileRouteTypes {
     | '/receipts/$intentId'
     | '/api/mock/settle'
     | '/api/webhooks/stripe'
+    | '/api/webhooks/waffo'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -171,6 +183,7 @@ export interface RootRouteChildren {
   ReceiptsIntentIdRoute: typeof ReceiptsIntentIdRoute
   ApiMockSettleRoute: typeof ApiMockSettleRoute
   ApiWebhooksStripeRoute: typeof ApiWebhooksStripeRoute
+  ApiWebhooksWaffoRoute: typeof ApiWebhooksWaffoRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -252,6 +265,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiWebhooksStripeRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/webhooks/waffo': {
+      id: '/api/webhooks/waffo'
+      path: '/api/webhooks/waffo'
+      fullPath: '/api/webhooks/waffo'
+      preLoaderRoute: typeof ApiWebhooksWaffoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -267,6 +287,7 @@ const rootRouteChildren: RootRouteChildren = {
   ReceiptsIntentIdRoute: ReceiptsIntentIdRoute,
   ApiMockSettleRoute: ApiMockSettleRoute,
   ApiWebhooksStripeRoute: ApiWebhooksStripeRoute,
+  ApiWebhooksWaffoRoute: ApiWebhooksWaffoRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

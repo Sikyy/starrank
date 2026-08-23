@@ -16,8 +16,8 @@ export const en: Messages = {
   taglineEmphasis: 'Will you take #1 when Youbid goes viral?',
   claimRankFor: 'Claim #{rank} for',
   takePageOneFor: 'Take page one for',
-  decreaseBid: 'Decrease bid by one dollar',
-  increaseBid: 'Increase bid by one dollar',
+  decreaseBid: 'Decrease bid by one yuan',
+  increaseBid: 'Increase bid by one yuan',
   explainerTakeover: 'This paid bid takes the whole first page for three hours.',
   explainerBid:
     'Your amount decides the rank. Paying less than the #1 price still puts you on the board wherever that bid can take you.',
@@ -96,9 +96,9 @@ export const en: Messages = {
     {
       heading: 'Bidding',
       bullets: [
-        'US dollars, $1 minimum, $1 steps.',
+        'Chinese yuan, ¥1 minimum, ¥1 steps.',
         'Every live amount falls 3% a day. Rank is current balance, then who settled first.',
-        'A listing drops off when it falls below $1. Stop paying and you slide; keep paying and you stay.',
+        'A listing drops off when it falls below ¥1. Stop paying and you slide; keep paying and you stay.',
         'A bid below first place still lands at whatever rank that amount can buy. A whale who keeps paying still holds #1.',
         'To raise an existing listing, enter the same URL or @handle and pay the difference to the current amount.',
         'Only the visitor who first paid a listing can raise it while it is still on the board.',
@@ -127,7 +127,7 @@ export const en: Messages = {
       heading: 'Refunds',
       bullets: [
         'A refund lowers that listing’s current balance in proportion to the refunded principal. We do not invent a new number.',
-        'A listing refunded to zero, or decayed below $1, leaves the board. Someone else can then bid that identity.',
+        'A listing refunded to zero, or decayed below ¥1, leaves the board. Someone else can then bid that identity.',
         'A full refund on a takeover ends the lease early.',
       ],
     },

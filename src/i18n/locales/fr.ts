@@ -16,8 +16,8 @@ export const fr: Messages = {
   taglineEmphasis: 'Prendrez-vous la #1 quand Youbid explosera ?',
   claimRankFor: 'Prendre #{rank} pour',
   takePageOneFor: 'Prendre la première page pour',
-  decreaseBid: 'Baisser l’enchère d’un dollar',
-  increaseBid: 'Augmenter l’enchère d’un dollar',
+  decreaseBid: 'Baisser l’enchère d’un yuan',
+  increaseBid: 'Augmenter l’enchère d’un yuan',
   explainerTakeover: 'Cette enchère payante occupe toute la première page pendant trois heures.',
   explainerBid: 'Le montant décide du rang. Payer moins que la #1 vous place quand même, là où cette enchère peut aller.',
   identityLabel: 'URL du produit ou identifiant social',
@@ -93,9 +93,9 @@ export const fr: Messages = {
     {
       heading: 'Enchères',
       bullets: [
-        'Dollars US, minimum 1 $, pas de 1 $.',
+        'Yuans chinois, minimum 1 ¥, pas de 1 ¥.',
         'Chaque montant en ligne baisse de 3 % par jour. Le rang est le solde actuel, puis qui a été réglé en premier.',
-        'Une fiche quitte le tableau sous 1 $. Arrêtez de payer et vous glissez ; continuez et vous restez.',
+        'Une fiche quitte le tableau sous 1 ¥. Arrêtez de payer et vous glissez ; continuez et vous restez.',
         'Une enchère sous la première place prend quand même le rang que ce montant peut acheter. Qui continue de payer garde la #1.',
         'Pour relever une fiche existante, entrez la même URL ou le même @handle et payez l’écart jusqu’au montant actuel.',
         'Seul le visiteur qui a d’abord payé une fiche peut la relever tant qu’elle est en ligne.',
@@ -123,7 +123,7 @@ export const fr: Messages = {
       heading: 'Remboursements',
       bullets: [
         'Un remboursement baisse le solde actuel au prorata du principal remboursé. Nous n’inventons pas un nouveau chiffre.',
-        'Une fiche remboursée à zéro, ou tombée sous 1 $, quitte le tableau. Quelqu’un d’autre peut alors enchérir cette identité.',
+        'Une fiche remboursée à zéro, ou tombée sous 1 ¥, quitte le tableau. Quelqu’un d’autre peut alors enchérir cette identité.',
         'Un remboursement intégral d’une prise de contrôle termine le bail plus tôt.',
       ],
     },

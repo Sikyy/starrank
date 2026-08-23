@@ -2,7 +2,7 @@ import { createFileRoute, Link, useRouter } from '@tanstack/react-router'
 import { createServerFn } from '@tanstack/react-start'
 import { useEffect } from 'react'
 
-import { formatUsd } from '../domain/money.ts'
+import { formatCny } from '../domain/money.ts'
 import type { PublicReceipt } from '../domain/receipt.ts'
 import { localeHtmlLang, useLocale } from '../i18n/context.tsx'
 import { interpolate } from '../i18n/locale.ts'
@@ -78,7 +78,7 @@ function ReceiptBody({ receipt }: { receipt: PublicReceipt }) {
         </div>
         <div>
           <dt>{copy.amount}</dt>
-          <dd>{formatUsd(receipt.amountCents)}</dd>
+          <dd>{formatCny(receipt.amountCents)}</dd>
         </div>
         <div>
           <dt>{copy.status}</dt>

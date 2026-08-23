@@ -16,8 +16,8 @@ export const es: Messages = {
   taglineEmphasis: '¿Tomarás el #1 cuando Youbid se vuelva viral?',
   claimRankFor: 'Tomar el #{rank} por',
   takePageOneFor: 'Tomar la primera página por',
-  decreaseBid: 'Bajar la puja un dólar',
-  increaseBid: 'Subir la puja un dólar',
+  decreaseBid: 'Bajar la puja un yuan',
+  increaseBid: 'Subir la puja un yuan',
   explainerTakeover: 'Esta puja de pago ocupa toda la primera página durante tres horas.',
   explainerBid: 'El importe decide el puesto. Pagar menos que el #1 igual te pone en el tablero, donde esa puja alcance.',
   identityLabel: 'URL del producto o handle social',
@@ -93,9 +93,9 @@ export const es: Messages = {
     {
       heading: 'Pujas',
       bullets: [
-        'Dólares de EE. UU., mínimo 1 $, pasos de 1 $.',
+        'Yuanes chinos, mínimo 1 ¥, pasos de 1 ¥.',
         'Cada importe en vivo baja un 3 % al día. El puesto es el saldo actual y, luego, quién se liquidó primero.',
-        'Una ficha sale del tablero por debajo de 1 $. Si dejas de pagar, bajas; si sigues, te quedas.',
+        'Una ficha sale del tablero por debajo de 1 ¥. Si dejas de pagar, bajas; si sigues, te quedas.',
         'Una puja por debajo del primer puesto igual cae en el rango que ese importe puede comprar. Quien sigue pagando conserva el #1.',
         'Para subir una ficha existente, introduce la misma URL o @handle y paga la diferencia hasta el importe actual.',
         'Solo el visitante que pagó primero una ficha puede subirla mientras siga en el tablero.',
@@ -123,7 +123,7 @@ export const es: Messages = {
       heading: 'Reembolsos',
       bullets: [
         'Un reembolso baja el saldo actual en proporción al principal devuelto. No inventamos otro número.',
-        'Una ficha reembolsada a cero, o caída por debajo de 1 $, deja el tablero. Entonces otra persona puede pujar esa identidad.',
+        'Una ficha reembolsada a cero, o caída por debajo de 1 ¥, deja el tablero. Entonces otra persona puede pujar esa identidad.',
         'Un reembolso total de una toma termina el alquiler antes.',
       ],
     },

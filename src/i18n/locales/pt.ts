@@ -16,8 +16,8 @@ export const pt: Messages = {
   taglineEmphasis: 'Vai ficar com o #1 quando o Youbid viralizar?',
   claimRankFor: 'Ficar com o #{rank} por',
   takePageOneFor: 'Ficar com a primeira página por',
-  decreaseBid: 'Diminuir o lance em um dólar',
-  increaseBid: 'Aumentar o lance em um dólar',
+  decreaseBid: 'Diminuir o lance em um yuan',
+  increaseBid: 'Aumentar o lance em um yuan',
   explainerTakeover: 'Este lance pago ocupa a primeira página inteira por três horas.',
   explainerBid: 'O valor decide a posição. Pagar menos que o #1 ainda te coloca no quadro, onde esse lance alcançar.',
   identityLabel: 'URL do produto ou handle social',
@@ -93,9 +93,9 @@ export const pt: Messages = {
     {
       heading: 'Lances',
       bullets: [
-        'Dólares dos EUA, mínimo de $1, passos de $1.',
+        'Yuans chineses, mínimo de ¥1, passos de ¥1.',
         'Cada valor ao vivo cai 3% ao dia. A posição é o saldo atual e, depois, quem foi liquidado primeiro.',
-        'Um anúncio sai do quadro abaixo de $1. Pare de pagar e desce; continue e fica.',
+        'Um anúncio sai do quadro abaixo de ¥1. Pare de pagar e desce; continue e fica.',
         'Um lance abaixo do primeiro lugar ainda cai na posição que esse valor consegue comprar. Quem continua a pagar mantém o #1.',
         'Para subir um anúncio existente, introduza o mesmo URL ou @handle e pague a diferença até ao valor atual.',
         'Só o visitante que primeiro pagou um anúncio pode subi-lo enquanto estiver no quadro.',
@@ -123,7 +123,7 @@ export const pt: Messages = {
       heading: 'Reembolsos',
       bullets: [
         'Um reembolso baixa o saldo atual na proporção do principal reembolsado. Não inventamos outro número.',
-        'Um anúncio reembolsado a zero, ou abaixo de $1 por decaimento, sai do quadro. Outra pessoa pode então licitar essa identidade.',
+        'Um anúncio reembolsado a zero, ou abaixo de ¥1 por decaimento, sai do quadro. Outra pessoa pode então licitar essa identidade.',
         'Um reembolso total de uma tomada termina o aluguer mais cedo.',
       ],
     },

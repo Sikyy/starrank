@@ -12,7 +12,7 @@ import {
   BID_STEP_CENTS,
   MINIMUM_BID_CENTS,
   amountToClaim,
-  formatUsd,
+  formatCny,
   takeoverIdleMs,
   takeoverPrice,
 } from '../domain/money.ts'
@@ -219,7 +219,7 @@ function Home() {
       })
       const payload = (await response.json()) as {
         message?: string
-        mode?: 'mock' | 'stripe' | 'settled' | 'unavailable'
+        mode?: 'mock' | 'stripe' | 'waffo' | 'settled' | 'unavailable'
         intentId?: string
         checkoutUrl?: string
       }
@@ -227,7 +227,7 @@ function Home() {
         setIdentityError(localizeError(payload.message ?? copy.errorCheckoutStart, copy))
         return
       }
-      if ((payload.mode === 'stripe' || payload.mode === 'settled') && payload.checkoutUrl) {
+      if ((payload.mode === 'stripe' || payload.mode === 'waffo' || payload.mode === 'settled') && payload.checkoutUrl) {
         window.location.assign(payload.checkoutUrl)
         return
       }
@@ -285,7 +285,7 @@ function Home() {
             >
               −
             </button>
-            <strong className="bid-amount">{formatUsd(amountCents)}</strong>
+            <strong className="bid-amount">{formatCny(amountCents)}</strong>
             <button
               className="step-button"
               type="button"
@@ -393,7 +393,7 @@ function Home() {
         <section className="takeover-offer" aria-label={copy.takeoverAria}>
           <p>
             <strong>{copy.takeoverNew}</strong> {copy.takeoverOwn}{' '}
-            {formatUsd(takeoverAmount)}{' '}
+            {formatCny(takeoverAmount)}{' '}
             <span>{copy.takeoverFalls}</span>
           </p>
           <button type="button" onClick={chooseTakeover} disabled={Boolean(activeTakeover)}>
@@ -436,7 +436,7 @@ function Home() {
                 time: new Date(board.takeover.endsAt).toLocaleTimeString(htmlLang, { hour: '2-digit', minute: '2-digit' }),
               })}
             </p>
-            <strong>{formatUsd(board.takeover.amountCents)}</strong>
+            <strong>{formatCny(board.takeover.amountCents)}</strong>
             <button type="button" onClick={() => setPage(2)}>{copy.browseRegular}</button>
           </article>
         ) : (
@@ -461,9 +461,9 @@ function Home() {
                     type="button"
                     onClick={() => chooseRank(listing)}
                   >
-                    {interpolate(copy.claimRank, { amount: formatUsd(claimCents) })}
+                    {interpolate(copy.claimRank, { amount: formatCny(claimCents) })}
                   </button>
-                  <button className="rank-badge" type="button" onClick={() => chooseRank(listing)} aria-label={interpolate(copy.claimRankAria, { rank, amount: formatUsd(claimCents) })}>
+                  <button className="rank-badge" type="button" onClick={() => chooseRank(listing)} aria-label={interpolate(copy.claimRankAria, { rank, amount: formatCny(claimCents) })}>
                     #{rank}
                   </button>
                   {listing.image ? <img src={listing.image} alt="" width="56" height="56" loading="lazy" /> : null}
@@ -480,8 +480,8 @@ function Home() {
                       <strong>{interpolate(copy.clicks, { count: formatCount(listing.clicks, htmlLang) })}</strong>
                     </small>
                   </div>
-                  <button className="listing-price" type="button" onClick={() => chooseRank(listing)} aria-label={interpolate(copy.currentAmountAria, { amount: formatUsd(listing.amountCents) })}>
-                    {formatUsd(listing.amountCents)}
+                  <button className="listing-price" type="button" onClick={() => chooseRank(listing)} aria-label={interpolate(copy.currentAmountAria, { amount: formatCny(listing.amountCents) })}>
+                    {formatCny(listing.amountCents)}
                   </button>
                 </article>
               )
@@ -502,7 +502,7 @@ function Home() {
             <dl>
               <div><dt>{copy.listing}</dt><dd>{listingTitle || (normalizedIdentity.ok ? normalizedIdentity.identity.display : identityInput)}</dd></div>
               <div><dt>{copy.placement}</dt><dd>{takeover ? copy.placementTakeover : interpolate(copy.projectedRank, { rank: previewRank })}</dd></div>
-              <div><dt>{copy.total}</dt><dd>{formatUsd(amountCents)}</dd></div>
+              <div><dt>{copy.total}</dt><dd>{formatCny(amountCents)}</dd></div>
             </dl>
             <p className="payment-note">
               {copy.paymentNote}

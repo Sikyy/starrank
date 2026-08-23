@@ -19,7 +19,7 @@ const payload = JSON.stringify({
     object: {
       id: 'cs_test_youbid',
       object: 'checkout.session',
-      currency: 'usd',
+      currency: 'cny',
       payment_status: 'paid',
       amount_subtotal: 10_001_00,
       amount_total: 10_001_00,

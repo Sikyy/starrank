@@ -2,6 +2,10 @@ export interface ProductionConfig {
   appUrl?: string
   stripeSecretKey?: string
   stripeWebhookSecret?: string
+  waffoMerchantId?: string
+  waffoPrivateKey?: string
+  waffoProductId?: string
+  waffoWebhookPublicKey?: string
   turnstileSecret?: string
   turnstileSiteKey?: string
   ownerCookieSecret?: string
@@ -46,6 +50,8 @@ export type StripeWebhookResult =
   | { kind: 'refund'; snapshot: RefundWebhookSnapshot }
   | { kind: 'ignored'; eventId: string; payloadHash: string; eventType: string }
 
+export type WaffoWebhookResult = StripeWebhookResult
+
 export interface ParsedCheckoutBody {
   requestId: string
   amountCents: number
@@ -58,6 +64,6 @@ export interface ParsedCheckoutBody {
 }
 
 export interface PublicCheckoutConfig {
-  mode: 'mock' | 'stripe' | 'unavailable'
+  mode: 'mock' | 'stripe' | 'waffo' | 'unavailable'
   turnstileSiteKey: string | null
 }

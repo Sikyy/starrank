@@ -9,8 +9,8 @@ test('Accept-Language picks the first supported tag', () => {
   assert.equal(localeFromAcceptLanguage('zh-CN,zh;q=0.9,en;q=0.8'), 'zh')
   assert.equal(localeFromAcceptLanguage('ja,en;q=0.8'), 'ja')
   assert.equal(localeFromAcceptLanguage('fa-IR,fa;q=0.9'), 'fa')
-  assert.equal(localeFromAcceptLanguage('xx,yy;q=0.8'), 'en')
-  assert.equal(localeFromAcceptLanguage(null), 'en')
+  assert.equal(localeFromAcceptLanguage('xx,yy;q=0.8'), 'zh')
+  assert.equal(localeFromAcceptLanguage(null), 'zh')
 })
 
 test('every locale fills the English message keys', () => {

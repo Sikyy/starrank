@@ -1,4 +1,4 @@
-export const CENTS_PER_DOLLAR = 100
+export const CENTS_PER_YUAN = 100
 // Rank drop-off timestamps were written against this floor. Changing it
 // without rewriting listings.drops_off_at makes every live amount lie.
 export const MINIMUM_BID_CENTS = 100
@@ -8,27 +8,27 @@ export const TAKEOVER_FLOOR_NUMERATOR = 6
 export const TAKEOVER_FLOOR_DENOMINATOR = 5
 export const TAKEOVER_FALL_MS = 24 * 60 * 60 * 1000
 
-export function dollarsToCents(dollars: number): number {
-  if (!Number.isFinite(dollars)) return MINIMUM_BID_CENTS
-  return snapToBidStep(Math.round(dollars * CENTS_PER_DOLLAR))
+export function yuanToCents(yuan: number): number {
+  if (!Number.isFinite(yuan)) return MINIMUM_BID_CENTS
+  return snapToBidStep(Math.round(yuan * CENTS_PER_YUAN))
 }
 
-export function centsToWholeDollars(cents: number): number {
-  return Math.round(cents / CENTS_PER_DOLLAR)
+export function centsToWholeYuan(cents: number): number {
+  return Math.round(cents / CENTS_PER_YUAN)
 }
 
 export function isValidBidCents(cents: number): boolean {
   return Number.isInteger(cents) && cents >= MINIMUM_BID_CENTS && cents % BID_STEP_CENTS === 0
 }
 
-export function formatUsd(cents: number): string {
-  const showCents = cents % CENTS_PER_DOLLAR !== 0
-  return new Intl.NumberFormat('en-US', {
+export function formatCny(cents: number): string {
+  const showCents = cents % CENTS_PER_YUAN !== 0
+  return new Intl.NumberFormat('zh-CN', {
     style: 'currency',
-    currency: 'USD',
+    currency: 'CNY',
     minimumFractionDigits: showCents ? 2 : 0,
     maximumFractionDigits: showCents ? 2 : 0,
-  }).format(cents / CENTS_PER_DOLLAR)
+  }).format(cents / CENTS_PER_YUAN)
 }
 
 export function takeoverIdleMs(nowIso: string, lastEndedAtIso: string | null): number {

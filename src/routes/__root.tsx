@@ -72,7 +72,7 @@ const SITE_SCHEMA = {
       name: 'Youbid',
       url: 'https://youbid.lol/',
       publisher: { '@id': 'https://youbid.lol/#org' },
-      inLanguage: 'en',
+      inLanguage: 'zh',
     },
     {
       '@type': 'WebApplication',
@@ -85,8 +85,8 @@ const SITE_SCHEMA = {
       offers: {
         '@type': 'Offer',
         price: '1',
-        priceCurrency: 'USD',
-        description: 'Minimum bid for a ranked placement. Bids are $1 and up, in whole-dollar steps.',
+        priceCurrency: 'CNY',
+        description: 'Minimum bid for a ranked placement. Bids are ¥1 and up, in whole-yuan steps.',
       },
       publisher: { '@id': 'https://youbid.lol/#org' },
     },
@@ -104,7 +104,7 @@ function RootLayout() {
 
 function RootDocument({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="zh-Hans">
       <head>
         <HeadContent />
         <script dangerouslySetInnerHTML={{ __html: LOCALE_BOOT_SCRIPT }} />

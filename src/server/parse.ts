@@ -1,4 +1,4 @@
-import { dollarsToCents, isValidBidCents } from '../domain/money.ts'
+import { yuanToCents, isValidBidCents } from '../domain/money.ts'
 import type { ParsedCheckoutBody, ProductionBoundaryResult } from './contracts.ts'
 
 export function parseCheckoutBody(raw: unknown): ProductionBoundaryResult<ParsedCheckoutBody> {
@@ -14,11 +14,11 @@ export function parseCheckoutBody(raw: unknown): ProductionBoundaryResult<Parsed
   const amountCents =
     typeof body.amountCents === 'number'
       ? body.amountCents
-      : typeof body.amountDollars === 'number'
-        ? dollarsToCents(body.amountDollars)
+      : typeof body.amountYuan === 'number'
+        ? yuanToCents(body.amountYuan)
         : Number.NaN
   if (!isValidBidCents(amountCents)) {
-    return { ok: false, status: 400, message: 'Bid in whole dollars, at least $1.' }
+    return { ok: false, status: 400, message: 'Bid in whole yuan, at least ¥1.' }
   }
 
   return {

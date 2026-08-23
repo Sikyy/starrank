@@ -40,7 +40,7 @@ export async function createStripeCheckout(
           {
             quantity: 1,
             price_data: {
-              currency: 'usd',
+              currency: 'cny',
               unit_amount: input.amountCents,
               product_data: {
                 name: input.takeover
@@ -122,8 +122,8 @@ export async function verifyStripeWebhookEvent(
   if (event.type === 'checkout.session.completed' || event.type === 'checkout.session.async_payment_succeeded') {
     const session = event.data.object
     const intentId = session.metadata?.youbid_intent_id
-    if (!intentId || session.payment_status !== 'paid' || session.currency !== 'usd') {
-      return { ok: false, status: 409, message: 'Stripe Checkout Session is not a paid USD Youbid intent.' }
+    if (!intentId || session.payment_status !== 'paid' || session.currency !== 'cny') {
+      return { ok: false, status: 409, message: 'Stripe Checkout Session is not a paid CNY Youbid intent.' }
     }
     const providerOrderId =
       typeof session.payment_intent === 'string' ? session.payment_intent : session.id
@@ -148,8 +148,8 @@ export async function verifyStripeWebhookEvent(
   if (event.type === 'charge.refunded') {
     const charge = event.data.object
     const providerOrderId = typeof charge.payment_intent === 'string' ? charge.payment_intent : charge.id
-    if (charge.currency !== 'usd') {
-      return { ok: false, status: 409, message: 'Refund is not a USD Youbid charge.' }
+    if (charge.currency !== 'cny') {
+      return { ok: false, status: 409, message: 'Refund is not a CNY Youbid charge.' }
     }
     return {
       ok: true,
