@@ -25,7 +25,7 @@ export const zh: Messages = {
   decreaseBid: '出价减少 1 元',
   increaseBid: '出价增加 1 元',
   explainerTakeover: '这笔付费出价会占用整个第一页三个小时。',
-  explainerBid: '新位置 ¥5 起。金额决定名次，低于第一名也能上榜，排在这个出价能买到的位置。',
+  explainerBid: '新位置 ¥10 起。金额决定名次，低于第一名也能上榜，排在这个出价能买到的位置。',
   identityLabel: '产品网址或社交账号',
   identityPlaceholder: '产品网址或 @handle',
   bid: '出价',
@@ -99,7 +99,7 @@ export const zh: Messages = {
     {
       heading: '出价',
       bullets: [
-        '人民币，最低 ¥5，步进 ¥1。',
+        '人民币，最低 ¥10，步进 ¥1。',
         '排名按累计出价从高到低；同价时，后结算的排前面。',
         '低于第一名的出价仍会上榜，落到这个金额能买到的名次。一次付费，永久在榜。',
         '给已有条目加价：输入同一个网址或 @handle，支付到当前金额的差额。',

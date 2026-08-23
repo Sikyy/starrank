@@ -52,6 +52,9 @@ export function SiteFooter() {
     <footer>
       <p>{copy.footerBlurb}</p>
       <nav className="footer-nav">
+        <Link to="/rules">{copy.navRules}</Link>
+        <Link to="/terms">服务条款</Link>
+        <Link to="/privacy">隐私政策</Link>
         <Link to="/stats">{copy.footerStats}</Link>
         <a href="https://starrank.lol">starrank.lol</a>
       </nav>

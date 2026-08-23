@@ -260,6 +260,52 @@ button:disabled { cursor: not-allowed; opacity: 0.48; }
 }
 .revenue-banner strong { font-size: 20px; color: var(--primary-dark); font-variant-numeric: tabular-nums; }
 
+/* ---------- Legal pages (terms / privacy) ---------- */
+.legal-page { padding-bottom: 40px; }
+.legal-doc {
+  max-width: 760px;
+  margin: 26px auto 0;
+  text-align: left;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 34px clamp(20px, 5vw, 48px);
+}
+.legal-kicker {
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #b3ada5;
+}
+.legal-doc h1 { margin: 8px 0 4px; font-size: clamp(24px, 4vw, 32px); }
+.legal-updated { color: #8a847d; font-size: 13px; margin-bottom: 22px; }
+.legal-doc section { margin-top: 26px; }
+.legal-doc h2 { font-size: 17px; margin-bottom: 10px; }
+.legal-doc h3 { font-size: 14px; margin: 14px 0 6px; }
+.legal-doc p, .legal-doc li { font-size: 14px; line-height: 1.75; color: #44403b; }
+.legal-doc ul { padding-left: 22px; margin: 8px 0; }
+.legal-doc a { color: var(--primary-dark); }
+.legal-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 10px 0;
+  font-size: 13px;
+}
+.legal-table th, .legal-table td {
+  border: 1px solid var(--border);
+  padding: 7px 10px;
+  text-align: left;
+}
+.legal-table th { background: rgba(0, 0, 0, 0.03); }
+.legal-footer-note {
+  margin-top: 30px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+  color: #8a847d !important;
+  font-size: 12px !important;
+}
+
 .bid-panel { padding-top: 30px; scroll-margin-top: 24px; }
 
 .bid-title-row {

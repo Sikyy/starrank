@@ -71,9 +71,9 @@ function intent(overrides: Partial<IntentRecord> = {}): IntentRecord {
 
 test('money stays in integer cents', () => {
   assert.equal(yuanToCents(10_001), 1_000_100)
-  assert.equal(yuanToCents(5), 500)
+  assert.equal(yuanToCents(10), 1000)
   assert.equal(amountToClaim(310_000), 310_100)
-  assert.equal(amountToClaim(100), 500) // clamped to the ¥5 entry minimum
+  assert.equal(amountToClaim(100), 1000) // clamped to the ¥10 entry minimum
   assert.equal(formatCny(100), '¥1')
   assert.equal(formatCny(200), '¥2')
 })

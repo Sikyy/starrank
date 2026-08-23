@@ -10,9 +10,11 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as RulesRouteImport } from './routes/rules'
 import { Route as RulesDotmdRouteImport } from './routes/rules[.]md'
 import { Route as StatsRouteImport } from './routes/stats'
+import { Route as TermsRouteImport } from './routes/terms'
 import { Route as ApiCheckoutRouteImport } from './routes/api.checkout'
 import { Route as ApiResolveRouteImport } from './routes/api.resolve'
 import { Route as ApiStatsRouteImport } from './routes/api.stats'
@@ -25,6 +27,11 @@ import { Route as ApiWebhooksWaffoRouteImport } from './routes/api.webhooks.waff
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PrivacyRoute = PrivacyRouteImport.update({
+  id: '/privacy',
+  path: '/privacy',
   getParentRoute: () => rootRouteImport,
 } as any)
 const RulesRoute = RulesRouteImport.update({
@@ -40,6 +47,11 @@ const RulesDotmdRoute = RulesDotmdRouteImport.update({
 const StatsRoute = StatsRouteImport.update({
   id: '/stats',
   path: '/stats',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TermsRoute = TermsRouteImport.update({
+  id: '/terms',
+  path: '/terms',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiCheckoutRoute = ApiCheckoutRouteImport.update({
@@ -85,9 +97,11 @@ const ApiWebhooksWaffoRoute = ApiWebhooksWaffoRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/privacy': typeof PrivacyRoute
   '/rules': typeof RulesRoute
   '/rules.md': typeof RulesDotmdRoute
   '/stats': typeof StatsRoute
+  '/terms': typeof TermsRoute
   '/api/checkout': typeof ApiCheckoutRoute
   '/api/resolve': typeof ApiResolveRoute
   '/api/stats': typeof ApiStatsRoute
@@ -99,9 +113,11 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/privacy': typeof PrivacyRoute
   '/rules': typeof RulesRoute
   '/rules.md': typeof RulesDotmdRoute
   '/stats': typeof StatsRoute
+  '/terms': typeof TermsRoute
   '/api/checkout': typeof ApiCheckoutRoute
   '/api/resolve': typeof ApiResolveRoute
   '/api/stats': typeof ApiStatsRoute
@@ -114,9 +130,11 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/privacy': typeof PrivacyRoute
   '/rules': typeof RulesRoute
   '/rules.md': typeof RulesDotmdRoute
   '/stats': typeof StatsRoute
+  '/terms': typeof TermsRoute
   '/api/checkout': typeof ApiCheckoutRoute
   '/api/resolve': typeof ApiResolveRoute
   '/api/stats': typeof ApiStatsRoute
@@ -130,9 +148,11 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/privacy'
     | '/rules'
     | '/rules.md'
     | '/stats'
+    | '/terms'
     | '/api/checkout'
     | '/api/resolve'
     | '/api/stats'
@@ -144,9 +164,11 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/privacy'
     | '/rules'
     | '/rules.md'
     | '/stats'
+    | '/terms'
     | '/api/checkout'
     | '/api/resolve'
     | '/api/stats'
@@ -158,9 +180,11 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/privacy'
     | '/rules'
     | '/rules.md'
     | '/stats'
+    | '/terms'
     | '/api/checkout'
     | '/api/resolve'
     | '/api/stats'
@@ -173,9 +197,11 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  PrivacyRoute: typeof PrivacyRoute
   RulesRoute: typeof RulesRoute
   RulesDotmdRoute: typeof RulesDotmdRoute
   StatsRoute: typeof StatsRoute
+  TermsRoute: typeof TermsRoute
   ApiCheckoutRoute: typeof ApiCheckoutRoute
   ApiResolveRoute: typeof ApiResolveRoute
   ApiStatsRoute: typeof ApiStatsRoute
@@ -193,6 +219,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/privacy': {
+      id: '/privacy'
+      path: '/privacy'
+      fullPath: '/privacy'
+      preLoaderRoute: typeof PrivacyRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/rules': {
@@ -214,6 +247,13 @@ declare module '@tanstack/react-router' {
       path: '/stats'
       fullPath: '/stats'
       preLoaderRoute: typeof StatsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/terms': {
+      id: '/terms'
+      path: '/terms'
+      fullPath: '/terms'
+      preLoaderRoute: typeof TermsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/checkout': {
@@ -277,9 +317,11 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  PrivacyRoute: PrivacyRoute,
   RulesRoute: RulesRoute,
   RulesDotmdRoute: RulesDotmdRoute,
   StatsRoute: StatsRoute,
+  TermsRoute: TermsRoute,
   ApiCheckoutRoute: ApiCheckoutRoute,
   ApiResolveRoute: ApiResolveRoute,
   ApiStatsRoute: ApiStatsRoute,

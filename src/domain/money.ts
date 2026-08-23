@@ -1,7 +1,7 @@
 export const CENTS_PER_YUAN = 100
 // outbid-style static ranking: amounts never decay. The minimum bid only gates
 // entry, so it can be raised without rewriting any stored timestamps.
-export const MINIMUM_BID_CENTS = 500
+export const MINIMUM_BID_CENTS = 1000
 export const BID_STEP_CENTS = 100
 export const TAKEOVER_OPEN_MULTIPLE = 4
 export const TAKEOVER_FLOOR_NUMERATOR = 6

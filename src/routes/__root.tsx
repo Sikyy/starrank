@@ -90,7 +90,7 @@ const SITE_SCHEMA = {
         '@type': 'Offer',
         price: '1',
         priceCurrency: 'CNY',
-        description: 'Minimum bid for a ranked placement. New spots start at ¥5, in whole-yuan steps.',
+        description: 'Minimum bid for a ranked placement. New spots start at ¥10, in whole-yuan steps.',
       },
       publisher: { '@id': 'https://starrank.lol/#org' },
     },
