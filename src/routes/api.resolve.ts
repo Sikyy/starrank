@@ -6,6 +6,7 @@ import { staticAvatarUrl } from '../domain/avatar.ts'
 import { completeListingMetadata } from '../domain/listing-metadata.ts'
 import { allowResolve } from '../server/env.ts'
 import { scrapePublicUrl } from '../server/scrape.ts'
+import { extractShareTarget } from '../server/share-input.ts'
 
 export const Route = createFileRoute('/api/resolve')({
   server: {
@@ -35,29 +36,13 @@ export const Route = createFileRoute('/api/resolve')({
             : ''
         let platform = platformRaw in PLATFORMS ? (platformRaw as PlatformId) : null
 
-        // Share-sheet short links (v.douyin.com/xxx, xhslink.com/xxx) don't
-        // carry the UID in the URL itself — follow redirects first and feed
-        // the resolved URL through identity parsing.
-        if (/^https?:\/\/(v\.douyin\.com|xhslink\.com)\//i.test(identityInput.trim())) {
+        // Share sheets embed a short or profile link in a longer message (e.g.
+        // "长按复制... https://v.douyin.com/xxx/ ...抖音号是…"). Extract and follow
+        // any Douyin/Xiaohongshu URL before parsing.
+        const share = await extractShareTarget(identityInput)
+        if (share.candidate) {
+          identityInput = share.candidate
           platform = null
-          try {
-            const probe = await fetch(identityInput.trim(), {
-              method: 'GET',
-              redirect: 'follow',
-              headers: {
-                'user-agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 16_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.0 Mobile/15E148 Safari/604.1',
-                'accept-language': 'zh-CN,zh;q=0.9',
-              },
-              signal: AbortSignal.timeout(12000),
-            })
-            const finalUrl = probe.url
-            void probe.body?.cancel()
-            if (finalUrl && /^https?:\/\//i.test(finalUrl)) {
-              identityInput = finalUrl
-            }
-          } catch {
-            // Fall through: the original input will fail validation with a clear message.
-          }
         }
         const identity = normalizeIdentity(identityInput, platform)
         if (!identity.ok) {

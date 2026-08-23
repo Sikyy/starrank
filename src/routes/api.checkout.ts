@@ -10,6 +10,7 @@ import { parseCheckoutBody } from '../server/parse.ts'
 import { createStripeCheckout } from '../server/stripe.ts'
 import { createWaffoCheckout } from '../server/waffo.ts'
 import { verifyTurnstile } from '../server/turnstile.ts'
+import { extractShareTarget } from '../server/share-input.ts'
 import { database, publicCheckoutConfig, readProductionConfig } from '../server/env.ts'
 import { ensureOwner, expireOpenIntents, insertIntent, loadReservationSnapshot, updateIntent } from '../server/db.ts'
 import { isDuplicateCheckoutRequest } from '../server/d1-errors.ts'
@@ -39,7 +40,16 @@ export const Route = createFileRoute('/api/checkout')({
           return Response.json({ code: 'invalid_checkout', message: parsed.message }, { status: parsed.status })
         }
 
-        const identity = normalizeIdentity(parsed.value.identityInput, parsed.value.platform)
+        // Allow a pasted Douyin/Xiaohongshu share message: extract and follow the
+        // embedded URL so the profile id can be read before reserving the intent.
+        let identityInput = parsed.value.identityInput
+        let identityPlatform = parsed.value.platform
+        const share = await extractShareTarget(identityInput)
+        if (share.candidate) {
+          identityInput = share.candidate
+          identityPlatform = null
+        }
+        const identity = normalizeIdentity(identityInput, identityPlatform)
         if (!identity.ok) {
           return Response.json({ code: 'invalid_identity', message: identity.message }, { status: 400 })
         }

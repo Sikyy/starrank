@@ -255,6 +255,12 @@ export function sponsoredUrl(targetUrl: string): string {
   return url.toString()
 }
 
+/** True when the value contains a Douyin/Xiaohongshu share or profile link that
+ * the server must resolve (a bare short link needs a redirect follow). */
+export function containsShareLink(value: string): boolean {
+  return /https?:\/\/(?:www\.)?(?:v\.douyin\.com|douyin\.com|xhslink\.com|xiaohongshu\.com)\//i.test(value)
+}
+
 export function identityFromCanonical(canonicalKey: string): ProductIdentity | null {
   const legacyX = /^x:([a-z0-9_]{1,30})$/.exec(canonicalKey)
   if (legacyX) {

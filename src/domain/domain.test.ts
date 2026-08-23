@@ -4,7 +4,7 @@ import test from 'node:test'
 import { boardPage, toPublicListing, isSocialIdentity } from './board.ts'
 import { settleVerifiedPaidEvent } from './checkout.ts'
 import { faviconUrlForTarget } from './favicon.ts'
-import { normalizeIdentity } from './identity.ts'
+import { containsShareLink, normalizeIdentity } from './identity.ts'
 import {
   decayedBalance,
   dropsOffAt,
@@ -205,6 +205,16 @@ test('douyin sec_uid keeps its exact case and parses as a bare id', () => {
   // Ordinary handle platforms still normalize their handle to lowercase.
   const x = normalizeIdentity('@StarRank', 'x')
   assert.equal(x.ok && x.identity.canonicalKey, 'x:starrank')
+})
+
+test('containsShareLink recognises paste-able Douyin/Xiaohongshu links', () => {
+  assert.equal(containsShareLink('https://v.douyin.com/iPq_ZcfQxYY/'), true)
+  assert.equal(containsShareLink('长按复制... https://v.douyin.com/abc/ 抖音号是1'), true)
+  assert.equal(containsShareLink('https://www.douyin.com/user/MS4wLjABAAAA'), true)
+  assert.equal(containsShareLink('https://xhslink.com/abc'), true)
+  assert.equal(containsShareLink('https://www.xiaohongshu.com/user/profile/5ff0e641'), true)
+  assert.equal(containsShareLink('@nasa'), false)
+  assert.equal(containsShareLink('example.com'), false)
 })
 
 test('missing listing metadata requires title and description', () => {

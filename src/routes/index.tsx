@@ -5,7 +5,7 @@ import { type FormEvent, useEffect, useMemo, useRef, useState } from 'react'
 
 import type { Listing } from '../data/listings.ts'
 import { faviconUrlForTarget } from '../domain/favicon.ts'
-import { PLATFORM_LIST, PLATFORMS, normalizeIdentity, type PlatformId } from '../domain/identity.ts'
+import { PLATFORM_LIST, PLATFORMS, containsShareLink, normalizeIdentity, type PlatformId, type ProductIdentity } from '../domain/identity.ts'
 import {
   BID_STEP_CENTS,
   MINIMUM_BID_CENTS,
@@ -88,6 +88,10 @@ function Home() {
   const [listingImageUrl, setListingImageUrl] = useState('')
   const [resolving, setResolving] = useState(false)
   const [resolvedKey, setResolvedKey] = useState('')
+  // Identity resolved by the server. Used when local parsing can't follow a
+  // Douyin/Xiaohongshu share short link (which needs a redirect the client
+  // cannot do synchronously).
+  const [serverIdentity, setServerIdentity] = useState<ProductIdentity | null>(null)
   const lastCanonical = useRef('')
   const resolveSeq = useRef(0)
   const [checkoutOpen, setCheckoutOpen] = useState(false)
@@ -97,20 +101,23 @@ function Home() {
   const board = { page: 1, pageCount: 1, takeover: data.takeover, listings: rankedListings, firstRank: 1 }
   const previewRank = projectedRank(amountCents, rankedListings)
   const normalizedIdentity = normalizeIdentity(identityInput, platform)
+  // Prefer the local identity; fall back to the server-resolved one for share
+  // links (v.douyin.com / xhslink.com) that only the server can follow.
+  const activeIdentity = normalizedIdentity.ok ? normalizedIdentity.identity : serverIdentity
   const canCheckout =
     data.checkout.mode !== 'unavailable' &&
-    normalizedIdentity.ok &&
+    Boolean(activeIdentity) &&
     listingTitle.trim() !== '' &&
     listingDescription.trim() !== '' &&
     amountCents >= MINIMUM_BID_CENTS &&
     !busy
-  const showListingMeta = normalizedIdentity.ok
+  const showListingMeta = Boolean(activeIdentity)
   // Social identities never use the platform favicon as their logo. unavatar
   // platforms get the real avatar; others fall back to a platform initial tile
   // until the user supplies an image URL.
-  const socialIdentity = normalizedIdentity.ok && /^[a-z]+:/.test(normalizedIdentity.identity.canonicalKey)
-  const identityLogo = normalizedIdentity.ok
-    ? faviconUrlForTarget(normalizedIdentity.identity.targetUrl)
+  const socialIdentity = Boolean(activeIdentity && /^[a-z]+:/.test(activeIdentity.canonicalKey))
+  const identityLogo = activeIdentity
+    ? faviconUrlForTarget(activeIdentity.targetUrl)
     : null
   // For social identities the resolve layer fills imageUrl (avatar) or leaves
   // it empty; don't show a platform favicon as the logo for them.
@@ -119,7 +126,8 @@ function Home() {
   const previewLogo = logoForPreview
   const resolveFailed =
     showListingMeta &&
-    resolvedKey === normalizedIdentity.identity.canonicalKey &&
+    Boolean(activeIdentity) &&
+    resolvedKey === activeIdentity?.canonicalKey &&
     !resolving &&
     (!listingTitle.trim() || !listingDescription.trim())
 
@@ -131,6 +139,7 @@ function Home() {
     if (key !== lastCanonical.current) {
       lastCanonical.current = key
       setResolvedKey('')
+      setServerIdentity(null)
       setListingTitle('')
       setListingDescription('')
       setListingImageUrl('')
@@ -147,7 +156,7 @@ function Home() {
 
   useEffect(() => {
     const result = normalizeIdentity(identityInput, platform)
-    if (!result.ok) return
+    if (!result.ok && !containsShareLink(identityInput)) return
     const timer = window.setTimeout(() => {
       void resolveIdentityFields(identityInput)
     }, 450)
@@ -156,7 +165,7 @@ function Home() {
 
   async function resolveIdentityFields(value: string) {
     const result = normalizeIdentity(value, platform)
-    if (!result.ok) return
+    if (!result.ok && !containsShareLink(value)) return
     const seq = ++resolveSeq.current
     setResolving(true)
     try {
@@ -167,20 +176,23 @@ function Home() {
       })
       if (seq !== resolveSeq.current) return
       const payload = (await response.json()) as {
+        identity?: ProductIdentity
         metadata?: { title?: string; description?: string; imageUrl?: string | null }
       }
-      setResolvedKey(result.identity.canonicalKey)
-      if (!response.ok || !payload.metadata) return
+      const resolved = result.ok ? result.identity : (payload.identity ?? null)
+      setResolvedKey(resolved?.canonicalKey ?? '')
+      if (!response.ok || !payload.metadata || !resolved) return
+      setServerIdentity(resolved)
       // When a platform blocks server-side scraping we get no metadata back.
       // Prefill an editable default (the identity display + a stock description)
       // so checkout is never gated on metadata the site could not fetch.
-      const fallbackTitle = result.identity.display
+      const fallbackTitle = resolved.display
       const fallbackDescription = copy.defaultDescription
       setListingTitle((current) => current || payload.metadata?.title || fallbackTitle)
       setListingDescription((current) => current || payload.metadata?.description || fallbackDescription)
       setListingImageUrl((current) => current || payload.metadata?.imageUrl || '')
     } catch {
-      if (seq === resolveSeq.current) setResolvedKey(result.identity.canonicalKey)
+      if (seq === resolveSeq.current) setResolvedKey(result.ok ? result.identity.canonicalKey : '')
     } finally {
       if (seq === resolveSeq.current) setResolving(false)
     }
@@ -198,7 +210,8 @@ function Home() {
   async function openCheckout(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
     const result = normalizeIdentity(identityInput, platform)
-    if (!result.ok) {
+    const share = containsShareLink(identityInput)
+    if (!result.ok && !share) {
       setIdentityError(localizeError(result.message, copy))
       return
     }
@@ -337,8 +350,8 @@ function Home() {
               <div className="bid-form">
                 <label className="identity-field">
                   <span className="input-prefix" aria-hidden="true">
-                    {normalizedIdentity.ok && socialIdentity ? (
-                      <span className="avatar-initial avatar-initial-sm">{platformInitial(normalizedIdentity.identity)}</span>
+                    {activeIdentity && socialIdentity ? (
+                      <span className="avatar-initial avatar-initial-sm">{platformInitial(activeIdentity)}</span>
                     ) : identityLogo ? (
                       <img src={identityLogo} alt="" width="16" height="16" />
                     ) : (
@@ -386,13 +399,13 @@ function Home() {
                   <div className="resolved-identity">
                     {previewLogo ? (
                       <img src={previewLogo} alt="" width="40" height="40" />
-                    ) : normalizedIdentity.ok ? (
+                    ) : activeIdentity ? (
                       <span className="avatar-initial" aria-hidden="true">
-                        {platformInitial(normalizedIdentity.identity)}
+                        {platformInitial(activeIdentity)}
                       </span>
                     ) : null}
                     <div>
-                      <strong>{listingTitle || (normalizedIdentity.ok ? normalizedIdentity.identity.display : '')}</strong>
+                      <strong>{listingTitle || activeIdentity?.display || ''}</strong>
                       {listingDescription ? <p>{listingDescription}</p> : null}
                     </div>
                   </div>
@@ -530,7 +543,7 @@ function Home() {
             <span className="modal-kicker">{copy.checkoutKicker}</span>
             <h2 id="checkout-title">{copy.reviewBid}</h2>
             <dl>
-              <div><dt>{copy.listing}</dt><dd>{listingTitle || (normalizedIdentity.ok ? normalizedIdentity.identity.display : identityInput)}</dd></div>
+              <div><dt>{copy.listing}</dt><dd>{listingTitle || activeIdentity?.display || identityInput}</dd></div>
               <div><dt>{copy.placement}</dt><dd>{interpolate(copy.projectedRank, { rank: previewRank })}</dd></div>
               <div><dt>{copy.total}</dt><dd>{formatCny(amountCents)}</dd></div>
             </dl>
