@@ -12,7 +12,13 @@ export interface Messages {
   language: string
   visitorsOnline: string
   visitorsLast24h: string
+  visitorsSinceLaunch: string
   seeStats: string
+  trendingLabel: string
+  trendingClicksPerHour: string
+  latestActivityLabel: string
+  activityAt: string
+  revenueBanner: string
   footerBlurb: string
   footerStats: string
 
@@ -133,5 +139,5 @@ export interface Messages {
   receiptKicker: string
   noCheckout: string
   noCheckoutLead: string
-  backToYoubid: string
+  backToStarRank: string
 }

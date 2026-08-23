@@ -1,25 +1,25 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "youbid-lol",
+  "name": "starrank",
   "compatibility_date": "2026-08-21",
   "compatibility_flags": ["nodejs_compat"],
   "workers_dev": true,
   "main": "@tanstack/react-start/server-entry",
   "observability": { "enabled": true },
   "vars": {
-    "APP_URL": "https://youbid.lol"
+    "APP_URL": "https://starrank.lol"
   },
   "routes": [
     {
-      "pattern": "youbid.lol/*",
-      "zone_name": "youbid.lol"
+      "pattern": "starrank.lol/*",
+      "zone_name": "starrank.lol"
     }
   ],
   "d1_databases": [
     {
       "binding": "DB",
-      "database_name": "youbid-lol",
-      "database_id": "5fc1f229-ee89-42c9-8d44-fe7af9c0d15a",
+      "database_name": "starrank-db",
+      "database_id": "51af159d-4584-44e2-86ef-78ba6424536b",
       "migrations_dir": "migrations"
     }
   ],

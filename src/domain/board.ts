@@ -69,12 +69,11 @@ export function toPublicListing(
   return {
     id: listing.id,
     domain: listing.displayName,
-    description: listing.description || 'Paid and verified on Youbid.',
+    description: listing.description || 'Paid and verified on StarRank.',
     href: `/go/${listing.id}`,
     image: listing.imageUrl || faviconUrlForTarget(listing.targetUrl),
     amountCents: listingStanding(listing, nowIso),
     settledAt: listing.settledAt ?? nowIso,
-    dropsOffAt: listing.dropsOffAt ?? listing.settledAt ?? nowIso,
     age: listing.settledAt ? ageLabel(listing.settledAt, now) : 'just now',
     clicks,
   }

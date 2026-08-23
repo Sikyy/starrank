@@ -8,6 +8,7 @@ import { LocaleSwitcher } from './locale-switcher.tsx'
 export function SiteHeader(input: {
   visitorsOnline: number
   visitorsLast24h: number
+  visitorsSinceLaunch?: number
 }) {
   const { copy, locale } = useLocale()
   const lang = localeHtmlLang(locale)
@@ -16,11 +17,11 @@ export function SiteHeader(input: {
       <div className="site-header-bar">
         <Link className="wordmark" to="/" aria-label={copy.homeAria}>
           <img className="wordmark-logo" src="/logo.avif" alt="" width="50" height="50" />
-          youbid<span>.lol</span>
+          Star<span>Rank</span>
         </Link>
         <nav className="header-nav" aria-label={copy.navSite}>
           <Link to="/rules">{copy.navRules}</Link>
-          <a href="https://github.com/Go7hic/youbid" target="_blank" rel="noreferrer">
+          <a href="https://github.com/Sikyy/starrank" target="_blank" rel="noreferrer">
             {copy.navGitHub}
           </a>
           <LocaleSwitcher />
@@ -33,6 +34,9 @@ export function SiteHeader(input: {
         </strong>
         <span>
           · {interpolate(copy.visitorsLast24h, { count: formatCount(input.visitorsLast24h, lang) })} ·{' '}
+          {input.visitorsSinceLaunch != null
+            ? `${interpolate(copy.visitorsSinceLaunch, { count: formatCount(input.visitorsSinceLaunch, lang) })} · `
+            : ''}
         </span>
         <Link className="stats-link" to="/stats" target="_blank" rel="noreferrer">
           {copy.seeStats}
@@ -49,7 +53,7 @@ export function SiteFooter() {
       <p>{copy.footerBlurb}</p>
       <nav className="footer-nav">
         <Link to="/stats">{copy.footerStats}</Link>
-        <a href="https://youbid.lol">youbid.lol</a>
+        <a href="https://starrank.lol">starrank.lol</a>
       </nav>
     </footer>
   )

@@ -190,6 +190,76 @@ button:disabled { cursor: not-allowed; opacity: 0.48; }
 
 .tagline strong { color: var(--primary-dark); font-weight: 700; }
 
+/* ---------- Trending strip (outbid-style) ---------- */
+.trending-strip {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  max-width: 720px;
+  margin: 18px auto 0;
+}
+.trending-label { font-size: 13px; color: #8a847d; white-space: nowrap; }
+.trending-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--card);
+  color: inherit;
+  font-size: 13px;
+  text-decoration: none;
+  transition: border-color 0.15s ease;
+}
+.trending-pill:hover { border-color: var(--primary); }
+.trending-pill strong { color: var(--primary-dark); font-weight: 700; }
+
+/* ---------- Latest activity (outbid-style) ---------- */
+.latest-activity {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-width: 720px;
+  margin: 0 auto 26px;
+  text-align: left;
+}
+.activity-label { font-size: 13px; font-weight: 700; color: #8a847d; }
+.activity-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 13px;
+}
+.activity-list li { display: flex; align-items: baseline; gap: 10px; }
+.activity-name { font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.activity-meta { color: #8a847d; flex: 1; }
+.activity-list strong { font-variant-numeric: tabular-nums; }
+
+/* ---------- Top N group headings ---------- */
+.group-heading {
+  margin: 26px 0 10px;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #b3ada5;
+}
+
+/* ---------- Revenue banner ---------- */
+.revenue-banner {
+  margin: 34px auto 0;
+  text-align: center;
+  font-size: 14px;
+  color: #5c5752;
+}
+.revenue-banner strong { font-size: 20px; color: var(--primary-dark); font-variant-numeric: tabular-nums; }
+
 .bid-panel { padding-top: 30px; scroll-margin-top: 24px; }
 
 .bid-title-row {

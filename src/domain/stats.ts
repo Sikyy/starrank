@@ -1,5 +1,5 @@
 import { listingDropsOffAt, listingStanding } from './decay.ts'
-import { type ListingRecord, type TakeoverRecord } from './records.ts'
+import { listingContribution, type ListingRecord, type TakeoverRecord } from './records.ts'
 import { rankListings } from './ranking.ts'
 
 export interface PublicSettlementFact {
@@ -23,6 +23,8 @@ export interface PublicStatsSnapshot {
   visitorsOnline: number
   visitorsLastHour: number
   visitorsLast24h: number
+  visitorsSinceLaunch: number
+  revenueTotalCents: number
   clicksLast24h: number
   volumeLiveCents: number
   firstPlaceCents: number
@@ -38,6 +40,7 @@ export interface StatsFacts {
   visitorsOnline: number
   visitorsLastHour: number
   visitorsLast24h: number
+  visitorsSinceLaunch: number
   clicksLast24h: number
 }
 
@@ -77,6 +80,9 @@ export function buildPublicStats(facts: StatsFacts): PublicStatsSnapshot {
     visitorsOnline: facts.visitorsOnline,
     visitorsLastHour: facts.visitorsLastHour,
     visitorsLast24h: facts.visitorsLast24h,
+    visitorsSinceLaunch: facts.visitorsSinceLaunch,
+    // outbid-style headline number: total verified principal across all time.
+    revenueTotalCents: live.reduce((sum, listing) => sum + listingContribution(listing), 0),
     clicksLast24h: facts.clicksLast24h,
     volumeLiveCents: live.reduce((sum, listing) => sum + listingStanding(listing, facts.nowIso), 0),
     firstPlaceCents: ranked[0]?.amountCents ?? 0,

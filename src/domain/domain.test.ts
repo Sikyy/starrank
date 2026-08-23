@@ -6,16 +6,12 @@ import { settleVerifiedPaidEvent } from './checkout.ts'
 import { faviconUrlForTarget } from './favicon.ts'
 import { normalizeIdentity } from './identity.ts'
 import {
-  DAILY_DECAY,
-  DECAY_FLOOR_CENTS,
   decayedBalance,
-  decayedBalanceFromDropOff,
   dropsOffAt,
   listingStanding,
-  toppedUpDropsOffAt,
 } from './decay.ts'
 import { completeListingMetadata } from './listing-metadata.ts'
-import { TAKEOVER_FALL_MS, amountToClaim, yuanToCents, formatCny, takeoverIdleMs, takeoverPrice } from './money.ts'
+import { amountToClaim, yuanToCents, formatCny } from './money.ts'
 import { canRaiseListing, signOwnerCookie, verifyOwnerCookie } from './owner.ts'
 import { projectedRank, rankListings } from './ranking.ts'
 import { buildPublicReceipt } from './receipt.ts'
@@ -25,9 +21,9 @@ import { planPaidSettlement, planRefundSettlement } from './settlement.ts'
 import { buildPublicStats } from './stats.ts'
 
 const listings = [
-  { id: 'b', amountCents: 10_000, settledAt: '2026-01-02T00:00:00Z', dropsOffAt: '2026-06-02T00:00:00Z' },
-  { id: 'a', amountCents: 10_000, settledAt: '2026-01-01T00:00:00Z', dropsOffAt: '2026-06-01T00:00:00Z' },
-  { id: 'c', amountCents: 5_000, settledAt: '2026-01-03T00:00:00Z', dropsOffAt: '2026-05-01T00:00:00Z' },
+  { id: 'b', amountCents: 10_000, settledAt: '2026-01-02T00:00:00Z' },
+  { id: 'a', amountCents: 10_000, settledAt: '2026-01-01T00:00:00Z' },
+  { id: 'c', amountCents: 5_000, settledAt: '2026-01-03T00:00:00Z' },
 ]
 
 const identity = {
@@ -75,58 +71,27 @@ function intent(overrides: Partial<IntentRecord> = {}): IntentRecord {
 
 test('money stays in integer cents', () => {
   assert.equal(yuanToCents(10_001), 1_000_100)
-  assert.equal(yuanToCents(0.5), 100)
+  assert.equal(yuanToCents(5), 500)
   assert.equal(amountToClaim(310_000), 310_100)
-  assert.equal(amountToClaim(100), 200)
+  assert.equal(amountToClaim(100), 500) // clamped to the ¥5 entry minimum
   assert.equal(formatCny(100), '¥1')
   assert.equal(formatCny(200), '¥2')
 })
 
-test('a takeover opens at 4x and falls to 1.2x over a day', () => {
-  const leader = 10_000
-  assert.equal(takeoverPrice(leader, 0), 40_000)
-  assert.equal(takeoverPrice(leader, TAKEOVER_FALL_MS), 12_000)
-  assert.equal(takeoverPrice(leader, TAKEOVER_FALL_MS / 2), 26_000)
-  assert.equal(takeoverPrice(leader, TAKEOVER_FALL_MS * 2), 12_000)
-  assert.ok(takeoverPrice(leader, TAKEOVER_FALL_MS / 4) > takeoverPrice(leader, TAKEOVER_FALL_MS / 2))
-  assert.equal(takeoverPrice(0, 0), 100)
-  assert.equal(takeoverIdleMs('2026-08-21T12:00:00.000Z', null), 0)
-  assert.equal(takeoverIdleMs('2026-08-21T12:00:00.000Z', '2026-08-21T06:00:00.000Z'), 6 * 60 * 60 * 1000)
+test('static ranking: highest amount first, ties break to latest settlement', () => {
+  const rows = listings
+  assert.deepEqual(rankListings(rows).map(({ id }) => id), ['b', 'a', 'c'])
+  assert.equal(projectedRank(10_001, rows), 1)
+  assert.equal(projectedRank(10_000, rows), 3)
 })
 
-test('ranking is deterministic and previews equal amounts behind settled bids', () => {
-  assert.deepEqual(rankListings(listings).map(({ id }) => id), ['b', 'a', 'c'])
-  assert.equal(projectedRank(10_001, listings), 1)
-  assert.equal(projectedRank(10_000, listings), 3)
-})
-
-test('decayed balance falls and drop-off order matches live balance order', () => {
+test('amounts never decay and listings never drop off', () => {
   const settled = '2026-01-01T00:00:00.000Z'
-  const later = '2026-02-01T00:00:00.000Z'
-  const high = decayedBalance(10_000, settled, later)
-  const low = decayedBalance(5_000, settled, later)
-  assert.ok(high < 10_000)
-  assert.ok(high > low)
-  assert.ok(high > 0)
-  assert.equal(decayedBalance(100, settled, later), 0)
-
-  const now = '2026-03-01T00:00:00.000Z'
-  const richer = dropsOffAt(20_000, settled)
-  const poorer = dropsOffAt(8_000, settled)
-  assert.ok(richer > poorer)
-  const fromDrop = [
-    { id: 'rich', amount: decayedBalanceFromDropOff(richer, now), t: richer },
-    { id: 'poor', amount: decayedBalanceFromDropOff(poorer, now), t: poorer },
-  ]
-  const byAmount = [...fromDrop].sort((left, right) => right.amount - left.amount).map((row) => row.id)
-  const byDrop = [...fromDrop].sort((left, right) => right.t.localeCompare(left.t)).map((row) => row.id)
-  assert.deepEqual(byAmount, byDrop)
-
-  const next = toppedUpDropsOffAt(poorer, 5_000, now)
-  assert.ok(next > poorer)
-  assert.ok(next > now)
-  assert.equal(DAILY_DECAY, 0.97)
-  assert.equal(DECAY_FLOOR_CENTS, 100)
+  const later = '2027-06-01T00:00:00.000Z'
+  const rec = listing({ principalPaidCents: 10_000, settledAt: settled })
+  assert.equal(listingStanding(rec, later), 10_000)
+  assert.equal(decayedBalance(10_000, settled, later), 10_000)
+  assert.ok(dropsOffAt(5_000, settled) > '9998-01-01')
 })
 
 test('a public URL uses favicon.so as the listing logo, not an og image host', () => {
@@ -337,7 +302,7 @@ test('top-up settlement applies the absolute target, not the charged delta', () 
   assert.ok(plan.writes.listing?.dropsOffAt)
 })
 
-test('a rank raise charges the decayed standing, not the historical ledger', () => {
+test('a rank raise charges the static standing, not the historical ledger', () => {
   const settled = '2026-01-01T00:00:00.000Z'
   const now = '2026-01-11T00:00:00.000Z'
   const existing = listing({
@@ -346,8 +311,7 @@ test('a rank raise charges the decayed standing, not the historical ledger', () 
     dropsOffAt: dropsOffAt(10_000, settled),
   })
   const live = listingStanding(existing, now)
-  assert.ok(live < 10_000)
-  assert.ok(live >= DECAY_FLOOR_CENTS)
+  assert.equal(live, 10_000)
 
   const settle = planPaidSettlement(
     {
@@ -387,7 +351,9 @@ test('a rank raise charges the decayed standing, not the historical ledger', () 
   )
   assert.equal(settle.kind, 'settle')
   if (settle.kind !== 'settle') return
-  assert.ok(settle.writes.listing?.dropsOffAt && settle.writes.listing.dropsOffAt > existing.dropsOffAt!)
+  assert.equal(settle.writes.listing?.principalPaidCents, 10_100)
+  // Drop-off is a constant far-future sentinel now; the listing simply stays.
+  assert.ok(settle.writes.listing?.dropsOffAt && settle.writes.listing.dropsOffAt === existing.dropsOffAt)
 
   const staleLedger = planPaidSettlement(
     {
@@ -409,13 +375,19 @@ test('a rank raise charges the decayed standing, not the historical ledger', () 
       eventType: 'checkout.session.completed',
       providerOrderId: 'pi_stale',
       intentId: 'intent_stale',
+      // Standing is now static (10_000), so the correct charge to reach
+      // 15_000 is exactly 5_000 — this settles instead of quarantining.
       principalPaidCents: 5_000,
       principalRefundedCents: 0,
       occurredAt: now,
     },
     { listingId: 'listing_1', takeoverId: 'lease_x' },
   )
-  assert.equal(staleLedger.kind, 'needs-support')
+  assert.equal(staleLedger.kind, 'settle')
+  if (staleLedger.kind !== 'settle') return
+  // Ledger only knows this order (orders was empty), so the written ledger
+  // records just this payment; the listing row keeps its stored principal.
+  assert.equal(staleLedger.writes.listing?.principalPaidCents, 5_000)
 })
 
 test('late takeover payment does not create a second active lease', () => {
@@ -727,11 +699,14 @@ test('public stats expose only board facts and hide owner tokens', () => {
     visitorsOnline: 12,
     visitorsLastHour: 40,
     visitorsLast24h: 90,
+    visitorsSinceLaunch: 1_234,
     clicksLast24h: 7,
   })
   assert.equal(stats.listingsLive, 2)
   assert.equal(stats.firstPlaceCents, 10_000)
   assert.equal(stats.volumeLiveCents, 14_000)
+  assert.equal(stats.revenueTotalCents, 14_000)
+  assert.equal(stats.visitorsSinceLaunch, 1_234)
   assert.equal(stats.recentSettlements[0]?.display, 'other.com')
   assert.equal(JSON.stringify(stats).includes('owner_1'), false)
 })

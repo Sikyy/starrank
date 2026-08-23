@@ -116,7 +116,7 @@ function MissingReceipt() {
       <h1 id="receipt-heading">{copy.noCheckout}</h1>
       <p className="page-lead">{copy.noCheckoutLead}</p>
       <Link className="primary-button modal-primary" to="/">
-        {copy.backToYoubid}
+        {copy.backToStarRank}
       </Link>
     </>
   )

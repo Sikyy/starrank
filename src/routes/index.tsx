@@ -1,11 +1,9 @@
-import { createFileRoute, useRouter } from '@tanstack/react-router'
+import { createFileRoute } from '@tanstack/react-router'
 import { createServerFn } from '@tanstack/react-start'
 import { getRequestHeader } from '@tanstack/react-start/server'
 import { type FormEvent, useEffect, useMemo, useRef, useState } from 'react'
 
 import type { Listing } from '../data/listings.ts'
-import { boardPage } from '../domain/board.ts'
-import { decayedBalanceFromDropOff } from '../domain/decay.ts'
 import { faviconUrlForTarget } from '../domain/favicon.ts'
 import { normalizeIdentity } from '../domain/identity.ts'
 import {
@@ -13,8 +11,6 @@ import {
   MINIMUM_BID_CENTS,
   amountToClaim,
   formatCny,
-  takeoverIdleMs,
-  takeoverPrice,
 } from '../domain/money.ts'
 import { projectedRank, rankListings } from '../domain/ranking.ts'
 import { database, publicCheckoutConfig } from '../server/env.ts'
@@ -42,10 +38,14 @@ const loadHome = createServerFn({ method: 'GET' }).handler(async () => {
     listings: board.listings,
     takeover: board.takeover,
     lastEndedTakeoverAt: board.lastEndedTakeoverAt,
+    trending: board.trending,
+    recentBids: board.recentBids,
     nowIso: now.toISOString(),
     checkout: publicCheckoutConfig(),
     visitorsOnline: stats.visitorsOnline,
     visitorsLast24h: stats.visitorsLast24h,
+    visitorsSinceLaunch: stats.visitorsSinceLaunch,
+    revenueTotalCents: stats.revenueTotalCents,
   }
 })
 
@@ -56,7 +56,6 @@ export const Route = createFileRoute('/')({
 
 function Home() {
   const data = Route.useLoaderData()
-  const router = useRouter()
   const { copy, locale } = useLocale()
   const htmlLang = localeHtmlLang(locale)
   const bidFormRef = useRef<HTMLElement>(null)
@@ -65,14 +64,9 @@ function Home() {
   const rankedListings = useMemo(
     () =>
       rankListings(
-        listings
-          .map((listing) => ({
-            ...listing,
-            amountCents: decayedBalanceFromDropOff(listing.dropsOffAt, clockIso),
-          }))
-          .filter((listing) => listing.amountCents > 0 && listing.dropsOffAt > clockIso),
+        listings.filter((listing) => listing.amountCents > 0),
       ),
-    [listings, clockIso],
+    [listings],
   )
   const leaderAmount = rankedListings[0]?.amountCents ?? MINIMUM_BID_CENTS
   const [amountCents, setAmountCents] = useState(() => amountToClaim(leaderAmount))
@@ -85,13 +79,11 @@ function Home() {
   const [resolvedKey, setResolvedKey] = useState('')
   const lastCanonical = useRef('')
   const resolveSeq = useRef(0)
-  const [takeover, setTakeover] = useState(false)
   const [checkoutOpen, setCheckoutOpen] = useState(false)
   const [pendingIntentId, setPendingIntentId] = useState<string | null>(null)
-  const [page, setPage] = useState(1)
   const [busy, setBusy] = useState(false)
 
-  const board = boardPage({ listings: rankedListings, takeover: data.takeover, requestedPage: page })
+  const board = { page: 1, pageCount: 1, takeover: data.takeover, listings: rankedListings, firstRank: 1 }
   const previewRank = projectedRank(amountCents, rankedListings)
   const normalizedIdentity = normalizeIdentity(identityInput)
   const canCheckout =
@@ -167,26 +159,12 @@ function Home() {
       if (seq === resolveSeq.current) setResolving(false)
     }
   }
-  const activeTakeover = data.takeover
-  const takeoverAmount = takeoverPrice(
-    leaderAmount,
-    takeoverIdleMs(clockIso, data.lastEndedTakeoverAt),
-  )
-
   function scrollToBidForm() {
     bidFormRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' })
   }
 
   function chooseRank(listing: Listing) {
-    setTakeover(false)
     setAmountCents(amountToClaim(listing.amountCents))
-    setIdentityError('')
-    scrollToBidForm()
-  }
-
-  function chooseTakeover() {
-    setTakeover(true)
-    setAmountCents(takeoverAmount)
     setIdentityError('')
     scrollToBidForm()
   }
@@ -213,7 +191,6 @@ function Home() {
           title: listingTitle,
           description: listingDescription,
           imageUrl: listingImageUrl || null,
-          takeover,
           turnstileToken: turnstileInput?.value ?? '',
         }),
       })
@@ -265,17 +242,33 @@ function Home() {
 
   return (
     <main className="site-shell">
-      <SiteHeader visitorsOnline={data.visitorsOnline} visitorsLast24h={data.visitorsLast24h} />
+      <SiteHeader
+        visitorsOnline={data.visitorsOnline}
+        visitorsLast24h={data.visitorsLast24h}
+        visitorsSinceLaunch={data.visitorsSinceLaunch}
+      />
 
       <section className="intro" id="top">
         <p className="tagline">
           {copy.tagline} <strong>{copy.taglineEmphasis}</strong>
         </p>
+        {data.trending.length > 0 ? (
+          <nav className="trending-strip" aria-label={copy.trendingLabel}>
+            <span className="trending-label">{copy.trendingLabel}</span>
+            {data.trending.map((item) => (
+              <a key={item.listingId} className="trending-pill" href={item.href} target="_blank" rel="sponsored noopener noreferrer">
+                {item.image ? <img src={item.image} alt="" width="16" height="16" loading="lazy" /> : null}
+                {item.display}
+                <strong>{interpolate(copy.trendingClicksPerHour, { count: formatCount(item.clicksPerHour, htmlLang) })}</strong>
+              </a>
+            ))}
+          </nav>
+        ) : null}
 
         <section className="bid-panel" ref={bidFormRef} aria-labelledby="bid-heading">
           <div className="bid-title-row">
             <h1 id="bid-heading">
-              {takeover ? copy.takePageOneFor : interpolate(copy.claimRankFor, { rank: previewRank })}
+              {interpolate(copy.claimRankFor, { rank: previewRank })}
             </h1>
             <button
               className="step-button"
@@ -296,7 +289,7 @@ function Home() {
             </button>
           </div>
           <p className="bid-explainer">
-            {takeover ? copy.explainerTakeover : copy.explainerBid}
+            {copy.explainerBid}
           </p>
 
           <form className="bid-composer-wrap" onSubmit={openCheckout} noValidate>
@@ -325,7 +318,7 @@ function Home() {
                   />
                 </label>
                 <button className="primary-button" type="submit" disabled={!canCheckout}>
-                  {busy ? copy.working : takeover ? copy.takeOver : copy.bid}
+                  {busy ? copy.working : copy.bid}
                 </button>
               </div>
               <p className="identity-help" id="identity-help">
@@ -390,64 +383,47 @@ function Home() {
           </form>
         </section>
 
-        <section className="takeover-offer" aria-label={copy.takeoverAria}>
-          <p>
-            <strong>{copy.takeoverNew}</strong> {copy.takeoverOwn}{' '}
-            {formatCny(takeoverAmount)}{' '}
-            <span>{copy.takeoverFalls}</span>
-          </p>
-          <button type="button" onClick={chooseTakeover} disabled={Boolean(activeTakeover)}>
-            {activeTakeover ? copy.takeoverActive : copy.takeOver}
-          </button>
-        </section>
       </section>
 
       <section className="leaderboard" aria-labelledby="leaderboard-heading">
         <h2 className="sr-only" id="leaderboard-heading">{copy.boardHeading}</h2>
-        <div className="board-controls">
-          <button className="refresh-button" type="button" onClick={() => void router.invalidate()}>
-            {copy.refresh}
-          </button>
-          <nav className="pagination" aria-label={copy.pagesAria}>
-            <button type="button" onClick={() => setPage(board.page - 1)} disabled={board.page === 1}>{copy.prev}</button>
-            {Array.from({ length: board.pageCount }, (_, index) => index + 1).map((pageNumber) => (
-              <button
-                key={pageNumber}
-                type="button"
-                className={pageNumber === board.page ? 'current-page' : undefined}
-                aria-current={pageNumber === board.page ? 'page' : undefined}
-                onClick={() => setPage(pageNumber)}
-              >
-                {pageNumber}
-              </button>
-            ))}
-            <button type="button" onClick={() => setPage(board.page + 1)} disabled={board.page === board.pageCount}>{copy.next}</button>
-          </nav>
-        </div>
 
-        {board.takeover ? (
-          <article className="takeover-live">
-            <span className="takeover-kicker">{copy.takeoverLiveKicker}</span>
-            <a href={board.takeover.href} target="_blank" rel="sponsored noopener noreferrer">
-              {board.takeover.display}
-            </a>
-            <p>
-              {interpolate(copy.takeoverOwnsUntil, {
-                time: new Date(board.takeover.endsAt).toLocaleTimeString(htmlLang, { hour: '2-digit', minute: '2-digit' }),
-              })}
-            </p>
-            <strong>{formatCny(board.takeover.amountCents)}</strong>
-            <button type="button" onClick={() => setPage(2)}>{copy.browseRegular}</button>
-          </article>
-        ) : (
-          <div className="listing-stack">
-            {board.listings.length === 0 ? (
-              <p className="empty-note">{copy.emptyBoard}</p>
-            ) : null}
-            {board.listings.map((listing, index) => {
-              const rank = board.firstRank + index
-              const claimCents = amountToClaim(listing.amountCents)
-              return (
+        {data.recentBids.length > 0 ? (
+          <aside className="latest-activity" aria-label={copy.latestActivityLabel}>
+            <span className="activity-label">{copy.latestActivityLabel}</span>
+            <ul className="activity-list">
+              {data.recentBids.map((item) => (
+                <li key={`${item.display}-${item.settledAt}`}>
+                  <span className="activity-name">{item.display}</span>
+                  <span className="activity-meta">
+                    {interpolate(copy.activityAt, {
+                      time: formatRelativeAge(item.settledAt, clockIso, copy),
+                      rank: item.rank,
+                    })}
+                  </span>
+                  <strong>{formatCny(item.amountCents)}</strong>
+                </li>
+              ))}
+            </ul>
+          </aside>
+        ) : null}
+
+        <div className="listing-stack">
+          {board.listings.length === 0 ? (
+            <p className="empty-note">{copy.emptyBoard}</p>
+          ) : null}
+          {board.listings.map((listing, index) => {
+            const rank = board.firstRank + index
+            const claimCents = amountToClaim(listing.amountCents)
+            const groupBoundary =
+              rank === 1 || rank === 4 || rank === 11 || (rank > 10 && (rank - 1) % 10 === 0)
+            return (
+              <>
+                {groupBoundary ? (
+                  <p className="group-heading" key={`group-${rank}`} aria-hidden="true">
+                    Top {rank === 1 ? '3' : rank === 4 ? '10' : rank - 1}
+                  </p>
+                ) : null}
                 <article
                   className={`listing-card rank-${Math.min(rank, 4)}`}
                   key={listing.id}
@@ -475,8 +451,6 @@ function Home() {
                     <small>
                       {formatRelativeAge(listing.settledAt, clockIso, copy)}
                       <span className="meta-dot" aria-hidden="true">•</span>
-                      {interpolate(copy.onBoardUntil, { date: listing.dropsOffAt.slice(0, 10) })}
-                      <span className="meta-dot" aria-hidden="true">•</span>
                       <strong>{interpolate(copy.clicks, { count: formatCount(listing.clicks, htmlLang) })}</strong>
                     </small>
                   </div>
@@ -484,11 +458,17 @@ function Home() {
                     {formatCny(listing.amountCents)}
                   </button>
                 </article>
-              )
-            })}
-          </div>
-        )}
+              </>
+            )
+          })}
+        </div>
       </section>
+
+      {data.revenueTotalCents > 0 ? (
+        <p className="revenue-banner">
+          {copy.revenueBanner} <strong>{formatCny(data.revenueTotalCents)}</strong>
+        </p>
+      ) : null}
 
       <SiteFooter />
 
@@ -498,10 +478,10 @@ function Home() {
         }}>
           <section className="checkout-modal" role="dialog" aria-modal="true" aria-labelledby="checkout-title">
             <span className="modal-kicker">{copy.checkoutKicker}</span>
-            <h2 id="checkout-title">{takeover ? copy.reviewTakeover : copy.reviewBid}</h2>
+            <h2 id="checkout-title">{copy.reviewBid}</h2>
             <dl>
               <div><dt>{copy.listing}</dt><dd>{listingTitle || (normalizedIdentity.ok ? normalizedIdentity.identity.display : identityInput)}</dd></div>
-              <div><dt>{copy.placement}</dt><dd>{takeover ? copy.placementTakeover : interpolate(copy.projectedRank, { rank: previewRank })}</dd></div>
+              <div><dt>{copy.placement}</dt><dd>{interpolate(copy.projectedRank, { rank: previewRank })}</dd></div>
               <div><dt>{copy.total}</dt><dd>{formatCny(amountCents)}</dd></div>
             </dl>
             <p className="payment-note">

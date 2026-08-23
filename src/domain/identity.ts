@@ -82,7 +82,7 @@ export function normalizeIdentity(rawValue: string): IdentityResult {
 
 export function sponsoredUrl(targetUrl: string): string {
   const url = new URL(targetUrl)
-  url.searchParams.set('utm_source', 'youbid')
+  url.searchParams.set('utm_source', 'starrank')
   return url.toString()
 }
 

@@ -24,19 +24,19 @@ test('checkout body is parsed at the boundary into an absolute bid', () => {
 test('checkout body carries listing metadata when supplied', () => {
   const parsed = parseCheckoutBody({
     requestId: 'req_2',
-    amountCents: 200,
-    identity: '@youbid',
-    title: 'Youbid',
+    amountCents: 500,
+    identity: '@starrank',
+    title: 'StarRank',
     description: 'Paid leaderboard',
     imageUrl: 'https://example.com/a.png',
   })
   assert.equal(parsed.ok, true)
   if (!parsed.ok) return
-  assert.equal(parsed.value.title, 'Youbid')
+  assert.equal(parsed.value.title, 'StarRank')
   assert.equal(parsed.value.description, 'Paid leaderboard')
   assert.equal(parsed.value.imageUrl, 'https://example.com/a.png')
-  assert.equal(parseCheckoutBody({ requestId: 'req_3', amountCents: 100, identity: 'https://example.com' }).ok, true)
-  assert.equal(parseCheckoutBody({ requestId: 'req_4', amountCents: 50, identity: 'https://example.com' }).ok, false)
+  assert.equal(parseCheckoutBody({ requestId: 'req_3', amountCents: 500, identity: 'https://example.com' }).ok, true)
+  assert.equal(parseCheckoutBody({ requestId: 'req_4', amountCents: 100, identity: 'https://example.com' }).ok, false)
   assert.equal(parseCheckoutBody({ requestId: 'req_5', amountCents: 150, identity: 'https://example.com' }).ok, false)
 })
 

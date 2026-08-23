@@ -362,26 +362,76 @@ export async function loadPublicBoard(
   listings: Listing[]
   takeover: { amountCents: number; display: string; href: string; endsAt: string } | null
   lastEndedTakeoverAt: string | null
+  trending: Array<{ listingId: string; display: string; href: string; image: string | null; clicksPerHour: number }>
+  recentBids: Array<{ display: string; rank: number; amountCents: number; settledAt: string }>
 }> {
   const nowIso = now.toISOString()
   await expireOpenIntents(db, nowIso)
-  const [listingResult, clickResult, takeoverResult, lastEnded] = await db.batch([
+  const dayAgoIso = new Date(now.getTime() - 24 * 60 * 60 * 1000).toISOString()
+  const [listingResult, clickResult, recentClickResult, settlementResult, takeoverResult, lastEnded] = await db.batch([
     db.prepare(
       `SELECT * FROM listings
-       WHERE drops_off_at > ?
-       ORDER BY drops_off_at DESC, settled_at ASC, id ASC`,
-    ).bind(nowIso),
+       WHERE settled_at IS NOT NULL AND (principal_paid_cents - principal_refunded_cents) > 0
+       ORDER BY (principal_paid_cents - principal_refunded_cents) DESC, settled_at DESC, id ASC`,
+    ),
     db.prepare(`SELECT listing_id, COUNT(*) AS clicks FROM click_facts GROUP BY listing_id`),
+    db.prepare(`SELECT listing_id, COUNT(*) AS clicks FROM click_facts WHERE occurred_at >= ? GROUP BY listing_id`).bind(dayAgoIso),
+    // Latest activity: most recent settled payment per listing (top-ups bump it).
+    // provider_orders links to listings through checkout_intents.
+    db.prepare(
+      `SELECT i.listing_id AS listing_id, MAX(o.occurred_at) AS occurred_at
+       FROM provider_orders o
+       JOIN checkout_intents i ON i.id = o.intent_id
+       WHERE o.provider_status = 'paid' AND i.listing_id IS NOT NULL
+       GROUP BY i.listing_id`,
+    ),
     db.prepare(`SELECT * FROM takeover_leases WHERE status = 'active' AND ends_at > ? LIMIT 1`).bind(nowIso),
     db.prepare(`SELECT MAX(ends_at) AS ended_at FROM takeover_leases WHERE status = 'ended'`),
   ])
   const clicks = new Map(
     ((clickResult.results as ClickCountRow[] | undefined) ?? []).map((row) => [row.listing_id, Number(row.clicks)]),
   )
+  const clicks24h = new Map(
+    ((recentClickResult.results as ClickCountRow[] | undefined) ?? []).map((row) => [row.listing_id, Number(row.clicks)]),
+  )
   const paid = ((listingResult.results as ListingRow[] | undefined) ?? [])
     .map(mapListing)
     .filter((row): row is ListingRecord => row !== null)
     .map((row) => toPublicListing(row, clicks.get(row.id) ?? 0, now))
+
+  // Trending: top 5 by clicks in the last 24h (clicks/h ≈ clicks24h / 24).
+  const trending = [...paid]
+    .map((listing) => ({ listing, hot: clicks24h.get(listing.id) ?? 0 }))
+    .filter((row) => row.hot > 0)
+    .sort((left, right) => right.hot - left.hot)
+    .slice(0, 5)
+    .map((row) => ({
+      listingId: row.listing.id,
+      display: row.listing.domain,
+      href: row.listing.href,
+      image: row.listing.image,
+      clicksPerHour: Math.max(1, Math.round(row.hot / 24)),
+    }))
+
+  // Latest activity: the five listings whose payments settled most recently,
+  // annotated with their current static rank.
+  const settledAtById = new Map(paid.map((listing) => [listing.id, listing.settledAt]))
+  const rankById = new Map(paid.map((listing, index) => [listing.id, index + 1]))
+  const recentBids = ((settlementResult.results as Array<{ listing_id: string; occurred_at: string }> | undefined) ?? [])
+    .filter((row) => settledAtById.has(row.listing_id))
+    .sort((left, right) => right.occurred_at.localeCompare(left.occurred_at))
+    .slice(0, 5)
+    .flatMap((row) => {
+      const listing = paid.find((item) => item.id === row.listing_id)
+      if (!listing) return []
+      return [{
+        display: listing.domain,
+        rank: rankById.get(listing.id) ?? 0,
+        amountCents: listing.amountCents,
+        settledAt: row.occurred_at,
+      }]
+    })
+
   const takeoverRow = mapTakeover(firstRow<TakeoverRow>(takeoverResult))
   const takeoverListing = takeoverRow
     ? ((listingResult.results as ListingRow[] | undefined) ?? []).map(mapListing).find((row) => row?.id === takeoverRow.listingId) ?? null
@@ -390,6 +440,8 @@ export async function loadPublicBoard(
     listings: paid,
     takeover: publicTakeover(takeoverRow, takeoverListing, nowIso),
     lastEndedTakeoverAt: firstRow<{ ended_at: string | null }>(lastEnded)?.ended_at ?? null,
+    trending,
+    recentBids,
   }
 }
 
@@ -406,13 +458,14 @@ export async function loadPublicStats(db: D1Database, now: Date): Promise<Public
   const onlineSince = new Date(now.getTime() - 5 * 60 * 1000).toISOString()
   await expireOpenIntents(db, nowIso)
 
-  const [listings, takeover, online, hour, day, clicks] = await db.batch([
-    db.prepare(`SELECT * FROM listings WHERE drops_off_at > ?`).bind(nowIso),
+  const [listings, takeover, online, hour, day, clicks, launch] = await db.batch([
+    db.prepare(`SELECT * FROM listings WHERE settled_at IS NOT NULL AND (principal_paid_cents - principal_refunded_cents) > 0`),
     db.prepare(`SELECT * FROM takeover_leases WHERE status = 'active' AND ends_at > ? LIMIT 1`).bind(nowIso),
     db.prepare(VISITOR_COUNT_SQL).bind(onlineSince),
     db.prepare(VISITOR_COUNT_SQL).bind(hourAgo),
     db.prepare(VISITOR_COUNT_SQL).bind(dayAgo),
     db.prepare(`SELECT COUNT(*) AS count FROM click_facts WHERE occurred_at >= ?`).bind(dayAgo),
+    db.prepare(`SELECT COUNT(DISTINCT COALESCE(visitor_key, id)) AS count FROM traffic_facts`),
   ])
 
   const listingRows = ((listings.results as ListingRow[] | undefined) ?? [])
@@ -429,6 +482,7 @@ export async function loadPublicStats(db: D1Database, now: Date): Promise<Public
     visitorsOnline: Number(firstRow<{ count: number }>(online)?.count ?? 0),
     visitorsLastHour: Number(firstRow<{ count: number }>(hour)?.count ?? 0),
     visitorsLast24h: Number(firstRow<{ count: number }>(day)?.count ?? 0),
+    visitorsSinceLaunch: Number(firstRow<{ count: number }>(launch)?.count ?? 0),
     clicksLast24h: Number(firstRow<{ count: number }>(clicks)?.count ?? 0),
   })
 }
@@ -448,7 +502,7 @@ export async function recordClick(
   input: { listingId: string; referrerHost: string | null; countryCode: string | null },
 ): Promise<ListingRecord | null> {
   const listing = mapListing(await db.prepare(`SELECT * FROM listings WHERE id = ? LIMIT 1`).bind(input.listingId).first<ListingRow>())
-  if (!listing || listingStanding(listing, new Date().toISOString()) <= 0) return null
+  if (!listing || listingStanding(listing, new Date().toISOString()) <= 0 || !listing.settledAt) return null
   await db
     .prepare(`INSERT INTO click_facts (id, listing_id, referrer_host, country_code) VALUES (?, ?, ?, ?)`)
     .bind(crypto.randomUUID(), listing.id, input.referrerHost, sanitizeCountry(input.countryCode))
