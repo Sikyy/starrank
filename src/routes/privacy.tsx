@@ -11,7 +11,7 @@ const UPDATED = '2026-08-23'
 function PrivacyPage() {
   return (
     <main className="site-shell legal-page">
-      <SiteHeader visitorsOnline={0} visitorsLast24h={0} />
+      <SiteHeader />
       <article className="legal-doc">
         <p className="legal-kicker">法律条款</p>
         <h1>StarRank 隐私政策</h1>

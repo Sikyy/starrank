@@ -84,9 +84,9 @@ export const Route = createFileRoute('/api/resolve')({
           }
         }
 
-        const isSocial = /^(x|instagram|tiktok|douyin|youtube|rednote|weibo):/.test(resolvedIdentity.canonicalKey)
+        const isSocial = /^(x|instagram|tiktok|douyin|rednote|weibo):/.test(resolvedIdentity.canonicalKey)
         if (isSocial) {
-          // unavatar-backed platforms (x/tiktok/youtube) return the account's
+          // unavatar-backed platforms (x/tiktok) return the account's
           // real avatar. instagram/douyin/rednote/weibo have no anonymous
           // source from Workers → what douyin gave us above wins.
           if (platformId !== 'douyin') {

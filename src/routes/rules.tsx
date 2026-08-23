@@ -33,11 +33,11 @@ export const Route = createFileRoute('/rules')({
 })
 
 function RulesPage() {
-  const { visitorsOnline, visitorsLast24h } = Route.useLoaderData()
+  void Route.useLoaderData()
   const { copy } = useLocale()
   return (
     <main className="site-shell">
-      <SiteHeader visitorsOnline={visitorsOnline} visitorsLast24h={visitorsLast24h} />
+      <SiteHeader />
       <article className="page-panel" aria-labelledby="rules-heading">
         <p className="page-kicker">{copy.rulesKicker}</p>
         <h1 id="rules-heading">{copy.rulesTitle}</h1>

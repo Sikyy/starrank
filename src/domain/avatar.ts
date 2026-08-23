@@ -4,7 +4,7 @@ import type { PlatformId } from './identity.ts'
  * Per-platform avatar provider + the unique-ID shape each platform uses.
  *
  * Sources verified live from the deployed Cloudflare Worker egress (2026-08-23):
- *   - X / TikTok / YouTube → unavatar.io avatars (free tier, works from Workers)
+ *   - X / TikTok → unavatar.io avatars (free tier, works from Workers)
  *   - Instagram            → unavatar instagram needs a paid plan → rely on the
  *                            user's manual image URL as fallback
  *   - 抖音 / 小红书 / 微博  → 平台对 CF Worker 出口返回反爬壳 / 登录墙，无
@@ -41,12 +41,6 @@ export const PLATFORM_LOOKUP: Record<PlatformId, PlatformLookup> = {
     avatar: (id) => `https://unavatar.io/tiktok/${encodeURIComponent(id)}?fallback=false`,
   },
 
-  youtube: {
-    idType: 'handle',
-    idHint: '@频道名（唯一）',
-    avatar: (id) => `https://unavatar.io/youtube/${encodeURIComponent(id.replace(/^@/, ''))}?fallback=false`,
-  },
-
   douyin: {
     idType: 'sec_uid',
     idHint: 'App 内「分享→复制链接」直接粘贴',
@@ -65,7 +59,7 @@ export const PLATFORM_LOOKUP: Record<PlatformId, PlatformLookup> = {
 
 /** True when the canonical key names a social handle identity. */
 export function isSocialCanonical(canonicalKey: string): boolean {
-  return /^(x|instagram|tiktok|douyin|youtube|rednote|weibo):/.test(canonicalKey)
+  return /^(x|instagram|tiktok|douyin|rednote|weibo):/.test(canonicalKey)
 }
 
 /** The platform id from a canonical key `<platform>:<id>`. */

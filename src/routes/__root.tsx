@@ -68,7 +68,6 @@ const SITE_SCHEMA = {
       name: 'StarRank',
       url: 'https://starrank.lol/',
       logo: 'https://starrank.lol/icon-512.png',
-      sameAs: ['https://github.com/Sikyy/starrank'],
     },
     {
       '@type': 'WebSite',

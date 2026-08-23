@@ -148,8 +148,6 @@ test('platform selection routes handles to per-platform canonical keys', () => {
   assert.ok(ig.ok && ig.identity.targetUrl.startsWith('https://instagram.com/star.rank'))
   const tt = normalizeIdentity('starrank_official', 'tiktok')
   assert.equal(tt.ok && tt.identity.canonicalKey, 'tiktok:starrank_official')
-  const yt = normalizeIdentity('@StarRank', 'youtube')
-  assert.equal(yt.ok && yt.identity.canonicalKey, 'youtube:starrank')
   // Same handle on different platforms must be distinct identities.
   const x = normalizeIdentity('starrank', 'x')
   const tiktokAgain = normalizeIdentity('starrank', 'tiktok')

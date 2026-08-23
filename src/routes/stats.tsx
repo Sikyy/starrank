@@ -38,7 +38,7 @@ function StatsPage() {
 
   return (
     <main className="site-shell">
-      <SiteHeader visitorsOnline={stats.visitorsOnline} visitorsLast24h={stats.visitorsLast24h} />
+      <SiteHeader />
       <section className="page-panel" aria-labelledby="stats-heading">
         <p className="page-kicker">{copy.statsKicker}</p>
         <h1 id="stats-heading">{copy.statsTitle}</h1>

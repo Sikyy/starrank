@@ -284,11 +284,7 @@ function Home() {
 
   return (
     <main className="site-shell">
-      <SiteHeader
-        visitorsOnline={data.visitorsOnline}
-        visitorsLast24h={data.visitorsLast24h}
-        visitorsSinceLaunch={data.visitorsSinceLaunch}
-      />
+      <SiteHeader />
 
       <section className="intro" id="top">
         <p className="tagline">

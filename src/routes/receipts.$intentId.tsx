@@ -28,7 +28,7 @@ export const Route = createFileRoute('/receipts/$intentId')({
 })
 
 function ReceiptPage() {
-  const { receipt, visitorsOnline, visitorsLast24h } = Route.useLoaderData()
+  const { receipt } = Route.useLoaderData()
   const router = useRouter()
 
   useEffect(() => {
@@ -41,7 +41,7 @@ function ReceiptPage() {
 
   return (
     <main className="site-shell">
-      <SiteHeader visitorsOnline={visitorsOnline} visitorsLast24h={visitorsLast24h} />
+      <SiteHeader />
       <section className="page-panel receipt-panel" aria-labelledby="receipt-heading">
         {receipt ? <ReceiptBody receipt={receipt} /> : <MissingReceipt />}
       </section>

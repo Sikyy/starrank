@@ -83,7 +83,7 @@ export function toPublicListing(
 
 /** True when the listing is a social handle (x:/instagram:/tiktok:/…). */
 export function isSocialIdentity(canonicalKey: string): boolean {
-  return /^(x|instagram|tiktok|douyin|youtube|rednote|weibo):/.test(canonicalKey)
+  return /^(x|instagram|tiktok|douyin|rednote|weibo):/.test(canonicalKey)
 }
 
 const PLATFORM_LETTERS: Record<string, string> = {
@@ -91,7 +91,6 @@ const PLATFORM_LETTERS: Record<string, string> = {
   instagram: 'IG',
   tiktok: 'TT',
   douyin: '抖音',
-  youtube: 'YT',
   rednote: 'RED',
   weibo: 'WB',
 }

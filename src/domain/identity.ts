@@ -3,7 +3,6 @@ export type PlatformId =
   | 'instagram'
   | 'tiktok'
   | 'douyin'
-  | 'youtube'
   | 'rednote'
   | 'weibo'
 
@@ -20,7 +19,6 @@ export const PLATFORMS: Record<PlatformId, PlatformMeta> = {
   instagram: { id: 'instagram', label: 'Instagram', placeholder: '@用户名（唯一，如 @nasa）', profileHost: 'instagram.com' },
   tiktok: { id: 'tiktok', label: 'TikTok', placeholder: '@用户名（唯一，如 @starrank）', profileHost: 'tiktok.com' },
   douyin: { id: 'douyin', label: '抖音', placeholder: 'App 内「分享→复制链接」直接粘贴', profileHost: 'douyin.com' },
-  youtube: { id: 'youtube', label: 'YouTube', placeholder: '@频道名（唯一，如 @nasa）', profileHost: 'youtube.com' },
   rednote: {
     id: 'rednote',
     label: '小红书',
@@ -57,7 +55,6 @@ const X_HOSTS = new Set(['x.com', 'twitter.com'])
 const IG_HOSTS = new Set(['instagram.com', 'instagr.am'])
 const TIKTOK_HOSTS = new Set(['tiktok.com'])
 const DOUYIN_HOSTS = new Set(['douyin.com', 'iesdouyin.com'])
-const YOUTUBE_HOSTS = new Set(['youtube.com', 'youtu.be'])
 const REDNOTE_HOSTS = new Set(['xiaohongshu.com', 'xhslink.com'])
 const WEIBO_HOSTS = new Set(['weibo.com', 'm.weibo.cn'])
 const X_RESERVED = new Set([
@@ -182,9 +179,6 @@ function handleIdentity(platform: PlatformId, rawHandle: string): IdentityResult
   }
   let targetUrl: string
   switch (platform) {
-    case 'youtube':
-      targetUrl = `https://www.youtube.com/@${normalizedHandle}`
-      break
     case 'douyin':
       targetUrl = `https://www.douyin.com/user/${normalizedHandle}`
       break
@@ -240,11 +234,6 @@ function handleFromSocialUrl(hostname: string, pathname: string): IdentityResult
     const uid = pathname.split('/').filter(Boolean)[1] ?? ''
     if (pathname.split('/').filter(Boolean)[0] !== 'u' || !/^\d+$/.test(uid)) return null
     return handleIdentity('weibo', uid)
-  }
-  if (YOUTUBE_HOSTS.has(hostname)) {
-    const channel = pathname.split('/').filter(Boolean).join('/')
-    if (!channel.startsWith('@')) return null
-    return handleIdentity('youtube', channel.slice(1))
   }
   return null
 }
