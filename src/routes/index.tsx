@@ -5,7 +5,7 @@ import { type FormEvent, useEffect, useMemo, useRef, useState } from 'react'
 
 import type { Listing } from '../data/listings.ts'
 import { faviconUrlForTarget } from '../domain/favicon.ts'
-import { normalizeIdentity } from '../domain/identity.ts'
+import { PLATFORM_LIST, normalizeIdentity, type PlatformId } from '../domain/identity.ts'
 import {
   BID_STEP_CENTS,
   MINIMUM_BID_CENTS,
@@ -68,9 +68,13 @@ function Home() {
       ),
     [listings],
   )
-  const leaderAmount = rankedListings[0]?.amountCents ?? MINIMUM_BID_CENTS
-  const [amountCents, setAmountCents] = useState(() => amountToClaim(leaderAmount))
+  const leaderAmount = rankedListings[0]?.amountCents ?? 0
+  // Empty board: start at the entry price itself, not entry + one step.
+  const [amountCents, setAmountCents] = useState(() =>
+    rankedListings.length > 0 ? amountToClaim(leaderAmount) : Math.max(MINIMUM_BID_CENTS, leaderAmount),
+  )
   const [identityInput, setIdentityInput] = useState('')
+  const [platform, setPlatform] = useState<PlatformId | null>(null)
   const [identityError, setIdentityError] = useState('')
   const [listingTitle, setListingTitle] = useState('')
   const [listingDescription, setListingDescription] = useState('')
@@ -85,7 +89,7 @@ function Home() {
 
   const board = { page: 1, pageCount: 1, takeover: data.takeover, listings: rankedListings, firstRank: 1 }
   const previewRank = projectedRank(amountCents, rankedListings)
-  const normalizedIdentity = normalizeIdentity(identityInput)
+  const normalizedIdentity = normalizeIdentity(identityInput, platform)
   const canCheckout =
     data.checkout.mode !== 'unavailable' &&
     normalizedIdentity.ok &&
@@ -105,7 +109,7 @@ function Home() {
   function applyIdentityInput(value: string) {
     setIdentityInput(value)
     setIdentityError('')
-    const next = normalizeIdentity(value)
+    const next = normalizeIdentity(value, platform)
     const key = next.ok ? next.identity.canonicalKey : ''
     if (key !== lastCanonical.current) {
       lastCanonical.current = key
@@ -125,16 +129,16 @@ function Home() {
   }, [])
 
   useEffect(() => {
-    const result = normalizeIdentity(identityInput)
+    const result = normalizeIdentity(identityInput, platform)
     if (!result.ok) return
     const timer = window.setTimeout(() => {
       void resolveIdentityFields(identityInput)
     }, 450)
     return () => window.clearTimeout(timer)
-  }, [identityInput])
+  }, [identityInput, platform])
 
   async function resolveIdentityFields(value: string) {
-    const result = normalizeIdentity(value)
+    const result = normalizeIdentity(value, platform)
     if (!result.ok) return
     const seq = ++resolveSeq.current
     setResolving(true)
@@ -142,7 +146,7 @@ function Home() {
       const response = await fetch('/api/resolve', {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ identity: value }),
+        body: JSON.stringify({ identity: value, platform }),
       })
       if (seq !== resolveSeq.current) return
       const payload = (await response.json()) as {
@@ -171,7 +175,7 @@ function Home() {
 
   async function openCheckout(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
-    const result = normalizeIdentity(identityInput)
+    const result = normalizeIdentity(identityInput, platform)
     if (!result.ok) {
       setIdentityError(localizeError(result.message, copy))
       return
@@ -188,6 +192,7 @@ function Home() {
           requestId: crypto.randomUUID(),
           amountCents,
           identity: identityInput,
+          platform,
           title: listingTitle,
           description: listingDescription,
           imageUrl: listingImageUrl || null,
@@ -293,6 +298,19 @@ function Home() {
           </p>
 
           <form className="bid-composer-wrap" onSubmit={openCheckout} noValidate>
+            <div className="platform-picker" role="group" aria-label={copy.platformLabel}>
+              {PLATFORM_LIST.map((meta) => (
+                <button
+                  key={meta.id}
+                  type="button"
+                  className={`platform-pill ${platform === meta.id ? 'active' : ''}`}
+                  onClick={() => setPlatform(platform === meta.id ? null : meta.id)}
+                  aria-pressed={platform === meta.id}
+                >
+                  {meta.label}
+                </button>
+              ))}
+            </div>
             <div className="bid-composer">
               <div className="bid-form">
                 <label className="identity-field">
@@ -311,7 +329,11 @@ function Home() {
                     value={identityInput}
                     onChange={(event) => applyIdentityInput(event.target.value)}
                     onBlur={(event) => void resolveIdentityFields(event.target.value)}
-                    placeholder={copy.identityPlaceholder}
+                    placeholder={
+                      platform
+                        ? `${PLATFORM_LIST.find((p) => p.id === platform)?.placeholder ?? ''}（${PLATFORM_LIST.find((p) => p.id === platform)?.label}）`
+                        : copy.identityPlaceholder
+                    }
                     aria-invalid={Boolean(identityError)}
                     aria-describedby="identity-help identity-error"
                     autoComplete="url"

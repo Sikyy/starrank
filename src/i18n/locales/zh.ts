@@ -28,6 +28,7 @@ export const zh: Messages = {
   explainerBid: '新位置 ¥10 起。金额决定名次，低于第一名也能上榜，排在这个出价能买到的位置。',
   identityLabel: '产品网址或社交账号',
   identityPlaceholder: '产品网址或 @handle',
+  platformLabel: '选择平台（可选，不选则直接粘贴链接）',
   bid: '出价',
   takeOver: '接管',
   working: '处理中…',

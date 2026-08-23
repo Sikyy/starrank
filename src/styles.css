@@ -308,6 +308,32 @@ button:disabled { cursor: not-allowed; opacity: 0.48; }
 
 .bid-panel { padding-top: 30px; scroll-margin-top: 24px; }
 
+/* ---------- Platform picker ---------- */
+.platform-picker {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+.platform-pill {
+  padding: 6px 14px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: #6b655e;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: border-color 0.15s ease, color 0.15s ease, background 0.15s ease;
+}
+.platform-pill:hover { border-color: var(--primary); color: var(--primary-dark); }
+.platform-pill.active {
+  border-color: var(--primary);
+  background: var(--primary-dark);
+  color: #fff;
+}
+
 .bid-title-row {
   display: flex;
   align-items: center;
@@ -713,10 +739,7 @@ footer {
 footer p { margin: 0; }
 footer a { color: var(--primary-dark); text-decoration: none; }
 
-.footer-nav { display: flex; gap: 14px; }
-
-.footer-contact { margin: 10px 0 0; font-size: 12px; color: #8a847d; }
-.footer-contact a { font-weight: 600; }
+.footer-nav { display: flex; flex-wrap: wrap; align-items: center; gap: 14px; }
 .stats-link, .traffic-note a { color: var(--primary-dark); font-weight: 650; text-decoration: none; }
 .stats-link:hover, .traffic-note a:hover { text-decoration: underline; }
 

@@ -28,6 +28,7 @@ export const es: Messages = {
   explainerBid: 'El importe decide el puesto. Pagar menos que el #1 igual te pone en el tablero, donde esa puja alcance.',
   identityLabel: 'URL del producto o handle social',
   identityPlaceholder: 'URL del producto o @handle',
+  platformLabel: 'Pick a platform (optional — or just paste a link)',
   bid: 'Pujar',
   takeOver: 'Tomar',
   working: 'Trabajando…',

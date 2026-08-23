@@ -1,7 +1,7 @@
 import { createFileRoute } from '@tanstack/react-router'
 
 import { faviconUrlForTarget } from '../domain/favicon.ts'
-import { normalizeIdentity } from '../domain/identity.ts'
+import { PLATFORMS, normalizeIdentity, type PlatformId } from '../domain/identity.ts'
 import { completeListingMetadata } from '../domain/listing-metadata.ts'
 import { allowResolve } from '../server/env.ts'
 import { scrapePublicUrl } from '../server/scrape.ts'
@@ -28,7 +28,12 @@ export const Route = createFileRoute('/api/resolve')({
           raw && typeof raw === 'object' && 'identity' in raw && typeof raw.identity === 'string'
             ? raw.identity
             : ''
-        const identity = normalizeIdentity(identityInput)
+        const platformRaw =
+          raw && typeof raw === 'object' && 'platform' in raw && typeof raw.platform === 'string'
+            ? raw.platform
+            : ''
+        const platform = platformRaw in PLATFORMS ? (platformRaw as PlatformId) : null
+        const identity = normalizeIdentity(identityInput, platform)
         if (!identity.ok) {
           return Response.json({ message: identity.message }, { status: 400 })
         }

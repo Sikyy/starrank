@@ -32,6 +32,7 @@ export interface Messages {
   explainerBid: string
   identityLabel: string
   identityPlaceholder: string
+  platformLabel: string
   bid: string
   takeOver: string
   working: string

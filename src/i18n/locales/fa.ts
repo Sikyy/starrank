@@ -28,6 +28,7 @@ export const fa: Messages = {
   explainerBid: 'مبلغ رتبه را تعیین می‌کند. کمتر از #۱ هم شما را روی تابلو می‌گذارد، هر جا که این پیشنهاد برسد.',
   identityLabel: 'نشانی محصول یا شناسهٔ اجتماعی',
   identityPlaceholder: 'نشانی محصول یا @handle',
+  platformLabel: 'Pick a platform (optional — or just paste a link)',
   bid: 'پیشنهاد',
   takeOver: 'تصرف',
   working: 'در حال انجام…',

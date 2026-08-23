@@ -28,6 +28,7 @@ export const ja: Messages = {
   explainerBid: '金額が順位を決めます。#1 より少なくても、その金額で届く位置に掲載されます。',
   identityLabel: 'プロダクト URL またはソーシャルハンドル',
   identityPlaceholder: 'プロダクト URL または @handle',
+  platformLabel: 'Pick a platform (optional — or just paste a link)',
   bid: '入札',
   takeOver: 'テイクオーバー',
   working: '処理中…',

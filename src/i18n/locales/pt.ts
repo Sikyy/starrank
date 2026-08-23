@@ -28,6 +28,7 @@ export const pt: Messages = {
   explainerBid: 'O valor decide a posição. Pagar menos que o #1 ainda te coloca no quadro, onde esse lance alcançar.',
   identityLabel: 'URL do produto ou handle social',
   identityPlaceholder: 'URL do produto ou @handle',
+  platformLabel: 'Pick a platform (optional — or just paste a link)',
   bid: 'Dar lance',
   takeOver: 'Assumir',
   working: 'A processar…',

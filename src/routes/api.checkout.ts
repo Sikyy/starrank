@@ -39,7 +39,7 @@ export const Route = createFileRoute('/api/checkout')({
           return Response.json({ code: 'invalid_checkout', message: parsed.message }, { status: parsed.status })
         }
 
-        const identity = normalizeIdentity(parsed.value.identityInput)
+        const identity = normalizeIdentity(parsed.value.identityInput, parsed.value.platform)
         if (!identity.ok) {
           return Response.json({ code: 'invalid_identity', message: identity.message }, { status: 400 })
         }

@@ -28,6 +28,7 @@ export const hi: Messages = {
   explainerBid: 'राशि रैंक तय करती है. #1 से कम देने पर भी आप बोर्ड पर आते हैं, जहाँ तक वह बोली पहुँचती है.',
   identityLabel: 'प्रोडक्ट URL या सोशल हैंडल',
   identityPlaceholder: 'आपका प्रोडक्ट URL या @handle',
+  platformLabel: 'Pick a platform (optional — or just paste a link)',
   bid: 'बोली',
   takeOver: 'टेकओवर',
   working: 'काम चल रहा है…',

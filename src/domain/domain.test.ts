@@ -101,19 +101,39 @@ test('a public URL uses favicon.so as the listing logo, not an og image host', (
 })
 
 test('identity normalization accepts public URLs and handles, rejects invite and script URLs', () => {
-  const handle = normalizeIdentity('@YouBid')
+  const handle = normalizeIdentity('@YouBid', null)
   assert.equal(handle.ok && handle.identity.canonicalKey, 'x:youbid')
-  const url = normalizeIdentity('https://www.example.com/launch/?utm_source=test&ref=1')
+  const url = normalizeIdentity('https://www.example.com/launch/?utm_source=test&ref=1', null)
   assert.equal(url.ok && url.identity.canonicalKey, 'url:example.com/launch')
-  assert.equal(normalizeIdentity('javascript:alert(1)').ok, false)
-  assert.equal(normalizeIdentity('https://t.me/spam').ok, false)
-  assert.equal(normalizeIdentity('https://discord.gg/invite').ok, false)
-  const bare = normalizeIdentity('YouBid')
+  assert.equal(normalizeIdentity('javascript:alert(1)', null).ok, false)
+  assert.equal(normalizeIdentity('https://t.me/spam', null).ok, false)
+  assert.equal(normalizeIdentity('https://discord.gg/invite', null).ok, false)
+  const bare = normalizeIdentity('YouBid', null)
   assert.equal(bare.ok && bare.identity.canonicalKey, 'x:youbid')
-  const xUrl = normalizeIdentity('https://x.com/YouBid')
+  const xUrl = normalizeIdentity('https://x.com/YouBid', null)
   assert.equal(xUrl.ok && xUrl.identity.canonicalKey, 'x:youbid')
-  const twitter = normalizeIdentity('twitter.com/YouBid')
+  const twitter = normalizeIdentity('twitter.com/YouBid', null)
   assert.equal(twitter.ok && twitter.identity.canonicalKey, 'x:youbid')
+})
+
+test('platform selection routes handles to per-platform canonical keys', () => {
+  const ig = normalizeIdentity('@star.rank', 'instagram')
+  assert.equal(ig.ok && ig.identity.canonicalKey, 'instagram:star.rank')
+  assert.ok(ig.ok && ig.identity.targetUrl.startsWith('https://instagram.com/star.rank'))
+  const tt = normalizeIdentity('starrank_official', 'tiktok')
+  assert.equal(tt.ok && tt.identity.canonicalKey, 'tiktok:starrank_official')
+  const yt = normalizeIdentity('@StarRank', 'youtube')
+  assert.equal(yt.ok && yt.identity.canonicalKey, 'youtube:starrank')
+  // Same handle on different platforms must be distinct identities.
+  const x = normalizeIdentity('starrank', 'x')
+  const tiktokAgain = normalizeIdentity('starrank', 'tiktok')
+  assert.notEqual(
+    x.ok && x.identity.canonicalKey,
+    tiktokAgain.ok && tiktokAgain.identity.canonicalKey,
+  )
+  // Pasted Instagram URLs auto-detect the platform.
+  const igUrl = normalizeIdentity('https://www.instagram.com/starrank/', null)
+  assert.equal(igUrl.ok && igUrl.identity.canonicalKey, 'instagram:starrank')
 })
 
 test('missing listing metadata requires title and description', () => {

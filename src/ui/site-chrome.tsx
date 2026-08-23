@@ -16,7 +16,6 @@ export function SiteHeader(input: {
     <header className="site-header">
       <div className="site-header-bar">
         <Link className="wordmark" to="/" aria-label={copy.homeAria}>
-          <img className="wordmark-logo" src="/logo.avif" alt="" width="50" height="50" />
           Star<span>Rank</span>
         </Link>
         <nav className="header-nav" aria-label={copy.navSite}>
@@ -57,10 +56,8 @@ export function SiteFooter() {
         <Link to="/privacy">隐私政策</Link>
         <Link to="/stats">{copy.footerStats}</Link>
         <a href="https://starrank.lol">starrank.lol</a>
+        <a href="mailto:yyymalicious@gmail.com">客服邮箱：yyymalicious@gmail.com</a>
       </nav>
-      <p className="footer-contact">
-        客服邮箱：<a href="mailto:yyymalicious@gmail.com">yyymalicious@gmail.com</a>
-      </p>
     </footer>
   )
 }

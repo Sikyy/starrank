@@ -28,6 +28,7 @@ export const ko: Messages = {
   explainerBid: '금액이 순위를 정합니다. 1위보다 적어도, 그 금액이 살 수 있는 자리에 올라갑니다.',
   identityLabel: '제품 URL 또는 소셜 핸들',
   identityPlaceholder: '제품 URL 또는 @handle',
+  platformLabel: 'Pick a platform (optional — or just paste a link)',
   bid: '입찰',
   takeOver: '테이크오버',
   working: '처리 중…',

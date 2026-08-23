@@ -1,3 +1,5 @@
+import type { PlatformId } from '../domain/identity.ts'
+
 export interface ProductionConfig {
   appUrl?: string
   stripeSecretKey?: string
@@ -56,6 +58,7 @@ export interface ParsedCheckoutBody {
   requestId: string
   amountCents: number
   identityInput: string
+  platform: PlatformId | null
   title: string
   description: string
   imageUrl: string | null

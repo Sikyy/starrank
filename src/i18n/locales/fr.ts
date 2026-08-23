@@ -28,6 +28,7 @@ export const fr: Messages = {
   explainerBid: 'Le montant décide du rang. Payer moins que la #1 vous place quand même, là où cette enchère peut aller.',
   identityLabel: 'URL du produit ou identifiant social',
   identityPlaceholder: 'URL du produit ou @handle',
+  platformLabel: 'Pick a platform (optional — or just paste a link)',
   bid: 'Enchérir',
   takeOver: 'Prendre la page',
   working: 'En cours…',

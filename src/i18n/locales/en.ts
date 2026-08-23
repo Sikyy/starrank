@@ -29,6 +29,7 @@ export const en: Messages = {
     'Your amount decides the rank. Paying less than the #1 price still puts you on the board wherever that bid can take you.',
   identityLabel: 'Product URL or social handle',
   identityPlaceholder: 'Your product URL or @handle',
+  platformLabel: 'Pick a platform (optional — or just paste a link)',
   bid: 'Bid',
   takeOver: 'Take over',
   working: 'Working…',

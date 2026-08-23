@@ -28,6 +28,7 @@ export const de: Messages = {
   explainerBid: 'Dein Betrag bestimmt den Rang. Weniger als Platz 1 setzt dich trotzdem auf das Board, wo dieses Gebot hinreicht.',
   identityLabel: 'Produkt-URL oder Social-Handle',
   identityPlaceholder: 'Deine Produkt-URL oder @handle',
+  platformLabel: 'Pick a platform (optional — or just paste a link)',
   bid: 'Bieten',
   takeOver: 'Übernehmen',
   working: 'Einen Moment…',

@@ -1,3 +1,4 @@
+import { PLATFORMS, type PlatformId } from '../domain/identity.ts'
 import { yuanToCents, isValidBidCents } from '../domain/money.ts'
 import type { ParsedCheckoutBody, ProductionBoundaryResult } from './contracts.ts'
 
@@ -10,6 +11,10 @@ export function parseCheckoutBody(raw: unknown): ProductionBoundaryResult<Parsed
   const identityInput = asNonEmptyString(body.identity ?? body.identityInput)
   if (!requestId) return { ok: false, status: 400, message: 'requestId is required.' }
   if (!identityInput) return { ok: false, status: 400, message: 'A product URL or @handle is required.' }
+  const platform =
+    typeof body.platform === 'string' && body.platform in PLATFORMS
+      ? (body.platform as PlatformId)
+      : null
 
   const amountCents =
     typeof body.amountCents === 'number'
@@ -27,6 +32,7 @@ export function parseCheckoutBody(raw: unknown): ProductionBoundaryResult<Parsed
       requestId,
       amountCents,
       identityInput,
+      platform,
       title: typeof body.title === 'string' ? body.title : '',
       description: typeof body.description === 'string' ? body.description : '',
       imageUrl: typeof body.imageUrl === 'string' ? body.imageUrl : null,
