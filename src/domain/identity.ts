@@ -16,17 +16,17 @@ export interface PlatformMeta {
 }
 
 export const PLATFORMS: Record<PlatformId, PlatformMeta> = {
-  x: { id: 'x', label: 'X', placeholder: '@用户名（字母/数字/下划线）', profileHost: 'x.com' },
-  instagram: { id: 'instagram', label: 'Instagram', placeholder: '@用户名（字母/数字/._）', profileHost: 'instagram.com' },
-  tiktok: { id: 'tiktok', label: 'TikTok', placeholder: '@用户名（如 @starrank）', profileHost: 'tiktok.com' },
-  douyin: { id: 'douyin', label: '抖音', placeholder: '粘贴主页分享链接（或数字 UID）', profileHost: 'douyin.com' },
-  youtube: { id: 'youtube', label: 'YouTube', placeholder: '@频道名', profileHost: 'youtube.com' },
+  x: { id: 'x', label: 'X', placeholder: '@用户名（唯一，如 @starrank）', profileHost: 'x.com' },
+  instagram: { id: 'instagram', label: 'Instagram', placeholder: '@用户名（唯一，如 @nasa）', profileHost: 'instagram.com' },
+  tiktok: { id: 'tiktok', label: 'TikTok', placeholder: '@用户名（唯一，如 @starrank）', profileHost: 'tiktok.com' },
+  douyin: { id: 'douyin', label: '抖音', placeholder: 'App 内「分享→复制链接」直接粘贴', profileHost: 'douyin.com' },
+  youtube: { id: 'youtube', label: 'YouTube', placeholder: '@频道名（唯一，如 @nasa）', profileHost: 'youtube.com' },
   rednote: {
     id: 'rednote',
     label: '小红书',
     // Verified: profile URLs only resolve with the 24-hex user UID found in
     // the share link, NOT the 小红书号 (nickname/search handle).
-    placeholder: '粘贴主页分享链接（含 24 位 UID）',
+    placeholder: '粘贴主页分享链接（含 24 位 UID；小红书号不行）',
     profileHost: 'xiaohongshu.com',
   },
   weibo: {
@@ -34,7 +34,7 @@ export const PLATFORMS: Record<PlatformId, PlatformMeta> = {
     label: '微博',
     // Weibo blocks server-side reads (visitor wall); numeric UID links still
     // work for visitors, so we accept the UID but skip metadata scraping.
-    placeholder: '粘贴主页链接（weibo.com/u/数字）',
+    placeholder: '粘贴 weibo.com/u/数字 链接（昵称不是 ID）',
     profileHost: 'weibo.com',
   },
 }

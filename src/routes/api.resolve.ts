@@ -2,7 +2,7 @@ import { createFileRoute } from '@tanstack/react-router'
 
 import { faviconUrlForTarget } from '../domain/favicon.ts'
 import { PLATFORMS, normalizeIdentity, type PlatformId } from '../domain/identity.ts'
-import { avatarUrlForIdentity } from '../domain/avatar.ts'
+import { staticAvatarUrl } from '../domain/avatar.ts'
 import { completeListingMetadata } from '../domain/listing-metadata.ts'
 import { allowResolve } from '../server/env.ts'
 import { scrapePublicUrl } from '../server/scrape.ts'
@@ -64,27 +64,39 @@ export const Route = createFileRoute('/api/resolve')({
           return Response.json({ message: identity.message }, { status: 400 })
         }
 
-        const isSocial = /^(x|instagram|tiktok|youtube):/.test(identity.identity.canonicalKey)
-        // Platforms behind login walls (douyin/weibo) never yield server-side
-        // metadata; skip the scrape so users fill title/description manually.
+        const isSocial = /^(x|instagram|tiktok|douyin|youtube|rednote|weibo):/.test(identity.identity.canonicalKey)
         const [platformId, socialHandle] = identity.identity.canonicalKey.split(':')
-        const scrapeable = !['douyin', 'weibo'].includes(platformId)
-        const scraped = scrapeable ? await scrapePublicUrl(identity.identity.targetUrl) : { title: '', description: '', imageUrl: null }
-        // Social identities show the person's avatar, never the platform favicon.
-        // unavatar-backed platforms get a stable avatar URL; instagram gets the
-        // og:image scraped straight from the profile page.
-        const avatar = isSocial
-          ? avatarUrlForIdentity(platformId as PlatformId, socialHandle ?? '') ?? scraped.imageUrl
-          : faviconUrlForTarget(identity.identity.targetUrl)
-        const metadata = {
-          ...scraped,
-          imageUrl: avatar,
+
+        let title = ''
+        let description = ''
+        let imageUrl = null as string | null
+
+        if (isSocial) {
+          // unavatar-backed platforms (x/tiktok/youtube) return the account's
+          // real avatar. instagram/douyin/rednote/weibo have no anonymous
+          // source from Workers → leave avatar null, open manual entry, and
+          // fall back to a platform-letter tile (not the platform logo).
+          imageUrl = staticAvatarUrl(platformId as PlatformId, socialHandle ?? '')
+          // Light scrape for a title where the avatar source gives none.
+          if (!['douyin', 'weibo', 'rednote'].includes(platformId)) {
+            const scraped = await scrapePublicUrl(identity.identity.targetUrl)
+            title = scraped.title || title
+            description = scraped.description || description
+          }
+        } else {
+          // Web URLs keep the site favicon.
+          const scraped = await scrapePublicUrl(identity.identity.targetUrl)
+          title = scraped.title
+          description = scraped.description
+          imageUrl = faviconUrlForTarget(identity.identity.targetUrl)
         }
+
+        const metadata = { title, description, imageUrl }
         const complete = completeListingMetadata(metadata, null)
         return Response.json({
           identity: identity.identity,
           metadata: complete.metadata,
-          source: metadata.title || metadata.description ? (isSocial ? 'handle' : 'scrape') : 'none',
+          source: title || description ? (isSocial ? 'handle' : 'scrape') : 'none',
           missing: complete.ok ? [] : complete.missing,
         })
       },

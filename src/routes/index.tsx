@@ -5,7 +5,7 @@ import { type FormEvent, useEffect, useMemo, useRef, useState } from 'react'
 
 import type { Listing } from '../data/listings.ts'
 import { faviconUrlForTarget } from '../domain/favicon.ts'
-import { PLATFORM_LIST, normalizeIdentity, type PlatformId } from '../domain/identity.ts'
+import { PLATFORM_LIST, PLATFORMS, normalizeIdentity, type PlatformId } from '../domain/identity.ts'
 import {
   BID_STEP_CENTS,
   MINIMUM_BID_CENTS,
@@ -22,6 +22,13 @@ import { en } from '../i18n/locales/en.ts'
 import { resolveRequestLocale } from '../server/locale.ts'
 import { resolveVisitorKey } from '../server/visitor-cookie.ts'
 import { SiteFooter, SiteHeader } from '../ui/site-chrome.tsx'
+
+/** Letter shown in the avatar tile when a social identity has no avatar yet. */
+function platformInitial(identity: { canonicalKey: string }): string {
+  const key = identity.canonicalKey
+  const label = key.includes(':') ? PLATFORMS[key.split(':')[0] as PlatformId]?.label : ''
+  return label ? label.charAt(0).toUpperCase() : 'S'
+}
 
 const loadHome = createServerFn({ method: 'GET' }).handler(async () => {
   resolveRequestLocale()
@@ -98,8 +105,18 @@ function Home() {
     amountCents >= MINIMUM_BID_CENTS &&
     !busy
   const showListingMeta = normalizedIdentity.ok
-  const identityLogo = normalizedIdentity.ok ? faviconUrlForTarget(normalizedIdentity.identity.targetUrl) : null
-  const previewLogo = listingImageUrl || identityLogo
+  // Social identities never use the platform favicon as their logo. unavatar
+  // platforms get the real avatar; others fall back to a platform initial tile
+  // until the user supplies an image URL.
+  const socialIdentity = normalizedIdentity.ok && /^[a-z]+:/.test(normalizedIdentity.identity.canonicalKey)
+  const identityLogo = normalizedIdentity.ok
+    ? faviconUrlForTarget(normalizedIdentity.identity.targetUrl)
+    : null
+  // For social identities the resolve layer fills imageUrl (avatar) or leaves
+  // it empty; don't show a platform favicon as the logo for them.
+  const logoForPreview =
+    listingImageUrl || (socialIdentity ? null : identityLogo) || null
+  const previewLogo = logoForPreview
   const resolveFailed =
     showListingMeta &&
     resolvedKey === normalizedIdentity.identity.canonicalKey &&
@@ -315,7 +332,9 @@ function Home() {
               <div className="bid-form">
                 <label className="identity-field">
                   <span className="input-prefix" aria-hidden="true">
-                    {identityLogo ? (
+                    {normalizedIdentity.ok && socialIdentity ? (
+                      <span className="avatar-initial avatar-initial-sm">{platformInitial(normalizedIdentity.identity)}</span>
+                    ) : identityLogo ? (
                       <img src={identityLogo} alt="" width="16" height="16" />
                     ) : (
                       <svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="1.4">
@@ -362,6 +381,10 @@ function Home() {
                   <div className="resolved-identity">
                     {previewLogo ? (
                       <img src={previewLogo} alt="" width="40" height="40" />
+                    ) : normalizedIdentity.ok ? (
+                      <span className="avatar-initial" aria-hidden="true">
+                        {platformInitial(normalizedIdentity.identity)}
+                      </span>
                     ) : null}
                     <div>
                       <strong>{listingTitle || (normalizedIdentity.ok ? normalizedIdentity.identity.display : '')}</strong>
