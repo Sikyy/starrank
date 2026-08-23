@@ -144,12 +144,31 @@ export function normalizeIdentity(rawValue: string, platform: PlatformId | null)
 function handleIdentity(platform: PlatformId, rawHandle: string): IdentityResult {
   const meta = PLATFORMS[platform]
   const normalizedHandle = rawHandle.replace(/^@/, '').toLowerCase()
+
+  // Douyin sec_uid (from share links) is MS4wLjAB… base64 and is the stable ID.
+  if (platform === 'douyin' && /^ms4wljab[a-z0-9_-]{20,}$/.test(normalizedHandle)) {
+    return {
+      ok: true,
+      identity: {
+        canonicalKey: 'douyin:' + normalizedHandle,
+        display: `抖音 ${normalizedHandle.slice(0, 12)}…`,
+        targetUrl: `https://www.douyin.com/user/${normalizedHandle}`,
+      },
+    }
+  }
+
   if (!HANDLE_BODY.test(normalizedHandle)) {
     return { ok: false, message: `${meta.label} 的账号格式不正确。` }
   }
   // UID-based platforms only accept numeric IDs (verified against real profiles).
   if ((platform === 'douyin' || platform === 'weibo') && !/^\d{5,32}$/.test(normalizedHandle)) {
-    return { ok: false, message: `${meta.label} 需要数字 UID（在个人主页链接里），不是昵称。` }
+    return {
+      ok: false,
+      message:
+        platform === 'douyin'
+          ? '抖音需要数字 UID 或主页分享链接。App 内点「分享 → 复制链接」后直接粘贴即可。'
+          : `${meta.label} 需要数字 UID（在个人主页链接里），不是昵称。`,
+    }
   }
   let targetUrl: string
   switch (platform) {
@@ -194,8 +213,9 @@ function handleFromSocialUrl(hostname: string, pathname: string): IdentityResult
     return handleIdentity('tiktok', segment)
   }
   if (DOUYIN_HOSTS.has(hostname)) {
-    // douyin.com/user/<numeric UID>
-    const uid = pathname.split('/').filter(Boolean)[1] ?? segment
+    // douyin.com/user/<id> or iesdouyin.com/share/user/<sec_uid>
+    const segments = pathname.split('/').filter(Boolean)
+    const uid = (segments[0] === 'share' ? segments[2] : segments[1]) ?? segment
     if (!uid) return null
     return handleIdentity('douyin', uid)
   }

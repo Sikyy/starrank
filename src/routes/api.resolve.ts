@@ -44,8 +44,11 @@ export const Route = createFileRoute('/api/resolve')({
             const probe = await fetch(identityInput.trim(), {
               method: 'GET',
               redirect: 'follow',
-              headers: { 'user-agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 16_0 like Mac OS X) AppleWebKit/605.1.15' },
-              signal: AbortSignal.timeout(8000),
+              headers: {
+                'user-agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 16_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.0 Mobile/15E148 Safari/604.1',
+                'accept-language': 'zh-CN,zh;q=0.9',
+              },
+              signal: AbortSignal.timeout(12000),
             })
             const finalUrl = probe.url
             void probe.body?.cancel()
