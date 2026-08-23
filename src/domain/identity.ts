@@ -98,6 +98,12 @@ export function normalizeIdentity(rawValue: string, platform: PlatformId | null)
   const tagged = HANDLE_PATTERN.exec(value)
   const bareHandle = !tagged && HANDLE_BODY.test(value) && !value.includes('.')
 
+  // Douyin share links resolve to a user sec_uid (case-sensitive base64url) that
+  // is longer than a normal handle, so accept it directly when douyin is chosen.
+  if (platform === 'douyin' && /^MS4wLjAB[A-Za-z0-9_-]{28,}$/.test(value)) {
+    return handleIdentity('douyin', value)
+  }
+
   // Handle-style inputs resolve through the selected platform.
   if ((tagged || bareHandle) && platform) {
     return handleIdentity(platform, tagged ? tagged[1] : value)
@@ -143,19 +149,23 @@ export function normalizeIdentity(rawValue: string, platform: PlatformId | null)
 /** Canonical key prefix per platform so identities never collide across platforms. */
 function handleIdentity(platform: PlatformId, rawHandle: string): IdentityResult {
   const meta = PLATFORMS[platform]
-  const normalizedHandle = rawHandle.replace(/^@/, '').toLowerCase()
+  const rawClean = rawHandle.replace(/^@/, '')
 
-  // Douyin sec_uid (from share links) is MS4wLjAB… base64 and is the stable ID.
-  if (platform === 'douyin' && /^ms4wljab[a-z0-9_-]{20,}$/.test(normalizedHandle)) {
+  // Douyin sec_uid (from share links) is a case-sensitive base64url token like
+  // MS4wLjAB…. It is the stable ID, so keep its exact case in both the canonical
+  // key and the profile URL.
+  if (platform === 'douyin' && /^MS4wLjAB[A-Za-z0-9_-]{20,}$/.test(rawClean)) {
     return {
       ok: true,
       identity: {
-        canonicalKey: 'douyin:' + normalizedHandle,
-        display: `抖音 ${normalizedHandle.slice(0, 12)}…`,
-        targetUrl: `https://www.douyin.com/user/${normalizedHandle}`,
+        canonicalKey: 'douyin:' + rawClean,
+        display: `抖音 ${rawClean.slice(0, 12)}…`,
+        targetUrl: `https://www.douyin.com/user/${rawClean}`,
       },
     }
   }
+
+  const normalizedHandle = rawClean.toLowerCase()
 
   if (!HANDLE_BODY.test(normalizedHandle)) {
     return { ok: false, message: `${meta.label} 的账号格式不正确。` }

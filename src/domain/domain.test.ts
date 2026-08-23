@@ -189,6 +189,24 @@ test('UID platforms (douyin/weibo) require numeric IDs; rednote requires 24-hex 
   assert.equal(wbUrl.ok && wbUrl.identity.canonicalKey, 'weibo:1234567890')
 })
 
+test('douyin sec_uid keeps its exact case and parses as a bare id', () => {
+  const sec = 'MS4wLjABAAAA3F8s8h9k2N4vXqRzLmP0tYbWjE7cA1dB'
+  // Bare sec_uid (no URL) with douyin selected is accepted directly.
+  const bare = normalizeIdentity(sec, 'douyin')
+  assert.equal(bare.ok, true)
+  assert.equal(bare.ok && bare.identity.canonicalKey, `douyin:${sec}`)
+  assert.equal(bare.ok && bare.identity.targetUrl, `https://www.douyin.com/user/${sec}`)
+
+  // A pasted douyin /user/… URL preserves the case-sensitive sec_uid too.
+  const url = normalizeIdentity(`https://www.douyin.com/user/${sec}`, null)
+  assert.equal(url.ok && url.identity.canonicalKey, `douyin:${sec}`)
+  assert.equal(url.ok && url.identity.targetUrl, `https://www.douyin.com/user/${sec}`)
+
+  // Ordinary handle platforms still normalize their handle to lowercase.
+  const x = normalizeIdentity('@StarRank', 'x')
+  assert.equal(x.ok && x.identity.canonicalKey, 'x:starrank')
+})
+
 test('missing listing metadata requires title and description', () => {
   const missing = completeListingMetadata({ title: '', description: '', imageUrl: null }, null)
   assert.equal(missing.ok, false)

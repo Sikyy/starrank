@@ -171,8 +171,13 @@ function Home() {
       }
       setResolvedKey(result.identity.canonicalKey)
       if (!response.ok || !payload.metadata) return
-      setListingTitle((current) => current || payload.metadata?.title || '')
-      setListingDescription((current) => current || payload.metadata?.description || '')
+      // When a platform blocks server-side scraping we get no metadata back.
+      // Prefill an editable default (the identity display + a stock description)
+      // so checkout is never gated on metadata the site could not fetch.
+      const fallbackTitle = result.identity.display
+      const fallbackDescription = copy.defaultDescription
+      setListingTitle((current) => current || payload.metadata?.title || fallbackTitle)
+      setListingDescription((current) => current || payload.metadata?.description || fallbackDescription)
       setListingImageUrl((current) => current || payload.metadata?.imageUrl || '')
     } catch {
       if (seq === resolveSeq.current) setResolvedKey(result.identity.canonicalKey)
