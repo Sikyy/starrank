@@ -10,6 +10,7 @@ import { extractShareTarget } from '../server/share-input.ts'
 import { isDouyinSecUid, lookupDouyinUser } from '../server/douyin.ts'
 import { lookupInstagramUser } from '../server/instagram.ts'
 import { lookupXiaohongshuUser } from '../server/xiaohongshu.ts'
+import { lookupTikTokUser } from '../server/tiktok.ts'
 
 export const Route = createFileRoute('/api/resolve')({
   server: {
@@ -116,6 +117,20 @@ export const Route = createFileRoute('/api/resolve')({
             imageUrl = xhs.avatarUrl
             origin = 'handle'
           }
+        } else if (platformId === 'tiktok' && socialHandle) {
+          // TikTok's own page scrape is limited; use SearchAPI for the display
+          // name and bio (the avatar still comes from unavatar below).
+          const tt = await lookupTikTokUser(socialHandle, config.searchApiKey)
+          if (tt) {
+            resolvedIdentity = {
+              canonicalKey: `tiktok:${tt.username}`,
+              display: tt.fullName || `TikTok @${tt.username}`,
+              targetUrl: `https://www.tiktok.com/@${tt.username}`,
+            }
+            title = tt.fullName
+            description = tt.bio
+            origin = 'handle'
+          }
         }
 
         const isSocial = /^(x|instagram|tiktok|douyin|rednote|weibo):/.test(resolvedIdentity.canonicalKey)
@@ -125,7 +140,7 @@ export const Route = createFileRoute('/api/resolve')({
           // above when available; otherwise fall back to a platform-letter tile.
           if (platformId !== 'douyin' && platformId !== 'instagram' && platformId !== 'rednote') {
             imageUrl = staticAvatarUrl(platformId as PlatformId, socialHandle ?? '')
-            if (!['weibo', 'rednote'].includes(platformId)) {
+            if (!['weibo', 'rednote', 'tiktok'].includes(platformId)) {
               const scraped = await scrapePublicUrl(resolvedIdentity.targetUrl)
               title = title || scraped.title
               description = description || scraped.description

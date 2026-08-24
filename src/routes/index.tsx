@@ -329,17 +329,22 @@ function Home() {
 
           <form className="bid-composer-wrap" onSubmit={openCheckout} noValidate>
             <div className="platform-picker" role="group" aria-label={copy.platformLabel}>
-              {PLATFORM_LIST.map((meta) => (
-                <button
-                  key={meta.id}
-                  type="button"
-                  className={`platform-pill ${platform === meta.id ? 'active' : ''}`}
-                  onClick={() => setPlatform(platform === meta.id ? null : meta.id)}
-                  aria-pressed={platform === meta.id}
-                >
-                  {meta.label}
-                </button>
-              ))}
+              {PLATFORM_LIST.map((meta) => {
+                const comingSoon = meta.id === 'weibo'
+                return (
+                  <button
+                    key={meta.id}
+                    type="button"
+                    disabled={comingSoon}
+                    className={`platform-pill ${platform === meta.id ? 'active' : ''} ${comingSoon ? 'coming-soon' : ''}`}
+                    onClick={() => { if (!comingSoon) setPlatform(platform === meta.id ? null : meta.id) }}
+                    aria-pressed={platform === meta.id}
+                  >
+                    {meta.label}
+                    {comingSoon ? <span className="platform-soon">未上线</span> : null}
+                  </button>
+                )
+              })}
             </div>
             <div className="bid-composer">
               <div className="bid-form">
@@ -523,12 +528,6 @@ function Home() {
           })}
         </div>
       </section>
-
-      {data.revenueTotalCents > 0 ? (
-        <p className="revenue-banner">
-          {copy.revenueBanner} <strong>{formatCny(data.revenueTotalCents)}</strong>
-        </p>
-      ) : null}
 
       <SiteFooter />
 

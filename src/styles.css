@@ -333,6 +333,14 @@ button:disabled { cursor: not-allowed; opacity: 0.48; }
   background: var(--primary-dark);
   color: #fff;
 }
+.platform-pill.coming-soon { opacity: 0.45; cursor: not-allowed; }
+.platform-soon {
+  margin-left: 5px;
+  font-size: 10px;
+  font-weight: 500;
+  opacity: 0.8;
+  white-space: nowrap;
+}
 
 .bid-title-row {
   display: flex;
