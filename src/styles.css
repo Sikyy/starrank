@@ -408,6 +408,8 @@ button:disabled { cursor: not-allowed; opacity: 0.48; }
 
 .bid-title-row {
   display: flex;
+  align-items: center;
+  justify-content: center;
   min-width: 0;
 }
 
