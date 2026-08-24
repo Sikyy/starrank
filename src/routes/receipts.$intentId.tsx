@@ -162,12 +162,9 @@ function ReceiptTicket({ receipt, htmlLang }: { receipt: PublicReceipt; htmlLang
   }
 
   return (
-    <div className={`printer-stage ${printed ? 'printed' : ''} ${invoice ? 'invoice-mode' : ''}`} id="receipt-ticket">
-      <div className="printer-cartoon" aria-hidden="true">
-        <span className="printer-icon">🖨️</span>
-        <span className="printer-msg">{printed ? '打印完成 ✔' : '正在打印…'}</span>
-      </div>
-
+    <div className={`receipt-stage ${printed ? 'printed' : ''} ${invoice ? 'invoice-mode' : ''}`} id="receipt-ticket">
+      <div className="printer-slot" aria-hidden="true"><span className="slot-paper" /></div>
+      <div className="receipt-paper-wrap">
       <div className="receipt-ticket ticket-cartoon">
         <div className="ticket-head">
           <Logo size={30} />
@@ -208,6 +205,7 @@ function ReceiptTicket({ receipt, htmlLang }: { receipt: PublicReceipt; htmlLang
         </div>
       </div>
 
+      </div>
       <div className="ticket-actions no-print">
         <button type="button" className="secondary-button" onClick={printTicket}>
           保存小票

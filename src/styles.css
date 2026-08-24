@@ -980,33 +980,52 @@ footer a { color: var(--primary-dark); text-decoration: none; }
   cursor: pointer;
 }
 
-.printer-cartoon {
-  text-align: center;
-  margin-bottom: 14px;
+.receipt-stage {
+  width: 360px;
+  max-width: 100%;
+  margin: 24px auto;
 }
-.printer-icon {
-  display: inline-block;
-  font-size: 36px;
-  animation: printer-bob 1.2s ease-in-out infinite;
+.printer-slot {
+  position: relative;
+  height: 30px;
+  background: #2b2e35;
+  border-radius: 9px;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.22);
+  z-index: 3;
 }
-.printer-msg {
-  display: block;
-  color: var(--muted-foreground);
-  font-size: 13px;
-  font-weight: 600;
-  margin-top: 6px;
+.slot-paper {
+  position: absolute;
+  left: 22px;
+  right: 22px;
+  top: 13px;
+  bottom: 5px;
+  background: #0e1014;
+  border-radius: 4px;
 }
-@keyframes printer-bob {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-5px); }
+.receipt-paper-wrap {
+  position: relative;
+  height: 440px;
+  overflow: hidden;
+  z-index: 2;
+  margin-top: -6px;
 }
-.printer-stage .receipt-ticket {
-  opacity: 0;
-  transform: translateY(-26px);
-  transition: opacity 0.6s ease, transform 0.6s ease;
+.receipt-paper-wrap .receipt-ticket {
+  position: absolute;
+  inset: 0;
+  transform: translateY(-100%);
+  transition: transform 1.5s cubic-bezier(0.3, 0.7, 0.4, 1);
+  margin: 0;
+  max-width: none;
+  border-radius: 0;
+  border: 1px solid #e5e1da;
+  border-top: 0;
+  clip-path: polygon(
+    0 0, 100% 0, 100% 97%, 96% 100%, 91% 96%, 86% 100%, 81% 96%, 76% 100%,
+    71% 96%, 66% 100%, 61% 96%, 56% 100%, 51% 96%, 46% 100%, 41% 96%, 36% 100%,
+    31% 96%, 26% 100%, 21% 96%, 16% 100%, 11% 96%, 6% 100%, 2% 96%, 0 97%
+  );
 }
-.printer-stage.printed .receipt-ticket {
-  opacity: 1;
+.receipt-stage.printed .receipt-paper-wrap .receipt-ticket {
   transform: translateY(0);
 }
 .ticket-cartoon {
@@ -1049,6 +1068,7 @@ footer a { color: var(--primary-dark); text-decoration: none; }
   cursor: pointer;
 }
 
+@page { margin: 0; }
 @media print {
   body * { visibility: hidden; }
   #receipt-ticket, #receipt-ticket * { visibility: visible; }
@@ -1057,12 +1077,16 @@ footer a { color: var(--primary-dark); text-decoration: none; }
     left: 0;
     top: 0;
     width: 100%;
-    max-width: none;
-    border: none;
-    box-shadow: none;
   }
-  .printer-cartoon { display: none; }
-  .printer-stage .receipt-ticket { opacity: 1 !important; transform: none !important; }
+  .printer-slot, .ticket-actions, .receipt-cta { display: none; }
+  .receipt-paper-wrap { height: auto; overflow: visible; }
+  .receipt-paper-wrap .receipt-ticket {
+    transform: none !important;
+    position: static;
+    margin: 0;
+    max-width: none;
+    width: 100%;
+  }
   .no-print { display: none; }
 }
 
