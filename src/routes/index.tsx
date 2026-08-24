@@ -317,33 +317,40 @@ function Home() {
         <section className="bid-panel" ref={bidFormRef} aria-labelledby="bid-heading">
           <div className="bid-title-row">
             <h1 id="bid-heading">
-              {interpolate(copy.claimRankFor, { rank: previewRank })}
+              <span className="bid-heading-label">{interpolate(copy.claimRankFor, { rank: previewRank })}</span>
+              <span className="bid-stepper">
+                <button
+                  type="button"
+                  className="bid-step"
+                  aria-label={copy.decreaseBid}
+                  onClick={() => applyAmount(amountCents - BID_STEP_CENTS)}
+                >
+                  −
+                </button>
+                <label className="bid-amount">
+                  <span className="sr-only">{copy.bidAmountLabel}</span>
+                  <span className="bid-amount-measure" aria-hidden="true">¥{amountText}</span>
+                  <span className="bid-amount-overlay">
+                    <span aria-hidden="true">¥</span>
+                    <input
+                      type="text"
+                      inputMode="numeric"
+                      value={amountText}
+                      onChange={(event) => handleAmountEdit(event.target.value)}
+                      onBlur={handleAmountBlur}
+                    />
+                  </span>
+                </label>
+                <button
+                  type="button"
+                  className="bid-step"
+                  aria-label={copy.increaseBid}
+                  onClick={() => applyAmount(amountCents + BID_STEP_CENTS)}
+                >
+                  +
+                </button>
+              </span>
             </h1>
-            <button
-              className="step-button"
-              type="button"
-              aria-label={copy.decreaseBid}
-              onClick={() => applyAmount(amountCents - BID_STEP_CENTS)}
-            >
-              −
-            </button>
-            <input
-              className="bid-amount"
-              type="text"
-              inputMode="decimal"
-              value={amountText}
-              onChange={(event) => handleAmountEdit(event.target.value)}
-              onBlur={handleAmountBlur}
-              aria-label={copy.bidAmountLabel}
-            />
-            <button
-              className="step-button"
-              type="button"
-              aria-label={copy.increaseBid}
-              onClick={() => applyAmount(amountCents + BID_STEP_CENTS)}
-            >
-              +
-            </button>
           </div>
           <p className="bid-explainer">
             {copy.explainerBid}

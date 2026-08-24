@@ -408,53 +408,86 @@ button:disabled { cursor: not-allowed; opacity: 0.48; }
 
 .bid-title-row {
   display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
   min-width: 0;
 }
 
-.bid-title-row h1, .bid-amount {
+.bid-title-row h1 {
   margin: 0;
   font-size: clamp(32px, 4vw, 40px);
   letter-spacing: -1.8px;
   line-height: 1.12;
+  font-weight: 760;
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-width: 0;
+  color: inherit;
 }
 
-.bid-title-row h1 { font-weight: 760; }
+.bid-stepper {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+
+.bid-step {
+  flex: 0 0 auto;
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  border: 0;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--primary) 14%, transparent);
+  color: var(--primary);
+  font-size: 20px;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.bid-step:hover { background: color-mix(in srgb, var(--primary) 26%, transparent); }
+.bid-step:active { transform: translateY(1px); }
+
+/* Editable amount styled like outbid.lol: an invisible span reserves the exact
+   number width, and a borderless input inherits the heading font on top of it. */
 .bid-amount {
+  position: relative;
+  display: inline-flex;
+  align-items: baseline;
   color: var(--primary);
   font-weight: 700;
   font-variant-numeric: tabular-nums;
-  background: transparent;
-  border: 1px solid transparent;
-  border-radius: 10px;
-  width: 7ch;
-  min-width: 3ch;
-  max-width: 12ch;
-  padding: 0 6px;
-  text-align: center;
-  appearance: textfield;
-  -moz-appearance: textfield;
 }
-.bid-amount:focus {
-  outline: none;
-  border-color: var(--primary);
-  background: #fff;
+.bid-amount-measure {
+  visibility: hidden;
+  white-space: nowrap;
+  font: inherit;
+  letter-spacing: inherit;
 }
-
-.step-button {
-  flex: 0 0 auto;
-  width: 25px;
-  height: 25px;
+.bid-amount-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+}
+.bid-amount-overlay input {
+  width: 100%;
+  min-width: 0;
+  margin: 0;
   padding: 0;
   border: 0;
-  border-radius: 50%;
-  background: #f7ece8;
-  color: var(--primary);
-  font-size: 18px;
-  line-height: 25px;
-  cursor: pointer;
+  background: transparent;
+  font: inherit;
+  letter-spacing: inherit;
+  color: inherit;
+  text-align: left;
+  outline: none;
 }
 
 .bid-explainer {
@@ -1273,18 +1306,18 @@ footer a { color: var(--primary-dark); text-decoration: none; }
   .intro { padding-top: 18px; }
   .tagline { font-size: 19px; line-height: 1.47; }
   .bid-panel { padding-top: 30px; }
-  .bid-title-row { flex-wrap: nowrap; gap: 4px; }
+  .bid-title-row { flex-wrap: wrap; gap: 8px; }
 
   .bid-title-row h1, .bid-amount {
     font-size: 29px;
     letter-spacing: -1.3px;
   }
 
-  .step-button {
-    width: 22px;
-    height: 22px;
+  .bid-step {
+    width: 24px;
+    height: 24px;
     font-size: 16px;
-    line-height: 22px;
+    line-height: 1;
   }
 
   .bid-explainer { margin-top: 14px; font-size: 14px; }
