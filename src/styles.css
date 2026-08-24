@@ -783,8 +783,8 @@ button:disabled { cursor: not-allowed; opacity: 0.48; }
   gap: 8px;
 }
 
-.listing-copy > a,
-.listing-copy > a:visited {
+.listing-head > a,
+.listing-head > a:visited {
   color: var(--foreground);
   font-size: 17px;
   font-weight: 700;
@@ -792,8 +792,8 @@ button:disabled { cursor: not-allowed; opacity: 0.48; }
   text-decoration: none;
 }
 
-.listing-copy > a:hover,
-.listing-copy > a:hover:visited {
+.listing-head > a:hover,
+.listing-head > a:hover:visited {
   color: var(--primary-dark);
   text-decoration: underline;
   text-underline-offset: 3px;
@@ -1389,7 +1389,7 @@ footer a { color: var(--primary-dark); text-decoration: none; }
     -webkit-line-clamp: 2;
   }
 
-  .listing-copy > a { font-size: 15px; }
+  .listing-head > a { font-size: 15px; }
   .listing-copy small { font-size: 11px; }
 
   .listing-price {
