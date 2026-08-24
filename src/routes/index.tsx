@@ -291,22 +291,6 @@ function Home() {
       <SiteHeader />
 
       <section className="intro" id="top">
-        <p className="tagline">
-          {copy.tagline} <strong>{copy.taglineEmphasis}</strong>
-        </p>
-        {data.trending.length > 0 ? (
-          <nav className="trending-strip" aria-label={copy.trendingLabel}>
-            <span className="trending-label">{copy.trendingLabel}</span>
-            {data.trending.map((item) => (
-              <a key={item.listingId} className="trending-pill" href={item.href} target="_blank" rel="sponsored noopener noreferrer">
-                {item.image ? <img src={item.image} alt="" width="16" height="16" loading="lazy" /> : null}
-                {item.display}
-                <strong>{interpolate(copy.trendingClicksPerHour, { count: formatCount(item.clicksPerHour, htmlLang) })}</strong>
-              </a>
-            ))}
-          </nav>
-        ) : null}
-
         <section className="bid-panel" ref={bidFormRef} aria-labelledby="bid-heading">
           <div className="bid-title-row">
             <h1 id="bid-heading">
