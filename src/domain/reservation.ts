@@ -1,6 +1,7 @@
 import { listingStanding } from './decay.ts'
 import type { ProductIdentity } from './identity.ts'
 import { isValidBidCents, takeoverIdleMs, takeoverPrice } from './money.ts'
+import type { Category } from './category.ts'
 import { canRaiseListing } from './owner.ts'
 import {
   intentIsExpired,
@@ -28,6 +29,7 @@ export interface ReservationSnapshot {
   listingTitle: string
   listingDescription: string
   listingImageUrl: string | null
+  category: Category
 }
 
 export type ReservationPlan =
@@ -115,6 +117,7 @@ export function planReserveCheckout(
       listingTitle: snapshot.listingTitle,
       listingDescription: snapshot.listingDescription,
       listingImageUrl: snapshot.listingImageUrl,
+      category: snapshot.category,
     },
   }
 }

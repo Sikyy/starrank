@@ -45,6 +45,7 @@ function listing(overrides: Partial<ListingRecord> = {}): ListingRecord {
     principalRefundedCents: 0,
     settledAt: '2026-08-21T00:00:00.000Z',
     dropsOffAt: null,
+    category: 'kr' as const,
     ...overrides,
   }
 }
@@ -65,6 +66,7 @@ function intent(overrides: Partial<IntentRecord> = {}): IntentRecord {
     listingTitle: 'Example',
     listingDescription: 'A product',
     listingImageUrl: null,
+    category: 'kr' as const,
     ...overrides,
   }
 }
@@ -287,6 +289,7 @@ test('reservation is idempotent, blocks foreign raises, and recovers uncertain c
     listingTitle: 'Example',
     listingDescription: 'A product',
     listingImageUrl: null,
+    category: 'kr' as const,
   }
   const created = planReserveCheckout(base, {
     intentId: 'intent_new',
@@ -589,6 +592,7 @@ test('a fully refunded listing releases its identity to the next bidder', () => 
     listingTitle: 'Example',
     listingDescription: 'A product',
     listingImageUrl: null,
+    category: 'kr' as const,
   }
   const plan = planReserveCheckout(snapshot, { intentId: 'intent_9', expiresAt: '2026-08-21T02:30:00.000Z' })
   assert.equal(plan.kind, 'create')
@@ -618,6 +622,7 @@ test('a takeover checkout is rejected below the live Dutch price', () => {
     listingTitle: 'Example',
     listingDescription: 'A product',
     listingImageUrl: null,
+    category: 'kr' as const,
   }
   const tooCheap = planReserveCheckout(snapshot, {
     intentId: 'intent_cheap',
@@ -662,6 +667,7 @@ test('replaying a paid checkout request returns the receipt instead of a new ses
       listingTitle: 'Example',
       listingDescription: 'A product',
       listingImageUrl: null,
+    category: 'kr' as const,
     },
     { intentId: 'intent_new', expiresAt: '2026-08-21T02:30:00.000Z' },
   )

@@ -1,5 +1,6 @@
 import { PLATFORMS, type PlatformId } from '../domain/identity.ts'
 import { yuanToCents, isValidBidCents } from '../domain/money.ts'
+import { CATEGORIES, type Category } from '../domain/category.ts'
 import type { ParsedCheckoutBody, ProductionBoundaryResult } from './contracts.ts'
 
 export function parseCheckoutBody(raw: unknown): ProductionBoundaryResult<ParsedCheckoutBody> {
@@ -38,10 +39,17 @@ export function parseCheckoutBody(raw: unknown): ProductionBoundaryResult<Parsed
       imageUrl: typeof body.imageUrl === 'string' ? body.imageUrl : null,
       takeover: body.takeover === true,
       turnstileToken: typeof body.turnstileToken === 'string' ? body.turnstileToken : '',
+      category: parseCategory(body.category),
     },
   }
 }
 
 function asNonEmptyString(value: unknown): string | null {
   return typeof value === 'string' && value.trim() ? value.trim() : null
+}
+
+function parseCategory(value: unknown): Category {
+  return typeof value === 'string' && (CATEGORIES as readonly string[]).includes(value)
+    ? (value as Category)
+    : 'kr'
 }

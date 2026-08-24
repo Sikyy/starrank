@@ -13,6 +13,7 @@ import {
   formatCny,
 } from '../domain/money.ts'
 import { projectedRank, rankListings } from '../domain/ranking.ts'
+import { CATEGORY_PICKER, type Category } from '../domain/category.ts'
 import { database, publicCheckoutConfig } from '../server/env.ts'
 import { loadPublicBoard, loadPublicStats, recordTraffic } from '../server/db.ts'
 import { localeHtmlLang, useLocale } from '../i18n/context.tsx'
@@ -67,13 +68,17 @@ function Home() {
   const htmlLang = localeHtmlLang(locale)
   const bidFormRef = useRef<HTMLElement>(null)
   const listings = data.listings
+  const [category, setCategory] = useState<Category | 'all'>('all')
+  const [bidCategory, setBidCategory] = useState<Category>('kr')
   const [clockIso, setClockIso] = useState(data.nowIso)
   const rankedListings = useMemo(
     () =>
       rankListings(
-        listings.filter((listing) => listing.amountCents > 0),
+        listings.filter(
+          (listing) => listing.amountCents > 0 && (category === 'all' || listing.category === category),
+        ),
       ),
-    [listings],
+    [listings, category],
   )
   const leaderAmount = rankedListings[0]?.amountCents ?? 0
   // Empty board: start at the entry price itself, not entry + one step.
@@ -230,6 +235,7 @@ function Home() {
           title: listingTitle,
           description: listingDescription,
           imageUrl: listingImageUrl || null,
+          category: bidCategory,
           turnstileToken: turnstileInput?.value ?? '',
         }),
       })
@@ -328,6 +334,19 @@ function Home() {
           </p>
 
           <form className="bid-composer-wrap" onSubmit={openCheckout} noValidate>
+            <div className="bid-categories" role="group" aria-label="榜单分类">
+              {CATEGORY_PICKER.filter((c) => c.value !== 'all').map((c) => (
+                <button
+                  key={c.value}
+                  type="button"
+                  className={`category-pill ${bidCategory === c.value ? 'active' : ''}`}
+                  onClick={() => setBidCategory(c.value as Category)}
+                  aria-pressed={bidCategory === c.value}
+                >
+                  {c.label}
+                </button>
+              ))}
+            </div>
             <div className="platform-picker" role="group" aria-label={copy.platformLabel}>
               {PLATFORM_LIST.map((meta) => {
                 const comingSoon = meta.id === 'weibo'
@@ -452,6 +471,21 @@ function Home() {
 
       <section className="leaderboard" aria-labelledby="leaderboard-heading">
         <h2 className="sr-only" id="leaderboard-heading">{copy.boardHeading}</h2>
+
+        <div className="category-tabs" role="tablist" aria-label="分类榜单">
+          {CATEGORY_PICKER.map((c) => (
+            <button
+              key={c.value}
+              type="button"
+              role="tab"
+              aria-selected={category === c.value}
+              className={`category-tab ${category === c.value ? 'active' : ''}`}
+              onClick={() => setCategory(c.value)}
+            >
+              {c.label}
+            </button>
+          ))}
+        </div>
 
         {data.recentBids.length > 0 ? (
           <aside className="latest-activity" aria-label={copy.latestActivityLabel}>

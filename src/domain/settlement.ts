@@ -192,6 +192,7 @@ export function planPaidSettlement(
     principalRefundedCents: totals.principalRefundedCents,
     settledAt: event.occurredAt,
     dropsOffAt: nextDropsOffAt(snapshot.listing, event.principalPaidCents, event.occurredAt),
+    category: intent.category,
   }
 
   const collidingTakeover = intent.kind === 'takeover' && snapshot.activeTakeover !== null

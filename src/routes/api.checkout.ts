@@ -130,6 +130,7 @@ export const Route = createFileRoute('/api/checkout')({
           listingTitle: submitted.title,
           listingDescription: submitted.description,
           listingImageUrl: submitted.imageUrl,
+          category: parsed.value.category,
         }
         const loaded = await loadReservationSnapshot(db, snapshotInput)
         const metadata = completeListingMetadata(

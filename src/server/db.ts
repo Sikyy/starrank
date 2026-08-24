@@ -6,6 +6,7 @@ import type { SettlementSnapshot, SettlementWrites } from '../domain/settlement.
 import { buildPublicStats, type PublicStatsSnapshot } from '../domain/stats.ts'
 import { buildPublicReceipt, type PublicReceipt } from '../domain/receipt.ts'
 import { publicTakeover, toPublicListing } from '../domain/board.ts'
+import type { Category } from '../domain/category.ts'
 import type { Listing } from '../data/listings.ts'
 import { rankListings } from '../domain/ranking.ts'
 import type { PurchaseKind } from '../domain/records.ts'
@@ -22,6 +23,7 @@ interface ListingRow {
   principal_refunded_cents: number
   settled_at: string | null
   drops_off_at: string | null
+  category: string
 }
 
 interface IntentRow {
@@ -39,6 +41,7 @@ interface IntentRow {
   listing_title: string
   listing_description: string
   listing_image_url: string | null
+  category: string
 }
 
 interface OrderRow {
@@ -114,6 +117,7 @@ export async function loadReservationSnapshot(
     listingTitle: string
     listingDescription: string
     listingImageUrl: string | null
+    category: Category
   },
 ): Promise<ReservationSnapshot> {
   const [existing, listing, open, takeover, leader, lastEnded] = await db.batch([
@@ -161,6 +165,7 @@ export async function loadReservationSnapshot(
     listingTitle: input.listingTitle,
     listingDescription: input.listingDescription,
     listingImageUrl: input.listingImageUrl,
+    category: input.category,
   }
 }
 
@@ -170,8 +175,8 @@ export async function insertIntent(db: D1Database, intent: IntentRecord): Promis
       `INSERT INTO checkout_intents (
          id, owner_id, listing_id, request_id, payload_hash, canonical_identity,
          target_amount_cents, kind, state, provider_checkout_id, expires_at,
-         listing_title, listing_description, listing_image_url
-       ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+         listing_title, listing_description, listing_image_url, category
+       ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
     )
     .bind(
       intent.id,
@@ -188,6 +193,7 @@ export async function insertIntent(db: D1Database, intent: IntentRecord): Promis
       intent.listingTitle,
       intent.listingDescription,
       intent.listingImageUrl,
+      intent.category,
     )
     .run()
 }
@@ -268,8 +274,8 @@ export async function applySettlement(db: D1Database, writes: SettlementWrites):
         .prepare(
           `INSERT INTO listings (
              id, owner_id, canonical_identity, display_name, target_url, description, image_url,
-             principal_paid_cents, principal_refunded_cents, settled_at, drops_off_at
-           ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+             principal_paid_cents, principal_refunded_cents, settled_at, drops_off_at, category
+           ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
            ON CONFLICT(id) DO UPDATE SET
              owner_id = excluded.owner_id,
              display_name = excluded.display_name,
@@ -278,7 +284,8 @@ export async function applySettlement(db: D1Database, writes: SettlementWrites):
              principal_paid_cents = excluded.principal_paid_cents,
              principal_refunded_cents = excluded.principal_refunded_cents,
              settled_at = excluded.settled_at,
-             drops_off_at = excluded.drops_off_at`,
+             drops_off_at = excluded.drops_off_at,
+             category = excluded.category`,
         )
         .bind(
           writes.listing.id,
@@ -292,6 +299,7 @@ export async function applySettlement(db: D1Database, writes: SettlementWrites):
           writes.listing.principalRefundedCents,
           writes.listing.settledAt,
           writes.listing.dropsOffAt,
+          writes.listing.category,
         ),
     )
   }
@@ -358,6 +366,7 @@ export async function applySettlement(db: D1Database, writes: SettlementWrites):
 export async function loadPublicBoard(
   db: D1Database,
   now: Date,
+  category?: Category,
 ): Promise<{
   listings: Listing[]
   takeover: { amountCents: number; display: string; href: string; endsAt: string } | null
@@ -368,12 +377,16 @@ export async function loadPublicBoard(
   const nowIso = now.toISOString()
   await expireOpenIntents(db, nowIso)
   const dayAgoIso = new Date(now.getTime() - 24 * 60 * 60 * 1000).toISOString()
-  const [listingResult, clickResult, recentClickResult, settlementResult, takeoverResult, lastEnded] = await db.batch([
-    db.prepare(
-      `SELECT * FROM listings
+  const listingsSql = category
+    ? `SELECT * FROM listings
+       WHERE settled_at IS NOT NULL AND (principal_paid_cents - principal_refunded_cents) > 0 AND category = ?
+       ORDER BY (principal_paid_cents - principal_refunded_cents) DESC, settled_at DESC, id ASC`
+    : `SELECT * FROM listings
        WHERE settled_at IS NOT NULL AND (principal_paid_cents - principal_refunded_cents) > 0
-       ORDER BY (principal_paid_cents - principal_refunded_cents) DESC, settled_at DESC, id ASC`,
-    ),
+       ORDER BY (principal_paid_cents - principal_refunded_cents) DESC, settled_at DESC, id ASC`
+  const listingStmt = category ? db.prepare(listingsSql).bind(category) : db.prepare(listingsSql)
+  const [listingResult, clickResult, recentClickResult, settlementResult, takeoverResult, lastEnded] = await db.batch([
+    listingStmt,
     db.prepare(`SELECT listing_id, COUNT(*) AS clicks FROM click_facts GROUP BY listing_id`),
     db.prepare(`SELECT listing_id, COUNT(*) AS clicks FROM click_facts WHERE occurred_at >= ? GROUP BY listing_id`).bind(dayAgoIso),
     // Latest activity: most recent settled payment per listing (top-ups bump it).
@@ -576,6 +589,7 @@ function mapListing(row: ListingRow | null | undefined): ListingRecord | null {
     principalRefundedCents: row.principal_refunded_cents,
     settledAt: row.settled_at,
     dropsOffAt: row.drops_off_at,
+    category: row.category as Category,
   }
 }
 
@@ -596,6 +610,7 @@ function mapIntent(row: IntentRow | null | undefined): IntentRecord | null {
     listingTitle: row.listing_title ?? '',
     listingDescription: row.listing_description ?? '',
     listingImageUrl: row.listing_image_url ?? null,
+    category: row.category as Category,
   }
 }
 

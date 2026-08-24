@@ -1,4 +1,5 @@
 import type { PlatformId } from '../domain/identity.ts'
+import type { Category } from '../domain/category.ts'
 
 export interface ProductionConfig {
   appUrl?: string
@@ -68,6 +69,7 @@ export interface ParsedCheckoutBody {
   imageUrl: string | null
   takeover: boolean
   turnstileToken: string
+  category: Category
 }
 
 export interface PublicCheckoutConfig {

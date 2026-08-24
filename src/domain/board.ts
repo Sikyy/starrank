@@ -78,6 +78,7 @@ export function toPublicListing(
     settledAt: listing.settledAt ?? nowIso,
     age: listing.settledAt ? ageLabel(listing.settledAt, now) : 'just now',
     clicks,
+    category: listing.category,
   }
 }
 

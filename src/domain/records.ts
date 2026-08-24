@@ -1,3 +1,4 @@
+import type { Category } from './category.ts'
 export type IntentState =
   | 'creating'
   | 'checkout-uncertain'
@@ -7,6 +8,7 @@ export type IntentState =
   | 'needs-support'
 
 export type PurchaseKind = 'rank' | 'takeover'
+
 
 export type ReceiptDisposition = 'settled' | 'replay' | 'quarantined' | 'ignored'
 
@@ -27,6 +29,7 @@ export interface IntentRecord {
   listingTitle: string
   listingDescription: string
   listingImageUrl: string | null
+  category: Category
 }
 
 export interface ListingRecord {
@@ -41,6 +44,7 @@ export interface ListingRecord {
   principalRefundedCents: number
   settledAt: string | null
   dropsOffAt: string | null
+  category: Category
 }
 
 export interface ProviderOrderRecord {

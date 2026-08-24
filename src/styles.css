@@ -342,6 +342,51 @@ button:disabled { cursor: not-allowed; opacity: 0.48; }
   white-space: nowrap;
 }
 
+.category-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 18px;
+}
+.category-tab {
+  padding: 6px 14px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: #6b655e;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: border-color 0.15s ease, color 0.15s ease, background 0.15s ease;
+}
+.category-tab.active {
+  border-color: var(--primary);
+  background: var(--primary-dark);
+  color: #fff;
+}
+
+.bid-categories {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+.category-pill {
+  padding: 5px 12px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: #6b655e;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.category-pill.active {
+  border-color: var(--primary);
+  background: var(--primary-dark);
+  color: #fff;
+}
+
 .bid-title-row {
   display: flex;
   align-items: center;
