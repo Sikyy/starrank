@@ -21,6 +21,7 @@ import { interpolate } from '../i18n/locale.ts'
 import { resolveRequestLocale } from '../server/locale.ts'
 import { resolveVisitorKey } from '../server/visitor-cookie.ts'
 import { SiteFooter, SiteHeader } from '../ui/site-chrome.tsx'
+import { PlatformIcon } from '../ui/platform-icon.tsx'
 
 /** Letter shown in the avatar tile when a social identity has no avatar yet. */
 function platformInitial(identity: { canonicalKey: string }): string {
@@ -344,7 +345,9 @@ function Home() {
               <div className="bid-form">
                 <label className="identity-field">
                   <span className="input-prefix" aria-hidden="true">
-                    {activeIdentity && socialIdentity ? (
+                    {platform ? (
+                      <PlatformIcon platform={platform} size={18} />
+                    ) : activeIdentity && socialIdentity ? (
                       <span className="avatar-initial avatar-initial-sm">{platformInitial(activeIdentity)}</span>
                     ) : identityLogo ? (
                       <img src={identityLogo} alt="" width="16" height="16" />
