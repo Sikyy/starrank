@@ -46,6 +46,7 @@ export const Route = createRootRoute({
       { name: 'twitter:image', content: 'https://starrank.lol/og-image.webp' },
     ],
     links: [
+      { rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg' },
       { rel: 'icon', href: '/favicon.ico', sizes: '128x128' },
       { rel: 'apple-touch-icon', href: '/icon-512.png' },
       { rel: 'alternate', type: 'text/plain', href: '/llms.txt' },

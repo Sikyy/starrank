@@ -2,6 +2,7 @@ import { Link } from '@tanstack/react-router'
 
 import { useLocale } from '../i18n/context.tsx'
 import { LocaleSwitcher } from './locale-switcher.tsx'
+import { Logo } from './logo.tsx'
 
 // Public analytics for starrank.lol — a DataFast public share that any visitor
 // can open without signing in (pageviews, revenue, referrers, visited URLs).
@@ -13,7 +14,8 @@ export function SiteHeader() {
     <header className="site-header">
       <div className="site-header-bar">
         <Link className="wordmark" to="/" aria-label={copy.homeAria}>
-          Star<span>Rank</span>
+          <Logo size={28} />
+          <span className="wordmark-text">Star<span>Rank</span></span>
         </Link>
         <nav className="header-nav" aria-label={copy.navSite}>
           <LocaleSwitcher />

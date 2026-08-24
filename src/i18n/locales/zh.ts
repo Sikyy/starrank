@@ -35,7 +35,7 @@ export const zh: Messages = {
   helpUnavailable: '配置好支付后就能付费出价。线上榜单只显示已验证的付款。',
   helpResolving: '正在读取条目信息…',
   helpResolveFailed: '无法读取这个主页。请填写标题和描述。',
-  helpDefault: '已经在榜上？输入同一个网址或 @handle，加价就能往上走。',
+  helpDefault: '已经在榜上？输入同一个 ID/链接，加价就能往上走。',
   title: '标题',
   titlePlaceholder: '显示在榜上的名称',
   description: '描述',

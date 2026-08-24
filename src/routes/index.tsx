@@ -87,7 +87,7 @@ function Home() {
     rankedListings.length > 0 ? amountToClaim(leaderAmount) : Math.max(MINIMUM_BID_CENTS, leaderAmount),
   )
   const [identityInput, setIdentityInput] = useState('')
-  const [platform, setPlatform] = useState<PlatformId | null>(null)
+  const [platform, setPlatform] = useState<PlatformId | null>('instagram')
   const [identityError, setIdentityError] = useState('')
   const [listingTitle, setListingTitle] = useState('')
   const [listingDescription, setListingDescription] = useState('')

@@ -145,7 +145,7 @@ button:disabled { cursor: not-allowed; opacity: 0.48; }
   object-fit: contain;
 }
 
-.wordmark span { color: var(--primary); }
+.wordmark .wordmark-text span { color: var(--primary); }
 
 .live-pill {
   display: flex;
@@ -346,6 +346,7 @@ button:disabled { cursor: not-allowed; opacity: 0.48; }
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
+  margin-top: 32px;
   margin-bottom: 18px;
 }
 .category-tab {

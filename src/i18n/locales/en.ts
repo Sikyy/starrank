@@ -36,7 +36,7 @@ export const en: Messages = {
   helpUnavailable: 'Paid bids open once payments are configured. The live board shows verified payments only.',
   helpResolving: 'Reading listing details…',
   helpResolveFailed: 'Could not load this profile. Add a title and description.',
-  helpDefault: 'Already on the list? Enter the same URL or @handle and up your bid to get back to the top.',
+  helpDefault: 'Already on the list? Enter the same ID/link and up your bid to get back to the top.',
   title: 'Title',
   titlePlaceholder: 'Name shown on the board',
   description: 'Description',

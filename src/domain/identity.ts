@@ -15,8 +15,8 @@ export interface PlatformMeta {
 }
 
 export const PLATFORMS: Record<PlatformId, PlatformMeta> = {
-  x: { id: 'x', label: 'X', placeholder: '@用户名（唯一，如 @starrank）', profileHost: 'x.com' },
   instagram: { id: 'instagram', label: 'Instagram', placeholder: '@用户名（唯一，如 @nasa）', profileHost: 'instagram.com' },
+  x: { id: 'x', label: 'X', placeholder: '@用户名（唯一，如 @starrank）', profileHost: 'x.com' },
   tiktok: { id: 'tiktok', label: 'TikTok', placeholder: '@用户名（唯一，如 @starrank）', profileHost: 'tiktok.com' },
   douyin: { id: 'douyin', label: '抖音', placeholder: 'App 内「分享→复制链接」直接粘贴', profileHost: 'douyin.com' },
   rednote: {
