@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useRouter } from '@tanstack/react-router'
 import { createServerFn } from '@tanstack/react-start'
-import { useEffect } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 
 import { formatCny } from '../domain/money.ts'
 import type { PublicReceipt } from '../domain/receipt.ts'
@@ -118,6 +118,9 @@ function ReceiptBody({ receipt }: { receipt: PublicReceipt }) {
 }
 
 function ReceiptTicket({ receipt, htmlLang }: { receipt: PublicReceipt; htmlLang: string }) {
+  const [printed, setPrinted] = useState(false)
+  const [invoice, setInvoice] = useState(false)
+  const [copied, setCopied] = useState(false)
   const settledAt = receipt.settledAt ? new Date(receipt.settledAt) : null
   const time = settledAt
     ? settledAt.toLocaleString(htmlLang, {
@@ -128,44 +131,92 @@ function ReceiptTicket({ receipt, htmlLang }: { receipt: PublicReceipt; htmlLang
         minute: '2-digit',
       })
     : '—'
+  const shareUrl = `${SITE_URL}/receipts/${receipt.intentId}`
+
+  useEffect(() => {
+    const t = window.setTimeout(() => setPrinted(true), 900)
+    return () => window.clearTimeout(t)
+  }, [])
+
+  const share = useCallback(async () => {
+    try {
+      if (navigator.share) {
+        await navigator.share({ title: 'StarRank 付款小票', text: receipt.display ?? '', url: shareUrl })
+        return
+      }
+      await navigator.clipboard.writeText(shareUrl)
+      setCopied(true)
+      window.setTimeout(() => setCopied(false), 2000)
+    } catch {
+      /* user cancelled */
+    }
+  }, [receipt.display, shareUrl])
+
+  const printTicket = () => window.print()
+  const printInvoice = () => {
+    setInvoice(true)
+    window.setTimeout(() => {
+      window.print()
+      window.setTimeout(() => setInvoice(false), 500)
+    }, 50)
+  }
+
   return (
-    <div className="receipt-ticket" id="receipt-ticket" aria-label="付款小票">
-      <div className="ticket-head">
-        <Logo size={30} />
-        <div className="ticket-brand">
-          <strong>StarRank</strong>
-          <span>{SITE_URL}</span>
+    <div className={`printer-stage ${printed ? 'printed' : ''} ${invoice ? 'invoice-mode' : ''}`} id="receipt-ticket">
+      <div className="printer-cartoon" aria-hidden="true">
+        <span className="printer-icon">🖨️</span>
+        <span className="printer-msg">{printed ? '打印完成 ✔' : '正在打印…'}</span>
+      </div>
+
+      <div className="receipt-ticket ticket-cartoon">
+        <div className="ticket-head">
+          <Logo size={30} />
+          <div className="ticket-brand">
+            <strong>StarRank</strong>
+            <span>{SITE_URL}</span>
+          </div>
+          <span className="ticket-type">{invoice ? '正式发票' : '付款小票'}</span>
+        </div>
+        <div className="ticket-body">
+          {receipt.imageUrl ? (
+            <img className="ticket-avatar" src={receipt.imageUrl} alt="" />
+          ) : (
+            <span className="ticket-avatar ticket-avatar-fallback">S</span>
+          )}
+          <div className="ticket-listing">
+            <h2>{receipt.display ?? '—'}</h2>
+            {invoice && receipt.rank ? <span className="ticket-rank">#{receipt.rank}</span> : null}
+          </div>
+          <dl className="ticket-dl">
+            <div>
+              <dt>当前排名</dt>
+              <dd>{receipt.rank ? `#${receipt.rank}` : '—'}</dd>
+            </div>
+            <div>
+              <dt>付款金额</dt>
+              <dd>{formatCny(receipt.amountCents)}</dd>
+            </div>
+            <div>
+              <dt>时间</dt>
+              <dd>{time}</dd>
+            </div>
+          </dl>
+          <div className="ticket-meta">
+            <span>网站 {SITE_URL}</span>
+            <span>编号 {receipt.intentId.slice(0, 8).toUpperCase()}</span>
+          </div>
         </div>
       </div>
-      <div className="ticket-body">
-        {receipt.imageUrl ? (
-          <img className="ticket-avatar" src={receipt.imageUrl} alt="" />
-        ) : (
-          <span className="ticket-avatar ticket-avatar-fallback">S</span>
-        )}
-        <div className="ticket-listing">
-          <h2>{receipt.display ?? '—'}</h2>
-          {receipt.rank ? <span className="ticket-rank">#{receipt.rank}</span> : null}
-        </div>
-        <dl className="ticket-dl">
-          <div>
-            <dt>当前排名</dt>
-            <dd>{receipt.rank ? `#${receipt.rank}` : '—'}</dd>
-          </div>
-          <div>
-            <dt>付款金额</dt>
-            <dd>{formatCny(receipt.amountCents)}</dd>
-          </div>
-          <div>
-            <dt>时间</dt>
-            <dd>{time}</dd>
-          </div>
-        </dl>
-      </div>
-      <div className="ticket-foot">
-        <span className="ticket-id">No. {receipt.intentId.slice(0, 8).toUpperCase()}</span>
-        <button type="button" className="secondary-button ticket-print" onClick={() => window.print()}>
-          打印小票
+
+      <div className="ticket-actions no-print">
+        <button type="button" className="secondary-button" onClick={printTicket}>
+          保存小票
+        </button>
+        <button type="button" className="secondary-button" onClick={share}>
+          {copied ? '已复制链接' : '分享'}
+        </button>
+        <button type="button" className="secondary-button" onClick={printInvoice}>
+          正式发票
         </button>
       </div>
     </div>
