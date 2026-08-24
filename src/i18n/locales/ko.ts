@@ -24,6 +24,7 @@ export const ko: Messages = {
   takePageOneFor: '첫 페이지를',
   decreaseBid: '입찰을 1위안 낮추기',
   increaseBid: '입찰을 1위안 올리기',
+  bidAmountLabel: '입찰 금액 (CNY)',
   explainerTakeover: '이 유료 입찰은 첫 페이지 전체를 3시간 동안 차지합니다.',
   explainerBid: '금액이 순위를 정합니다. 1위보다 적어도, 그 금액이 살 수 있는 자리에 올라갑니다.',
   identityLabel: '제품 URL 또는 소셜 핸들',

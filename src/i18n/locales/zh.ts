@@ -24,6 +24,7 @@ export const zh: Messages = {
   takePageOneFor: '拿下第一页',
   decreaseBid: '出价减少 1 元',
   increaseBid: '出价增加 1 元',
+  bidAmountLabel: '出价金额（元）',
   explainerTakeover: '这笔付费出价会占用整个第一页三个小时。',
   explainerBid: '新位置 ¥10 起。金额决定名次，低于第一名也能上榜，排在这个出价能买到的位置。',
   identityLabel: '产品网址或社交账号',

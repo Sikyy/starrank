@@ -24,6 +24,7 @@ export const es: Messages = {
   takePageOneFor: 'Tomar la primera página por',
   decreaseBid: 'Bajar la puja un yuan',
   increaseBid: 'Subir la puja un yuan',
+  bidAmountLabel: 'Importe de la puja (CNY)',
   explainerTakeover: 'Esta puja de pago ocupa toda la primera página durante tres horas.',
   explainerBid: 'El importe decide el puesto. Pagar menos que el #1 igual te pone en el tablero, donde esa puja alcance.',
   identityLabel: 'URL del producto o handle social',

@@ -11,6 +11,7 @@ import {
   MINIMUM_BID_CENTS,
   amountToClaim,
   formatCny,
+  snapToBidStep,
 } from '../domain/money.ts'
 import { projectedRank, rankListings } from '../domain/ranking.ts'
 import { CATEGORY_PICKER, type Category } from '../domain/category.ts'
@@ -83,9 +84,10 @@ function Home() {
   )
   const leaderAmount = rankedListings[0]?.amountCents ?? 0
   // Empty board: start at the entry price itself, not entry + one step.
-  const [amountCents, setAmountCents] = useState(() =>
-    rankedListings.length > 0 ? amountToClaim(leaderAmount) : Math.max(MINIMUM_BID_CENTS, leaderAmount),
-  )
+  const initialAmount =
+    rankedListings.length > 0 ? amountToClaim(leaderAmount) : Math.max(MINIMUM_BID_CENTS, leaderAmount)
+  const [amountCents, setAmountCents] = useState(initialAmount)
+  const [amountText, setAmountText] = useState(() => String(Math.round(initialAmount / 100)))
   const [identityInput, setIdentityInput] = useState('')
   const [platform, setPlatform] = useState<PlatformId | null>('instagram')
   const [identityError, setIdentityError] = useState('')
@@ -206,8 +208,29 @@ function Home() {
     bidFormRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' })
   }
 
+  /** Set the bid in cents (snapped to a whole-yuan step) and mirror it into the editable field. */
+  function applyAmount(cents: number) {
+    const snapped = snapToBidStep(cents)
+    setAmountCents(snapped)
+    setAmountText(String(snapped / 100))
+  }
+
+  /** Live-edit the amount: keep the raw text for the input, commit the parsed value to state. */
+  function handleAmountEdit(raw: string) {
+    setAmountText(raw)
+    const yuan = Number(raw)
+    if (Number.isFinite(yuan) && yuan > 0) {
+      setAmountCents(snapToBidStep(Math.round(yuan * 100)))
+    }
+  }
+
+  /** Snap the displayed text back to the committed amount when the field loses focus. */
+  function handleAmountBlur() {
+    setAmountText(String(Math.round(amountCents / 100)))
+  }
+
   function chooseRank(listing: Listing) {
-    setAmountCents(amountToClaim(listing.amountCents))
+    applyAmount(amountToClaim(listing.amountCents))
     setIdentityError('')
     scrollToBidForm()
   }
@@ -300,16 +323,24 @@ function Home() {
               className="step-button"
               type="button"
               aria-label={copy.decreaseBid}
-              onClick={() => setAmountCents((amount) => Math.max(MINIMUM_BID_CENTS, amount - BID_STEP_CENTS))}
+              onClick={() => applyAmount(amountCents - BID_STEP_CENTS)}
             >
               −
             </button>
-            <strong className="bid-amount">{formatCny(amountCents)}</strong>
+            <input
+              className="bid-amount"
+              type="text"
+              inputMode="decimal"
+              value={amountText}
+              onChange={(event) => handleAmountEdit(event.target.value)}
+              onBlur={handleAmountBlur}
+              aria-label={copy.bidAmountLabel}
+            />
             <button
               className="step-button"
               type="button"
               aria-label={copy.increaseBid}
-              onClick={() => setAmountCents((amount) => amount + BID_STEP_CENTS)}
+              onClick={() => applyAmount(amountCents + BID_STEP_CENTS)}
             >
               +
             </button>

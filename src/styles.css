@@ -422,7 +422,26 @@ button:disabled { cursor: not-allowed; opacity: 0.48; }
 }
 
 .bid-title-row h1 { font-weight: 760; }
-.bid-amount { color: var(--primary); font-weight: 700; }
+.bid-amount {
+  color: var(--primary);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  width: 7ch;
+  min-width: 3ch;
+  max-width: 12ch;
+  padding: 0 6px;
+  text-align: center;
+  appearance: textfield;
+  -moz-appearance: textfield;
+}
+.bid-amount:focus {
+  outline: none;
+  border-color: var(--primary);
+  background: #fff;
+}
 
 .step-button {
   flex: 0 0 auto;

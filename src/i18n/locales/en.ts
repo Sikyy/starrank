@@ -24,6 +24,7 @@ export const en: Messages = {
   takePageOneFor: 'Take page one for',
   decreaseBid: 'Decrease bid by one yuan',
   increaseBid: 'Increase bid by one yuan',
+  bidAmountLabel: 'Bid amount (CNY)',
   explainerTakeover: 'This paid bid takes the whole first page for three hours.',
   explainerBid:
     'Your amount decides the rank. Paying less than the #1 price still puts you on the board wherever that bid can take you.',

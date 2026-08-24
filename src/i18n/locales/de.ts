@@ -24,6 +24,7 @@ export const de: Messages = {
   takePageOneFor: 'Seite eins für',
   decreaseBid: 'Gebot um einen Yuan senken',
   increaseBid: 'Gebot um einen Yuan erhöhen',
+  bidAmountLabel: 'Gebotsbetrag (CNY)',
   explainerTakeover: 'Dieses bezahlte Gebot nimmt die ganze erste Seite für drei Stunden ein.',
   explainerBid: 'Dein Betrag bestimmt den Rang. Weniger als Platz 1 setzt dich trotzdem auf das Board, wo dieses Gebot hinreicht.',
   identityLabel: 'Produkt-URL oder Social-Handle',

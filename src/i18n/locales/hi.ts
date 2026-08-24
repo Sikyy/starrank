@@ -24,6 +24,7 @@ export const hi: Messages = {
   takePageOneFor: 'पहला पेज इसके लिए लें',
   decreaseBid: 'बोली एक युआन घटाएँ',
   increaseBid: 'बोली एक युआन बढ़ाएँ',
+  bidAmountLabel: 'बोली राशि (CNY)',
   explainerTakeover: 'यह पेड बोली तीन घंटे के लिए पूरा पहला पेज ले लेती है.',
   explainerBid: 'राशि रैंक तय करती है. #1 से कम देने पर भी आप बोर्ड पर आते हैं, जहाँ तक वह बोली पहुँचती है.',
   identityLabel: 'प्रोडक्ट URL या सोशल हैंडल',

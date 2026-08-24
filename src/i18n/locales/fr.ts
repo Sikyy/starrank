@@ -24,6 +24,7 @@ export const fr: Messages = {
   takePageOneFor: 'Prendre la première page pour',
   decreaseBid: 'Baisser l’enchère d’un yuan',
   increaseBid: 'Augmenter l’enchère d’un yuan',
+  bidAmountLabel: "Montant de l'offre (CNY)",
   explainerTakeover: 'Cette enchère payante occupe toute la première page pendant trois heures.',
   explainerBid: 'Le montant décide du rang. Payer moins que la #1 vous place quand même, là où cette enchère peut aller.',
   identityLabel: 'URL du produit ou identifiant social',

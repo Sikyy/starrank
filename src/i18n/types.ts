@@ -28,6 +28,7 @@ export interface Messages {
   takePageOneFor: string
   decreaseBid: string
   increaseBid: string
+  bidAmountLabel: string
   explainerTakeover: string
   explainerBid: string
   identityLabel: string

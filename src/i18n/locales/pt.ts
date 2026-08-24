@@ -24,6 +24,7 @@ export const pt: Messages = {
   takePageOneFor: 'Ficar com a primeira página por',
   decreaseBid: 'Diminuir o lance em um yuan',
   increaseBid: 'Aumentar o lance em um yuan',
+  bidAmountLabel: 'Valor do lance (CNY)',
   explainerTakeover: 'Este lance pago ocupa a primeira página inteira por três horas.',
   explainerBid: 'O valor decide a posição. Pagar menos que o #1 ainda te coloca no quadro, onde esse lance alcançar.',
   identityLabel: 'URL do produto ou handle social',

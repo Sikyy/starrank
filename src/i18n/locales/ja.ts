@@ -24,6 +24,7 @@ export const ja: Messages = {
   takePageOneFor: '1ページ目を取る',
   decreaseBid: '入札を1元下げる',
   increaseBid: '入札を1元上げる',
+  bidAmountLabel: '入札金額（CNY）',
   explainerTakeover: 'この有料入札は1ページ目全体を3時間占有します。',
   explainerBid: '金額が順位を決めます。#1 より少なくても、その金額で届く位置に掲載されます。',
   identityLabel: 'プロダクト URL またはソーシャルハンドル',
