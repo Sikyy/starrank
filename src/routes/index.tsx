@@ -519,15 +519,14 @@ function Home() {
             const rank = board.firstRank + index
             const claimCents = amountToClaim(listing.amountCents)
             return (
-              <>
-                <article
-                  className={`listing-card rank-${Math.min(rank, 4)}`}
-                  key={listing.id}
-                  onClick={(event) => {
-                    if ((event.target as HTMLElement).closest('a, .claim-rank')) return
-                    chooseRank(listing)
-                  }}
-                >
+              <article
+                className={`listing-card rank-${Math.min(rank, 4)}`}
+                key={listing.id}
+                onClick={(event) => {
+                  if ((event.target as HTMLElement).closest('a, .claim-rank')) return
+                  chooseRank(listing)
+                }}
+              >
                   <button
                     className="claim-rank"
                     type="button"
@@ -555,8 +554,7 @@ function Home() {
                       <strong>{interpolate(copy.clicks, { count: formatCount(listing.clicks, htmlLang) })}</strong>
                     </small>
                   </div>
-                </article>
-              </>
+              </article>
             )
           })}
         </div>
