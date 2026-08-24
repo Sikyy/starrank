@@ -473,26 +473,6 @@ function Home() {
           ))}
         </div>
 
-        {data.recentBids.length > 0 ? (
-          <aside className="latest-activity" aria-label={copy.latestActivityLabel}>
-            <span className="activity-label">{copy.latestActivityLabel}</span>
-            <ul className="activity-list">
-              {data.recentBids.map((item) => (
-                <li key={`${item.display}-${item.settledAt}`}>
-                  <span className="activity-name">{item.display}</span>
-                  <span className="activity-meta">
-                    {interpolate(copy.activityAt, {
-                      time: formatRelativeAge(item.settledAt, clockIso, copy),
-                      rank: item.rank,
-                    })}
-                  </span>
-                  <strong>{formatCny(item.amountCents)}</strong>
-                </li>
-              ))}
-            </ul>
-          </aside>
-        ) : null}
-
         <div className="listing-stack">
           {board.listings.length === 0 ? (
             <p className="empty-note">{copy.emptyBoard}</p>
