@@ -345,31 +345,33 @@ button:disabled { cursor: not-allowed; opacity: 0.48; }
 .category-tabs {
   display: flex;
   flex-wrap: wrap;
-  justify-content: center;
-  gap: 8px;
+  justify-content: flex-start;
+  gap: 4px;
   margin: 20px 0 16px;
 }
 .category-tab {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  height: 38px;
-  padding: 0 15px;
-  border-radius: 999px;
-  border: 1px solid var(--border);
+  gap: 7px;
+  height: 40px;
+  padding: 0 14px;
+  border-radius: 12px;
+  border: 1px solid transparent;
   background: transparent;
-  color: #6b655e;
+  color: var(--foreground);
   font-size: 14px;
-  font-weight: 600;
+  font-weight: 650;
   cursor: pointer;
   transition: border-color 0.15s ease, color 0.15s ease, background 0.15s ease;
 }
+.category-tab:hover { background: var(--primary-soft); }
 .category-tab.active {
   border-color: var(--primary);
-  background: var(--primary-dark);
-  color: #fff;
+  background: #fae4dd;
+  color: var(--primary);
 }
-.category-tab svg { flex: 0 0 auto; }
+.category-tab svg { flex: 0 0 auto; color: #8a847d; }
+.category-tab.active svg { color: var(--primary); }
 
 .category-select-wrap {
   position: relative;
@@ -752,7 +754,11 @@ button:disabled { cursor: not-allowed; opacity: 0.48; }
   background: var(--primary-dark);
 }
 
-.listing-card.rank-1 { border: 2px solid var(--primary); background: #fae4dd; }
+.listing-card.rank-1 {
+  border: 2px solid var(--primary);
+  background: rgba(229, 114, 85, 0.12);
+  box-shadow: 0 12px 28px rgba(181, 82, 57, 0.14);
+}
 .listing-card.rank-2 { border-color: #e9bcae; background: #fff7f3; }
 .listing-card.rank-3 { background: #fffaf7; }
 .listing-card.just-settled { animation: settled-glow 1.4s ease-out 2; }
@@ -811,7 +817,7 @@ button:disabled { cursor: not-allowed; opacity: 0.48; }
 }
 
 .listing-copy small { color: #8c857f; font-size: 12px; }
-.listing-copy small strong { color: #5b5550; font-weight: 650; }
+.listing-copy small strong { color: var(--foreground); font-weight: 700; }
 .meta-dot { color: var(--primary); padding: 0 4px; }
 
 .listing-price {
