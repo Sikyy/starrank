@@ -17,6 +17,8 @@ export interface PublicReceipt {
   listingId: string | null
   imageUrl: string | null
   settledAt: string | null
+  canonicalIdentity: string | null
+  description: string | null
 }
 
 export function buildPublicReceipt(input: {
@@ -53,5 +55,7 @@ export function buildPublicReceipt(input: {
     listingId: input.listing?.id ?? input.intent.listingId,
     imageUrl: input.listing?.imageUrl ?? null,
     settledAt: input.listing?.settledAt ?? null,
+    canonicalIdentity: input.listing?.canonicalIdentity ?? input.intent.canonicalIdentity,
+    description: input.listing?.description ?? '',
   }
 }

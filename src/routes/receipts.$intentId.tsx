@@ -166,43 +166,42 @@ function ReceiptTicket({ receipt, htmlLang }: { receipt: PublicReceipt; htmlLang
       <div className="printer-slot" aria-hidden="true"><span className="slot-paper" /></div>
       <div className="receipt-paper-wrap">
       <div className="receipt-ticket ticket-cartoon">
-        <div className="ticket-head">
-          <Logo size={30} />
-          <div className="ticket-brand">
+        <div className="receipt-brand">
+          <Logo size={24} />
+          <div className="receipt-brand-text">
             <strong>StarRank</strong>
             <span>{SITE_URL}</span>
           </div>
           <span className="ticket-type">{invoice ? '正式发票' : '付款小票'}</span>
         </div>
-        <div className="ticket-body">
-          {receipt.imageUrl ? (
-            <img className="ticket-avatar" src={receipt.imageUrl} alt="" />
-          ) : (
-            <span className="ticket-avatar ticket-avatar-fallback">S</span>
-          )}
-          <div className="ticket-listing">
-            <h2>{receipt.display ?? '—'}</h2>
-            {invoice && receipt.rank ? <span className="ticket-rank">#{receipt.rank}</span> : null}
-          </div>
-          <dl className="ticket-dl">
-            <div>
-              <dt>当前排名</dt>
-              <dd>{receipt.rank ? `#${receipt.rank}` : '—'}</dd>
-            </div>
-            <div>
-              <dt>付款金额</dt>
-              <dd>{formatCny(receipt.amountCents)}</dd>
-            </div>
-            <div>
-              <dt>时间</dt>
-              <dd>{time}</dd>
-            </div>
-          </dl>
-          <div className="ticket-meta">
-            <span>网站 {SITE_URL}</span>
-            <span>编号 {receipt.intentId.slice(0, 8).toUpperCase()}</span>
-          </div>
+        <div className="receipt-divider" />
+        <div className="receipt-shop">
+          <p>StarRank 付费榜单</p>
+          <p>{SITE_URL}</p>
+          <p>{time}</p>
         </div>
+        <div className="receipt-divider" />
+        <div className="receipt-persona">
+          <div className="receipt-persona-row"><span className="receipt-k">用户 ID</span><span className="receipt-v">{receipt.canonicalIdentity ?? '—'}</span></div>
+          <div className="receipt-persona-row"><span className="receipt-k">用户名</span><span className="receipt-v">{receipt.display ?? '—'}</span></div>
+          <div className="receipt-persona-row"><span className="receipt-k">简介</span><span className="receipt-v">{receipt.description || '—'}</span></div>
+        </div>
+        <div className="receipt-divider" />
+        <table className="receipt-table">
+          <thead><tr><th>项目</th><th>金额</th></tr></thead>
+          <tbody>
+            <tr><td>上榜排名 #{receipt.rank ?? '—'}</td><td>{formatCny(receipt.amountCents)}</td></tr>
+            <tr><td>榜单展示服务</td><td>{formatCny(receipt.amountCents)}</td></tr>
+          </tbody>
+        </table>
+        <div className="receipt-totals">
+          <div><span>合计</span><span>{formatCny(receipt.amountCents)}</span></div>
+          <div className="receipt-paid"><span>实付金额</span><span>{formatCny(receipt.amountCents)}</span></div>
+        </div>
+        <div className="receipt-divider" />
+        <div className="receipt-no"># {receipt.intentId.slice(0, 8).toUpperCase()}</div>
+        <div className="receipt-barcode" aria-hidden="true" />
+        <p className="receipt-foot">StarRank · {SITE_URL} · 欢迎再来</p>
       </div>
 
       </div>

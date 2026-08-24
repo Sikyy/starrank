@@ -1017,17 +1017,64 @@ footer a { color: var(--primary-dark); text-decoration: none; }
   margin: 0;
   max-width: none;
   border-radius: 0;
-  border: 1px solid #e5e1da;
-  border-top: 0;
+  background: #fff;
+  color: #282624;
+  padding: 18px 20px 20px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 13px;
   clip-path: polygon(
-    0 0, 100% 0, 100% 97%, 96% 100%, 91% 96%, 86% 100%, 81% 96%, 76% 100%,
-    71% 96%, 66% 100%, 61% 96%, 56% 100%, 51% 96%, 46% 100%, 41% 96%, 36% 100%,
-    31% 96%, 26% 100%, 21% 96%, 16% 100%, 11% 96%, 6% 100%, 2% 96%, 0 97%
+    0 2.5%, 4% 0, 8% 2.5%, 12% 0, 16% 2.5%, 20% 0, 24% 2.5%, 28% 0, 32% 2.5%, 36% 0,
+    40% 2.5%, 44% 0, 48% 2.5%, 52% 0, 56% 2.5%, 60% 0, 64% 2.5%, 68% 0, 72% 2.5%, 76% 0,
+    80% 2.5%, 84% 0, 88% 2.5%, 92% 0, 96% 2.5%, 100% 0,
+    100% 97.5%, 96% 100%, 92% 97.5%, 88% 100%, 84% 97.5%, 80% 100%, 76% 97.5%, 72% 100%,
+    68% 97.5%, 64% 100%, 60% 97.5%, 56% 100%, 52% 97.5%, 48% 100%, 44% 97.5%, 40% 100%,
+    36% 97.5%, 32% 100%, 28% 97.5%, 24% 100%, 20% 97.5%, 16% 100%, 12% 97.5%, 8% 100%,
+    4% 97.5%, 0 100%
   );
 }
 .receipt-stage.printed .receipt-paper-wrap .receipt-ticket {
   transform: translateY(0);
 }
+.receipt-brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.receipt-brand-text { display: flex; flex-direction: column; line-height: 1.15; }
+.receipt-brand-text strong { font-size: 15px; }
+.receipt-brand-text span { font-size: 11px; color: var(--muted-foreground); }
+.receipt-divider {
+  border-top: 1px dashed #c9c4bd;
+  margin: 12px 0;
+}
+.receipt-shop {
+  text-align: center;
+  color: #55524e;
+}
+.receipt-shop p { margin: 3px 0; }
+.receipt-persona { display: grid; gap: 6px; }
+.receipt-persona-row { display: flex; gap: 8px; justify-content: space-between; }
+.receipt-k { color: #8b8680; flex: 0 0 auto; }
+.receipt-v { text-align: right; word-break: break-word; }
+.receipt-table { width: 100%; border-collapse: collapse; }
+.receipt-table th, .receipt-table td {
+  padding: 6px 2px;
+  font-weight: 400;
+  text-align: left;
+}
+.receipt-table th { border-bottom: 1px dashed #c9c4bd; color: #8b8680; }
+.receipt-table td:last-child, .receipt-table th:last-child { text-align: right; }
+.receipt-totals { display: grid; gap: 6px; margin-top: 8px; }
+.receipt-totals > div { display: flex; justify-content: space-between; }
+.receipt-paid { font-weight: 700; font-size: 15px; }
+.receipt-no { text-align: center; margin-top: 10px; color: #55524e; font-size: 12px; }
+.receipt-barcode {
+  height: 36px;
+  margin: 8px 0 4px;
+  background: repeating-linear-gradient(90deg, #1c1c1c 0 2px, transparent 2px 5px);
+}
+.receipt-foot { text-align: center; color: #8b8680; font-size: 11px; }
+
 .ticket-cartoon {
   border-width: 2px;
   box-shadow: 0 8px 24px rgba(39, 36, 34, 0.08);
