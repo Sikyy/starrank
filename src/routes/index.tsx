@@ -321,7 +321,7 @@ function Home() {
           <form className="bid-composer-wrap" onSubmit={openCheckout} noValidate>
             <div className="platform-picker" role="group" aria-label={copy.platformLabel}>
               {PLATFORM_LIST.map((meta) => {
-                const comingSoon = meta.id === 'weibo'
+                const comingSoon = meta.id === 'weibo' || meta.id === 'rednote'
                 return (
                   <button
                     key={meta.id}
