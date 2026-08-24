@@ -241,16 +241,6 @@ button:disabled { cursor: not-allowed; opacity: 0.48; }
 .activity-meta { color: #8a847d; flex: 1; }
 .activity-list strong { font-variant-numeric: tabular-nums; }
 
-/* ---------- Top N group headings ---------- */
-.group-heading {
-  margin: 26px 0 10px;
-  font-size: 12px;
-  font-weight: 800;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: #b3ada5;
-}
-
 /* ---------- Revenue banner ---------- */
 .revenue-banner {
   margin: 34px auto 0;
@@ -794,8 +784,9 @@ button:disabled { cursor: not-allowed; opacity: 0.48; }
 
 .listing-copy > a {
   color: var(--foreground);
-  font-size: 16px;
+  font-size: 17px;
   font-weight: 700;
+  line-height: 1.2;
   text-decoration: none;
 }
 
@@ -807,11 +798,11 @@ button:disabled { cursor: not-allowed; opacity: 0.48; }
 
 .listing-copy p {
   display: -webkit-box;
-  margin: 3px 0 4px;
+  margin: 5px 0 6px;
   overflow: hidden;
-  color: #5c5752;
-  font-size: 14px;
-  line-height: 1.5;
+  color: #6b655e;
+  font-size: 15px;
+  line-height: 1.55;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 3;
 }
@@ -1389,12 +1380,12 @@ footer a { color: var(--primary-dark); text-decoration: none; }
   .rank-badge { min-width: 36px; padding: 5px 6px; font-size: 14px; }
 
   .listing-copy p {
-    font-size: 12px;
-    line-height: 1.35;
+    font-size: 13px;
+    line-height: 1.45;
     -webkit-line-clamp: 2;
   }
 
-  .listing-copy > a { font-size: 14px; }
+  .listing-copy > a { font-size: 15px; }
   .listing-copy small { font-size: 11px; }
 
   .listing-price {

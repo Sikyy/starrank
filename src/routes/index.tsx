@@ -518,15 +518,8 @@ function Home() {
           {board.listings.map((listing, index) => {
             const rank = board.firstRank + index
             const claimCents = amountToClaim(listing.amountCents)
-            const groupBoundary =
-              rank === 1 || rank === 4 || rank === 11 || (rank > 10 && (rank - 1) % 10 === 0)
             return (
               <>
-                {groupBoundary ? (
-                  <p className="group-heading" key={`group-${rank}`} aria-hidden="true">
-                    Top {rank === 1 ? '3' : rank === 4 ? '10' : rank - 1}
-                  </p>
-                ) : null}
                 <article
                   className={`listing-card rank-${Math.min(rank, 4)}`}
                   key={listing.id}
