@@ -10,6 +10,9 @@ import { database } from '../server/env.ts'
 import { loadPublicStats, loadReceipt } from '../server/db.ts'
 import { resolveRequestLocale } from '../server/locale.ts'
 import { SiteFooter, SiteHeader } from '../ui/site-chrome.tsx'
+import { Logo } from '../ui/logo.tsx'
+
+const SITE_URL = 'https://starrank.lol'
 
 const loadReceiptPage = createServerFn({ method: 'GET' })
   .validator((intentId: string) => intentId)
@@ -71,20 +74,26 @@ function ReceiptBody({ receipt }: { receipt: PublicReceipt }) {
         {settled ? copy.paidSettled : copy.checkoutReturn}
       </p>
       <h1 id="receipt-heading">{title}</h1>
-      <dl className="receipt-dl">
-        <div>
-          <dt>{copy.listing}</dt>
-          <dd>{receipt.display ?? copy.pendingIdentity}</dd>
-        </div>
-        <div>
-          <dt>{copy.amount}</dt>
-          <dd>{formatCny(receipt.amountCents)}</dd>
-        </div>
-        <div>
-          <dt>{copy.status}</dt>
-          <dd>{receipt.status}</dd>
-        </div>
-      </dl>
+
+      {settled ? (
+        <ReceiptTicket receipt={receipt} htmlLang={htmlLang} />
+      ) : (
+        <dl className="receipt-dl">
+          <div>
+            <dt>{copy.listing}</dt>
+            <dd>{receipt.display ?? copy.pendingIdentity}</dd>
+          </div>
+          <div>
+            <dt>{copy.amount}</dt>
+            <dd>{formatCny(receipt.amountCents)}</dd>
+          </div>
+          <div>
+            <dt>{copy.status}</dt>
+            <dd>{receipt.status}</dd>
+          </div>
+        </dl>
+      )}
+
       {receipt.status === 'awaiting-payment' ? (
         <p className="page-lead">{copy.awaitingLead}</p>
       ) : null}
@@ -101,10 +110,65 @@ function ReceiptBody({ receipt }: { receipt: PublicReceipt }) {
       {receipt.status === 'needs-support' ? (
         <p className="page-lead">{copy.supportLead}</p>
       ) : null}
-      <Link className="primary-button receipt-cta" to="/">
+      <Link className="primary-button receipt-cta no-print" to="/">
         {copy.seeBoard}
       </Link>
     </>
+  )
+}
+
+function ReceiptTicket({ receipt, htmlLang }: { receipt: PublicReceipt; htmlLang: string }) {
+  const settledAt = receipt.settledAt ? new Date(receipt.settledAt) : null
+  const time = settledAt
+    ? settledAt.toLocaleString(htmlLang, {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+      })
+    : '—'
+  return (
+    <div className="receipt-ticket" id="receipt-ticket" aria-label="付款小票">
+      <div className="ticket-head">
+        <Logo size={30} />
+        <div className="ticket-brand">
+          <strong>StarRank</strong>
+          <span>{SITE_URL}</span>
+        </div>
+      </div>
+      <div className="ticket-body">
+        {receipt.imageUrl ? (
+          <img className="ticket-avatar" src={receipt.imageUrl} alt="" />
+        ) : (
+          <span className="ticket-avatar ticket-avatar-fallback">S</span>
+        )}
+        <div className="ticket-listing">
+          <h2>{receipt.display ?? '—'}</h2>
+          {receipt.rank ? <span className="ticket-rank">#{receipt.rank}</span> : null}
+        </div>
+        <dl className="ticket-dl">
+          <div>
+            <dt>当前排名</dt>
+            <dd>{receipt.rank ? `#${receipt.rank}` : '—'}</dd>
+          </div>
+          <div>
+            <dt>付款金额</dt>
+            <dd>{formatCny(receipt.amountCents)}</dd>
+          </div>
+          <div>
+            <dt>时间</dt>
+            <dd>{time}</dd>
+          </div>
+        </dl>
+      </div>
+      <div className="ticket-foot">
+        <span className="ticket-id">No. {receipt.intentId.slice(0, 8).toUpperCase()}</span>
+        <button type="button" className="secondary-button ticket-print" onClick={() => window.print()}>
+          打印小票
+        </button>
+      </div>
+    </div>
   )
 }
 

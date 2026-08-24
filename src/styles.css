@@ -920,6 +920,81 @@ footer a { color: var(--primary-dark); text-decoration: none; }
 .receipt-dl dt { color: var(--muted-foreground); }
 .receipt-dl dd { margin: 0; font-weight: 700; }
 
+.receipt-ticket {
+  max-width: 420px;
+  margin: 20px 0;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: #fff;
+  overflow: hidden;
+}
+.ticket-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 18px;
+  border-bottom: 1px dashed var(--border);
+  background: #faf7f3;
+}
+.ticket-brand { display: flex; flex-direction: column; line-height: 1.2; }
+.ticket-brand strong { font-size: 16px; }
+.ticket-brand span { font-size: 12px; color: var(--muted-foreground); }
+.ticket-body { padding: 18px; display: flex; flex-direction: column; gap: 14px; }
+.ticket-avatar { width: 64px; height: 64px; border-radius: 50%; object-fit: cover; }
+.ticket-avatar-fallback {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--primary-soft);
+  color: var(--primary-dark);
+  font-weight: 700;
+  font-size: 24px;
+}
+.ticket-listing { display: flex; align-items: center; gap: 10px; }
+.ticket-listing h2 { margin: 0; font-size: 18px; }
+.ticket-rank { background: var(--primary); color: #fff; border-radius: 8px; padding: 2px 8px; font-size: 13px; font-weight: 700; }
+.ticket-dl { margin: 0; border-top: 1px dashed var(--border); padding-top: 12px; }
+.ticket-dl > div { display: flex; justify-content: space-between; padding: 6px 0; }
+.ticket-dl dt { color: var(--muted-foreground); }
+.ticket-dl dd { margin: 0; font-weight: 700; }
+.ticket-foot {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 18px;
+  border-top: 1px dashed var(--border);
+  background: #faf7f3;
+}
+.ticket-id { color: var(--muted-foreground); font-size: 12px; }
+.ticket-print {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: auto;
+  padding: 10px 16px;
+  border-radius: 999px;
+  border: 1px solid var(--primary);
+  background: transparent;
+  color: var(--primary-dark);
+  font-weight: 700;
+  cursor: pointer;
+}
+
+@media print {
+  body * { visibility: hidden; }
+  #receipt-ticket, #receipt-ticket * { visibility: visible; }
+  #receipt-ticket {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    max-width: none;
+    border: none;
+    box-shadow: none;
+  }
+  .no-print { display: none; }
+}
+
 .receipt-cta {
   display: inline-flex;
   height: auto;

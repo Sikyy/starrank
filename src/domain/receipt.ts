@@ -15,6 +15,8 @@ export interface PublicReceipt {
   rank: number | null
   takeoverEndsAt: string | null
   listingId: string | null
+  imageUrl: string | null
+  settledAt: string | null
 }
 
 export function buildPublicReceipt(input: {
@@ -49,5 +51,7 @@ export function buildPublicReceipt(input: {
     rank: status === 'ranked' || status === 'takeover-active' ? input.rank : null,
     takeoverEndsAt: takeoverActive ? input.takeover?.endsAt ?? null : null,
     listingId: input.listing?.id ?? input.intent.listingId,
+    imageUrl: input.listing?.imageUrl ?? null,
+    settledAt: input.listing?.settledAt ?? null,
   }
 }
