@@ -547,9 +547,14 @@ function Home() {
                   </button>
                   {listing.image ? <img src={listing.image} alt="" width="56" height="56" loading="lazy" /> : null}
                   <div className="listing-copy">
-                    <a href={listing.href} target="_blank" rel="sponsored noopener noreferrer">
-                      {listing.domain}
-                    </a>
+                    <div className="listing-head">
+                      <a href={listing.href} target="_blank" rel="sponsored noopener noreferrer">
+                        {listing.domain}
+                      </a>
+                      <button className="listing-price" type="button" onClick={() => chooseRank(listing)} aria-label={interpolate(copy.currentAmountAria, { amount: formatCny(listing.amountCents) })}>
+                        {formatCny(listing.amountCents)}
+                      </button>
+                    </div>
                     {listing.description ? <p>{listing.description}</p> : null}
                     <small>
                       {formatRelativeAge(listing.settledAt, clockIso, copy)}
@@ -557,9 +562,6 @@ function Home() {
                       <strong>{interpolate(copy.clicks, { count: formatCount(listing.clicks, htmlLang) })}</strong>
                     </small>
                   </div>
-                  <button className="listing-price" type="button" onClick={() => chooseRank(listing)} aria-label={interpolate(copy.currentAmountAria, { amount: formatCny(listing.amountCents) })}>
-                    {formatCny(listing.amountCents)}
-                  </button>
                 </article>
               </>
             )
