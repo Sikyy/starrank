@@ -23,6 +23,7 @@ import { resolveRequestLocale } from '../server/locale.ts'
 import { resolveVisitorKey } from '../server/visitor-cookie.ts'
 import { SiteFooter, SiteHeader } from '../ui/site-chrome.tsx'
 import { PlatformIcon } from '../ui/platform-icon.tsx'
+import { CategoryIcon } from '../ui/category-icon.tsx'
 
 /** Letter shown in the avatar tile when a social identity has no avatar yet. */
 function platformInitial(identity: { canonicalKey: string }): string {
@@ -334,19 +335,6 @@ function Home() {
           </p>
 
           <form className="bid-composer-wrap" onSubmit={openCheckout} noValidate>
-            <div className="bid-categories" role="group" aria-label="榜单分类">
-              {CATEGORY_PICKER.filter((c) => c.value !== 'all').map((c) => (
-                <button
-                  key={c.value}
-                  type="button"
-                  className={`category-pill ${bidCategory === c.value ? 'active' : ''}`}
-                  onClick={() => setBidCategory(c.value as Category)}
-                  aria-pressed={bidCategory === c.value}
-                >
-                  {c.label}
-                </button>
-              ))}
-            </div>
             <div className="platform-picker" role="group" aria-label={copy.platformLabel}>
               {PLATFORM_LIST.map((meta) => {
                 const comingSoon = meta.id === 'weibo'
@@ -396,6 +384,19 @@ function Home() {
                     aria-describedby="identity-help identity-error"
                     autoComplete="url"
                   />
+                </label>
+                <label className="category-select-wrap">
+                  <span className="sr-only">榜单分类</span>
+                  <CategoryIcon category={bidCategory} size={14} />
+                  <select
+                    className="category-select"
+                    value={bidCategory}
+                    onChange={(event) => setBidCategory(event.target.value as Category)}
+                  >
+                    {CATEGORY_PICKER.filter((c) => c.value !== 'all').map((c) => (
+                      <option key={c.value} value={c.value}>{c.label}</option>
+                    ))}
+                  </select>
                 </label>
                 <button className="primary-button" type="submit" disabled={!canCheckout}>
                   {busy ? copy.working : copy.bid}
@@ -482,7 +483,8 @@ function Home() {
               className={`category-tab ${category === c.value ? 'active' : ''}`}
               onClick={() => setCategory(c.value)}
             >
-              {c.label}
+              <CategoryIcon category={c.value} size={15} />
+              <span>{c.label}</span>
             </button>
           ))}
         </div>
